@@ -1,0 +1,31 @@
+<!doctype html>
+<head>
+
+<!-- meta -->
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="author" content="Writability">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- /meta -->
+
+<title>{% block title %}{% endblock %}</title>
+
+<!-- styles -->
+<link type="text/css" rel="stylesheet" href="/static/css/bootstrap-3.0.0.min.css" />
+<link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+{% block page_css %}{% endblock%}
+<!-- /styles -->
+
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+
+<!-- scripts -->
+<script src="/static/js/libs/modernizr-2.6.2.min.js"></script>
+<!-- /scripts -->
+
+</head>
+<body>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>
