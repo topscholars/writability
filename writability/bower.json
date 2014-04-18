@@ -1,0 +1,12 @@
+{
+  "name": "Writability",
+  "version": "00.06.00",
+  "dependencies": {
+    "jquery": "~2.1.0",
+    "lodash": "~2.4.1",
+    "handlebars": "~1.3.0",
+    "modernizr": "~2.7.2",
+    "requirejs": "~2.1.11",
+    "ember": "~1.5.0"
+  }
+}
