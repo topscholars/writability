@@ -1,3 +1,6 @@
 {
-  "directory": "static/libs"
+    "directory": "static/libs",
+    "scripts": {
+        "postinstall": "bower-requirejs -c static/src/config.js"
+    }
 }
