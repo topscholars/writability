@@ -3,9 +3,9 @@
 # ----------------------------------------------------------------------------#
 from flask import Blueprint, render_template
 
-host = Blueprint('frontend', __name__)
+bp = Blueprint('frontend', __name__)
 
 
-@host.route('/')
+@bp.route('/')
 def home():
     return render_template('pages/landing.jinja')

@@ -7,8 +7,7 @@ from flask import Flask, render_template
 import logging
 from logging import Formatter, FileHandler
 # from forms import LoginForm, RegisterForm, ForgotForm
-# from controllers.api import host_api
-from controllers import frontend
+from controllers import frontend, api
 
 # ----------------------------------------------------------------------------#
 # App Config.
@@ -41,8 +40,8 @@ def login_required(test):
 # Controllers.
 # ----------------------------------------------------------------------------#
 
-# app.register_blueprint(host_api, url_prefix='/api/0.06')
-app.register_blueprint(frontend.host)
+app.register_blueprint(frontend.bp)
+api.initialize(app, "/api")
 
 
 @app.errorhandler(500)
@@ -72,5 +71,5 @@ if not app.debug:
 # Specify port manually:
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
     # app.run(host='0.0.0.0', port=port, ssl_context='adhoc')
