@@ -1,6 +1,8 @@
 from flask.ext.restful import Resource, reqparse, fields
 from flask.ext.restful import marshal_with, marshal_with_field
 
+from models.essay import Essay
+
 # TODO: Delete this dict
 essays = [
     {
@@ -22,7 +24,7 @@ parser.add_argument('context', required=True, type=str)
 parser.add_argument('topic', type=str)
 # parser.add_argument('due_date', type=date)
 parser.add_argument('word_count', type=int)
-parser.add_argument('num_drafts', type=int)
+parser.add_argument('num_of_drafts', type=int)
 
 
 class EssayResource(Resource):
@@ -44,15 +46,16 @@ class EssayResource(Resource):
 
     @marshal_with(output_fields)
     def get(self, id):
-        for essay in essays:
-            if essay.get("id") == id:
-                return essay
+        return Essay.read(id)
 
+    @marshal_with(output_fields)
     def put(self, id):
-        pass
+        args = parser.parse_args()
+        return Essay.update(id, args)
 
     def delete(self, id):
-        pass
+        # TODO: what should I return on deletes?
+        return Essay.delete(id)
 
 
 class EssayListResource(Resource):
@@ -67,5 +70,7 @@ class EssayListResource(Resource):
     def get(self):
         return {self.my_endpoint: essays}
 
+    @marshal_with(EssayResource.output_fields)
     def post(self):
-        pass
+        args = parser.parse_args()
+        return Essay.create(args), 201

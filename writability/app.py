@@ -3,10 +3,11 @@
 # ----------------------------------------------------------------------------#
 import os
 from flask import Flask, render_template
-# from flask.ext.sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
 # from forms import LoginForm, RegisterForm, ForgotForm
+
+from models.db import init_app
 from controllers import frontend, api
 
 # ----------------------------------------------------------------------------#
@@ -15,7 +16,7 @@ from controllers import frontend, api
 
 app = Flask(__name__)
 app.config.from_object('config')
-# db = SQLAlchemy(app)
+init_app(app)
 
 # Automatically tear down SQLAlchemy.
 '''
