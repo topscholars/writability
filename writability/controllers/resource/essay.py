@@ -59,10 +59,13 @@ class EssayListResource(Resource):
 
     my_endpoint = "essays"
 
-    @marshal_with_field(
-        fields.List(fields.Nested(EssayResource.output_fields)))
+    output_fields = {
+        my_endpoint: fields.List(fields.Nested(EssayResource.output_fields))
+    }
+
+    @marshal_with(output_fields)
     def get(self):
-        return essays
+        return {self.my_endpoint: essays}
 
     def post(self):
         pass
