@@ -1,6 +1,6 @@
 flask==0.10.1
 # using dev version of restful for marshal_with_field
-git+http://github.com/twilio/flask-restful.git
+git+git://github.com/twilio/flask-restful.git
 
 # dev
 nose
