@@ -42,6 +42,10 @@ class BaseModel(db.Model):
         return class_.query.get(id)
 
     @classmethod
+    def read_all(class_):
+        return class_.query.all()
+
+    @classmethod
     def update(class_, id, updated_dict):
         model = class_.read(id)
         db.session.add(model)

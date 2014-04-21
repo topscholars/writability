@@ -1,38 +1,32 @@
-from flask.ext.restful import Resource, reqparse, fields
-from flask.ext.restful import marshal_with, marshal_with_field
+from flask.ext.restful import fields
 
 from models.essay import Essay
 
-# TODO: Delete this dict
-essays = [
-    {
-        "id": 901,
-        "prompt": "a great prompt 901",
-        "topic": "something truly brilliant"
-    },
-    {
-        "id": 456,
-        "prompt": "456asdasd",
-        "topic": "something truly brilliant"
-    }
-]
-
-parser = reqparse.RequestParser()
-parser.add_argument('prompt', required=True, type=str)
-parser.add_argument('audience', required=True, type=str)
-parser.add_argument('context', required=True, type=str)
-parser.add_argument('topic', type=str)
-# parser.add_argument('due_date', type=date)
-parser.add_argument('word_count', type=int)
-parser.add_argument('num_of_drafts', type=int)
+from base import ItemRequestParser, ItemResource, ListResource
 
 
-class EssayResource(Resource):
+class EssayRequestParser(ItemRequestParser):
+
+    def _add_arguments(self):
+        self.parser.add_argument('prompt', required=True, type=str)
+        self.parser.add_argument('audience', required=True, type=str)
+        self.parser.add_argument('context', required=True, type=str)
+        self.parser.add_argument('topic', type=str)
+        # parser.add_argument('due_date', type=date)
+        self.parser.add_argument('word_count', type=int)
+        self.parser.add_argument('num_of_drafts', type=int)
+
+
+class EssayResource(ItemResource):
+
+    model = Essay
 
     my_endpoint = "essay"
 
+    parser = EssayRequestParser()
+
     # variable 'fields' is used by Flask
-    output_fields = {
+    _item_fields = {
         "prompt": fields.String,
         "audience": fields.String,
         "context": fields.String,
@@ -44,33 +38,13 @@ class EssayResource(Resource):
         "uri": fields.Url(my_endpoint, absolute=True)
     }
 
-    @marshal_with(output_fields)
-    def get(self, id):
-        return Essay.read(id)
 
-    @marshal_with(output_fields)
-    def put(self, id):
-        args = parser.parse_args()
-        return Essay.update(id, args)
+class EssaysListResource(ListResource):
 
-    def delete(self, id):
-        # TODO: what should I return on deletes?
-        return Essay.delete(id)
-
-
-class EssayListResource(Resource):
+    model = Essay
 
     my_endpoint = "essays"
 
-    output_fields = {
-        my_endpoint: fields.List(fields.Nested(EssayResource.output_fields))
-    }
+    parser = EssayResource.parser
 
-    @marshal_with(output_fields)
-    def get(self):
-        return {self.my_endpoint: essays}
-
-    @marshal_with(EssayResource.output_fields)
-    def post(self):
-        args = parser.parse_args()
-        return Essay.create(args), 201
+    _item_resource = EssayResource
