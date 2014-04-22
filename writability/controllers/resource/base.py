@@ -105,6 +105,7 @@ class ListResource(BaseResource):
         model_class = self.resource_manager.model_class
 
         item = model_class.create(args)
+
         return marshal(item, item_fields), 201
 
     @classmethod

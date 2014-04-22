@@ -1,29 +1,14 @@
+"""
+models.base
+~~~~~~~~~~~
+
+This module contains the base model that represents a database table.
+
+"""
 from datetime import datetime
-from sqlalchemy.dialects.postgresql import ARRAY
 
-from db import db
-
-
-class SerializableDateTime(db.TypeDecorator):
-
-    impl = db.DateTime
-
-    def process_result_value(self, value, dialect):
-        # account for nullable deleted_ts by simply returning None
-        return value.isoformat() if value is not None else value
-
-
-class SerializableStringList(db.TypeDecorator):
-
-    impl = ARRAY(db.String)
-
-    def process_bind_param(self, value, dialect):
-        # return [s.strip() for s in value.split(',')]
-        return value
-
-    def process_result_value(self, value, dialect):
-        # return ', '.join(value)
-        return value
+from .db import db
+from .fields import SerializableDateTime
 
 
 class BaseModel(db.Model):
@@ -46,7 +31,8 @@ class BaseModel(db.Model):
 
     @classmethod
     def create(class_, object_dict):
-        model = class_(**object_dict)
+        prepared_dict = class_._replace_resource_ids_with_models(object_dict)
+        model = class_(**prepared_dict)
         db.session.add(model)
         db.session.commit()
         return model
@@ -64,7 +50,8 @@ class BaseModel(db.Model):
         model = class_.read(id)
         db.session.add(model)
 
-        for k, v in updated_dict.items():
+        prepared_dict = class_._replace_resource_ids_with_models(updated_dict)
+        for k, v in prepared_dict.items():
             # only update attributes that have changed
             try:
                 if getattr(model, k) != v:
@@ -82,3 +69,7 @@ class BaseModel(db.Model):
         db.session.delete(model)
         db.session.commit()
         return id
+
+    @classmethod
+    def _replace_resource_ids_with_models(class_, object_dict):
+        return object_dict

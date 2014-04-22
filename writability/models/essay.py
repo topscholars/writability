@@ -8,7 +8,9 @@ ApplicationEssay is the essay the students write for a specific Application.
 
 """
 from .db import db
-from .base import BaseModel, SerializableStringList
+from .base import BaseModel
+from .fields import SerializableStringList
+from .relationships import essay_associations
 
 
 class Essay(BaseModel):
@@ -34,6 +36,26 @@ class ThemeEssay(Essay):
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     proposed_topics = db.Column(SerializableStringList)
+
+    application_essays = db.relationship(
+        "ApplicationEssay",
+        secondary=essay_associations,
+        backref=db.backref("theme_essay", lazy="dynamic"))
+
+    @classmethod
+    def _replace_resource_ids_with_models(class_, object_dict):
+        object_dict = super(
+            ThemeEssay,
+            class_)._replace_resource_ids_with_models(object_dict)
+
+        application_essay_ids = object_dict.get("application_essays", [])
+        essays = []
+        for id in application_essay_ids:
+            essays.append(ApplicationEssay.query.get(id))
+
+        object_dict["application_essays"] = essays
+
+        return object_dict
 
 
 class ApplicationEssay(Essay):

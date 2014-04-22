@@ -1,3 +1,10 @@
+"""
+models.db
+~~~~~~~~~
+
+This model attaches the app to the database and imports all tables.
+
+"""
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -10,5 +17,6 @@ def init_app(app):
 
 db = SQLAlchemy()
 
-# imports at the bottom as they require db
+# Imports at the bottom as they require db
+# They need to be imported to be added to the db
 from essay import Essay
