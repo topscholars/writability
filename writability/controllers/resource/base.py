@@ -1,3 +1,10 @@
+"""
+controllers.resource.base
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module contains the base resources for the API.
+
+"""
 from flask.ext.restful import Resource, reqparse, fields
 from flask.ext.restful import marshal
 

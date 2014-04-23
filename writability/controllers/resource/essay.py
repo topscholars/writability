@@ -10,8 +10,8 @@ from flask.ext.restful import fields, types
 from models.essay import Essay, ThemeEssay, ApplicationEssay
 
 from .base import ResourceManager, ItemResource, ListResource
-from .types import resource_list
-from fields import ResourceField
+from .types import resource_list, unicode_list
+from .fields import ResourceField
 
 
 class EssayResourceManager(ResourceManager):
@@ -62,8 +62,7 @@ class ThemeEssayResourceManager(EssayResourceManager):
         super(ThemeEssayResourceManager, self)._add_parse_arguments()
         self.parser.add_argument(
             "proposed_topics",
-            type=str,
-            action="append")
+            type=unicode_list)
         self.parser.add_argument(
             "application_essays",
             type=resource_list)

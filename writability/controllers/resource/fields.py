@@ -1,3 +1,10 @@
+"""
+controllers.resource.fields
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module contains custom output fields.
+
+"""
 from flask.ext.restful import fields
 
 
