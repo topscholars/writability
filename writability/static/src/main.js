@@ -10,7 +10,8 @@ require.config({
         lodash: "/static/libs/lodash/dist/lodash.compat",
         jquery: "/static/libs/jquery/dist/jquery",
         handlebars: "/static/libs/handlebars/handlebars",
-        ember: "/static/libs/ember/ember"
+        ember: "/static/libs/ember/ember",
+        bootstrap: "/static/libs/bootstrap/dist/js/bootstrap"
     }
 });
 
