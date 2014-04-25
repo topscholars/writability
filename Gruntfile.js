@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
         watch: {
             emberTemplates: {
-                files: 'writability/static/src/*.hbs',
+                files: 'writability/static/src/**/*.hbs',
                 tasks: ['emberTemplates']
             },
         },
@@ -17,7 +17,7 @@ module.exports = function(grunt) {
                     templateBasePath: "writability/static/src"
                 },
                 files: {
-                    "writability/static/src/templates.js": "writability/static/src/*.hbs"
+                    "writability/static/src/templates.js": "writability/static/src/**/*.hbs"
                 }
             }
         }
