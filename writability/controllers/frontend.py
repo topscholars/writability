@@ -6,11 +6,12 @@ from flask import Blueprint, render_template
 bp = Blueprint('frontend', __name__)
 
 
-@bp.route('/')
+@bp.route('/landing')
 def landing():
     return render_template('pages/landing.jinja')
 
 
-@bp.route('/home')
+@bp.route('/')
+@bp.route('/essays')
 def home():
     return render_template('pages/app.jinja')
