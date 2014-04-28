@@ -11,7 +11,7 @@ def landing():
     return render_template('pages/landing.jinja')
 
 
-@bp.route('/')
-@bp.route('/essays')
-def home():
+@bp.route('/', defaults={'path': '/'})
+@bp.route('/<path:path>')
+def home(path):
     return render_template('pages/app.jinja')

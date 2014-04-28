@@ -31,7 +31,7 @@ class EssayResourceManager(ResourceManager):
 
     def _add_item_fields(self):
         super(EssayResourceManager, self)._add_item_fields()
-        self.item_fields.update({
+        self._item_fields.update({
             "prompt": fields.String,
             "audience": fields.String,
             "context": fields.String,
@@ -69,7 +69,7 @@ class ThemeEssayResourceManager(EssayResourceManager):
 
     def _add_item_fields(self):
         super(ThemeEssayResourceManager, self)._add_item_fields()
-        self.item_fields.update({
+        self._item_fields.update({
             "proposed_topics": fields.List(fields.String),
             "application_essays": fields.List(ResourceField(
                 ApplicationEssayResourceManager.item_endpoint,
@@ -99,7 +99,7 @@ class ApplicationEssayResourceManager(EssayResourceManager):
 
     def _add_item_fields(self):
         super(ApplicationEssayResourceManager, self)._add_item_fields()
-        self.item_fields.update({
+        self._item_fields.update({
             # 'proposed_topics': fields.List(fields.String)
         })
 

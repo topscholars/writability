@@ -14,7 +14,7 @@ module.exports = function(grunt) {
             compile: {
                 options: {
                     precompile: false, // remove for prod
-                    templateBasePath: "writability/static/src"
+                    templateBasePath: "writability/static/src/views"
                 },
                 files: {
                     "writability/static/src/templates.js": "writability/static/src/**/*.hbs"
@@ -28,4 +28,3 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['emberTemplates']);
 };
-
