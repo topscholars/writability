@@ -2,7 +2,7 @@
 
 <ol class="list">
 {{#each}}
-    <li class="list-item">
+    <li {{action "select"}} {{bind-attr class=":list-item isSelected"}}>
         {{partial view.listItem}}
     </li>
 {{/each}}

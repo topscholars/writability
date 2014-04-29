@@ -43,5 +43,7 @@ App.EssayRoute = Ember.Route.extend({
         this.render({
             outlet: 'details-module',
         });
+
+        this.controller.send('select');
     }
 });
