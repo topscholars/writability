@@ -1,6 +1,6 @@
 Ember.TEMPLATES["application"] = Ember.Handlebars.compile("<header id=\"header\">{{outlet header}}</header>\n<div id=\"main-layout\" class=\"layout\">\n    <section id=\"list-module\" class=\"module\">\n        {{outlet list-module}}\n    </section>\n    <section id=\"details-module\" class=\"module\">\n        {{outlet details-module}}\n    </section>\n</div>\n<div id=\"editor-layout\" class=\"layout\">\n    <section id=\"editor-module\" class=\"module\">{{outlet editor-module}}</section>\n</div>\n<div id=\"modal-container\">\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
 
-Ember.TEMPLATES["modules/details"] = Ember.Handlebars.compile("Build details pane\n\n{{audience}}\n\nsomething\n\nis Selected: {{isSelected}}\n");
+Ember.TEMPLATES["modules/details"] = Ember.Handlebars.compile("Build details pane\nID: {{id}}\n{{audience}}\n\nsomething\n");
 
 Ember.TEMPLATES["modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">Writability</div>\n");
 

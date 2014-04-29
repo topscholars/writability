@@ -4,8 +4,11 @@ App.EssaysController = Ember.ArrayController.extend({
     selectedEssay: null,
 
     actions: {
-        selectEssay: function (essay) {
-            this.set('selectedEssay', essay);
+        selectEssay: function (model) {
+            if (this.selectedEssay !== model) {
+                this.transitionToRoute("essay", model.id);
+                this.set('selectedEssay', model);
+            }
         }
     }
 });
@@ -23,6 +26,7 @@ App.EssayController = Ember.ObjectController.extend({
         select: function () {
             var model = this.get('model');
             this.get('controllers.essays').send('selectEssay', model);
+
         }
     },
 });
