@@ -7,156 +7,112 @@
 /***********************************************************
 * IMPORTS
 ************************************************************/
-/* @import "reset.css"; */
-@import "../../libs/bootstrap/less/bootstrap";
+@import "reset.css";
+/* @import "../../libs/bootstrap/less/bootstrap"; */
 @import "functions";
 @import "components";
-/* @import "layout-index":
-@import "layout-modal";
-@import "layout-editor"; */
+/*@import "modules";
+@import "partials"; */
 
 /***********************************************************
 * COLOR DEFINITIONS
 ************************************************************/
 @white: rgb(255, 255, 255);
 @black: rgb(0, 0, 0);
-@darkGrey: rgb(67, 66, 65);
-@grey: rgb(123, 121, 121);
-@lightGrey: rgb(200, 200, 200);
-@blue: rgb(0, 137, 255);
-
+@greyLightest: rgb(251, 249, 248);
+@greyLighter: rgb(245, 243, 243);
+@greyLight: rgb(233, 232, 231);
+@grey: rgb(175, 173, 173);
+@green: rgb(84, 179, 72);
 
 /***********************************************************
 * SIZE DEFINITIONS
 ************************************************************/
-@tinyFontSize: 12px;
-@normalFontSize: 16px;
-@bigFontSize: 26px;
+@bodyFontSize: 19px; // 14pt
+@smallBodyFontSize: 16px; // 12pt
+@bigBodyFontSize: 22px; // 16pt
 
-@normalLineHeight: @normalFontSize + 3px;
+@headerFontSize: 40px; // 30pt
+@smallestHeaderFontSize: 22px; // 16pt
+@smallHeaderFontSize: 24px; // 18pt
+@bigHeaderFontSize: 52px; // 40pt
+@biggestHeaderFontSize: 60px; // 45pt
+
+/* @normalLineHeight: @normalFontSize + 3px;
 @listLineHeight: 30px;
-@bigLineHeight: @bigFontSize + 8px;
+@bigLineHeight: @bigFontSize + 8px; */
 
-@headerHeight: 50px;
+@headerHeight: 45px;
 
-@bigLinePadding: 22px;
-@innerPadding: 20px;
-@outerPadding: 8px;
+@bigMargin: 60px;
+@smallMargin: 30px;
 
-@bigBoxPadding: 100px;
-@smallBoxPadding: 40px;
-@pagePadding: 23%;
+@innerPadding: 25px;
+@smallPadding: 15px;
 
-@normalBorder: 2px;
-@normalRound: 4px;
+@thinBorder: 1px;
+@wideBorder: 4px;
+
+@round: 4px;
 
 
 /***********************************************************
 * FONTS (with help from http://fontsquirrel.com)
 ************************************************************/
+// Leage Gothic is a temporary replacement for Trade Gothic
 @font-face {
-    font-family: 'Helvetica Neue Light';
-    src: url('fonts/helvetica-neue-light-webfont.eot'); //ie9
+    font-family: 'League Gothic';
+    src: url('/static/fonts/leaguegothic-regular-webfont.eot'); //ie9
     src:
-        url('fonts/helvetica-neue-light-webfont.eot?#iefix')
+        url('/static/fonts/leaguegothic-regular-webfont.eot?#iefix')
             format('embedded-opentype'), // ie6-8
-        url('fonts/helvetica-neue-light-webfont.woff')
+        url('/static/fonts/leaguegothic-regular-webfont.woff')
             format('woff'), // modern
-        url('fonts/helvetica-neue-light-webfont.ttf')
+        url('/static/fonts/leaguegothic-regular-webfont.ttf')
             format('truetype'), // safari, android, ios
-        url('fonts/helvetica-neue-light-webfont.svg#HeleveticaNeueLight')
+        url('/static/fonts/leaguegothic-regular-webfont.svg#LeagueGothic')
             format('svg'); // old ios
     font-weight: normal;
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'Helvetica Neue';
-    src: url('fonts/helvetica-neue-webfont.eot'); //ie9
-    src:
-        url('fonts/helvetica-neue-webfont.eot?#iefix')
-            format('embedded-opentype'), // ie6-8
-        url('fonts/helvetica-neue-webfont.woff')
-            format('woff'), // modern
-        url('fonts/helvetica-neue-webfont.ttf')
-            format('truetype'), // safari, android, ios
-        url('fonts/helvetica-neue-webfont.svg#HeleveticaNeue')
-            format('svg'); // old ios
-    font-weight: normal;
-    font-style: normal;
-}
+// Kameron is a temporary replacement for Rockwell
+@import url('http://fonts.googleapis.com/css?family=Kameron');
 
-@font-face {
-    font-family: 'Helvetica Neue Bold';
-    src: url('fonts/helvetica-neue-bold-webfont.eot'); //ie9
-    src:
-        url('fonts/helvetica-neue-bold-webfont.eot?#iefix')
-            format('embedded-opentype'), // ie6-8
-        url('fonts/helvetica-neue-bold-webfont.woff')
-            format('woff'), // modern
-        url('fonts/helvetica-neue-bold-webfont.ttf')
-            format('truetype'), // safari, android, ios
-        url('fonts/helvetica-neue-bold-webfont.svg#HeleveticaNeueBold')
-            format('svg'); // old ios
-    font-weight: normal;
-    font-style: normal;
-}
-
-.titleFont(@fontSize: @bigFontSize) {
-    font-family: 'Helvetica Neue Bold', 'Arial Bold', sans-serif;
-    font-size: @fontSize;
-}
-
-.labelFont(@fontSize: @normalFontSize) {
-    font-family: 'Helvetica Neue Bold', 'Arial Bold', sans-serif;
-    font-size: @fontSize;
-}
-
-.normalFont(@fontSize: @normalFontSize) {
-    font-family: 'Helvetica Neue Light', 'Arial Narrow', sans-serif;
-    font-size: @fontSize;
-    letter-spacing: 1px;
-}
-
-.tinyFont(@fontSize: @tinyFontSize) {
-    font-family: 'Helvetica Neue Light', 'Arial Narrow', sans-serif;
-    font-size: @fontSize;
-}
-
-
-/***********************************************************
-* TEXT STYLE SETS
-************************************************************/
 .headerText() {
-    .tinyFont;
-    color: @white;
+    font-family: 'Kameron', serif;
+    font-size: @smallHeaderFontSize;
 }
 
-.titleText() {
-    .titleFont;
-    color: @darkGrey;
+.bodyText() {
+    font-family: 'League Gothic', sans-serif;
+    font-size: @bodyFontSize;
 }
 
-.labelText() {
-    .labelFont;
-    color: @darkGrey;
+.highlightedText() {
+    font-family: 'League Gothic', sans-serif;
+    font-size: @bigBodyFontSize;
 }
 
-.normalText() {
-    .normalFont;
-    color: @grey;
+.moduleHeaderText() {
+    font-family: 'Kameron', serif;
+    font-size: @bigHeaderFontSize;
 }
 
-.contrastText() {
-    .normalFont;
-    color: @blue;
+.sectionHeaderText() {
+    font-family: 'Kameron', serif;
+    font-size: @smallHeaderFontSize;
 }
 
-.buttonText() {
-    .normalFont;
-    color: @white;
+.itemHeaderText() {
+    font-family: 'Kameron', serif;
+    font-size: @headerFontSize;
 }
 
+.smallText() {
+    font-family: 'League Gothic', sans-serif;
+    font-size: @smallBodyFontSize;
+}
 
 /***********************************************************
 * REUSABLE APP-SPECIFIC CLASSES
@@ -169,6 +125,14 @@
         @spread: 7px,
         @alpha: .15) {
     box-shadow: @hShadow @vShadow @blur @spread @alpha;
+}
+
+.vertical-section-shadow() {
+    box-shadow: 0px -5px 5px 0px rgba(0, 0, 0, .5);
+}
+
+.horizontal-section-shadow() {
+    box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, .5);
 }
 
 /* Inner drop shadow. */
@@ -193,14 +157,13 @@
 }
 
 .form-element {
-    .normalFont;
-    border-radius: @normalRound;
+    .bodyText;
+    border-radius: @round;
     .inner-box-shadow();
 
     //height: @listLineHeight;
-    border: 1px @lightGrey solid;
+    border: 1px @greyLight solid;
     padding: @innerPadding;
-    margin: @outerPadding 0px;
     background-color: @white;
 
 }
@@ -229,20 +192,17 @@ html {
 }
 
 body {
-    .background-pattern-wrapper(
-            100%,
-            100%,
-            60px,
-            60px,
-            'body.jpg',
-            @grey,
-            repeat);
+    .bodyText();
+
+    background-color: @white;
+    color: @black;
     min-width: 980px;
+
 }
 
 button {
-    .buttonText;
-    border-radius: @normalRound;
+    .bodyText;
+    border-radius: @round;
 
     &:hover {
      cursor: pointer;
@@ -277,21 +237,139 @@ button {
 }
 
 a {
-    color: @darkGrey;
+    color: @grey;
     text-decoration: underline;
 
     &:hover {
-        color: @blue;
+        color: @green;
     }
 }
 
 li {
-    margin-bottom: @outerPadding;
-    line-height: @listLineHeight;
+}
+
+.layout {
+    min-width: 960px;
+    position: absolute;
+    top: @headerHeight;
+    width: 100%;
+    z-index: 10;
 }
 
 /***********************************************************
-* CORE LAYOUT
+* LAYOUTS
 ************************************************************/
+#main-layout {
+    .module {
+        width: 50%;
+        min-width: 480px;
+        padding-top: @bigMargin;
+        padding-bottom: @bigMargin;
+    }
+}
 
+/***********************************************************
+* MODULE: HEADER
+************************************************************/
+#header {
+    .horizontal-section-shadow();
+    .headerText();
 
+    background-color: @black;
+    color: @white;
+    display: table;
+    height: @headerHeight;
+    position: fixed;
+    text-align: center;
+    width: 100%;
+    z-index: 20;
+
+    .header-title {
+        display: table-cell;
+        vertical-align: middle;
+    }
+}
+
+/***********************************************************
+* MODULE: LIST
+************************************************************/
+#list-module {
+    background-color: @greyLighter;
+    position: absolute;
+    left: 0px;
+
+    .module-title {
+        .moduleHeaderText();
+        float: left;
+        padding-left: @bigMargin;
+        margin-bottom: @smallMargin;
+    }
+
+    .list {
+        border-top: @thinBorder @grey solid;
+        clear: both;
+    }
+
+    .list-item {
+        border-bottom: @thinBorder @grey solid;
+        float: left;
+        list-style: none;
+        padding: @smallMargin @bigMargin;
+        width: 100%;
+
+        .list-style-group {
+            float: left;
+            margin-right: @smallPadding;
+        }
+
+        .main-group {
+            float: left;
+            margin-right: @smallPadding;
+
+            .main-line {
+                .itemHeaderText();
+                margin-bottom: @smallPadding;
+            }
+
+            .sub-line {
+            }
+        }
+
+        .details-group {
+            .smallText();
+
+            float: right;
+            margin-right: @smallPadding;
+        }
+
+        .arrow-icon {
+            float: right;
+        }
+    }
+}
+
+/***********************************************************
+* MODULE: DETAILS
+************************************************************/
+#details-module {
+    .vertical-section-shadow();
+
+    border-left: @thinBorder @grey solid;
+    height: 100%;
+    position: fixed;
+    left: 50%;
+    z-index: 15;
+
+}
+
+/***********************************************************
+* PARTIALS: ESSAY(S)
+************************************************************/
+.list-item {
+   .next-action {
+       .highlightedText();
+
+       color: @green;
+       margin-bottom: @smallPadding;
+   }
+}

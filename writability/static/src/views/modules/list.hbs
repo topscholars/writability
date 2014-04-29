@@ -1,7 +1,9 @@
-{{view.title}}
+<div class="module-title">{{view.title}}</div>
 
+<ol class="list">
 {{#each}}
-    <li>
+    <li class="list-item">
         {{partial view.listItem}}
     </li>
 {{/each}}
+</ol>

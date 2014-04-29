@@ -11,9 +11,7 @@
 <title>{% block title %}{% endblock %}</title>
 
 <!-- styles -->
-<!-- <link type="text/css" rel="stylesheet" href="/static/libs/bootstrap-3.0.0.min.css" />
 <link type="text/css" rel="stylesheet" href="/static/src/core/css/main.css" />
--->
 {% block page_css %}{% endblock%}
 <!-- /styles -->
 
@@ -22,7 +20,9 @@
 <!-- TODO: Should Modernizr go here. -->
 </head>
 <body>
+<div id="container"> <!-- for bootstrap -->
 {% block content %}{% endblock %}
+</div>
 </body>
 
 <script src="/static/libs/modernizr/modernizr.js"></script>
