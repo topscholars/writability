@@ -1,5 +1,5 @@
 App.EssaysController = Ember.ArrayController.extend({
-    itemController: 'essay',
+    itemController: 'essay.item',
 
     selectedEssay: null,
 
@@ -14,7 +14,7 @@ App.EssaysController = Ember.ArrayController.extend({
 });
 
 
-App.EssayController = Ember.ObjectController.extend({
+App.EssayItemController = Ember.ObjectController.extend({
     isSelected: (function () {
         var selectedEssay = this.get('controllers.essays.selectedEssay');
         return selectedEssay === this.get('model');
@@ -26,7 +26,10 @@ App.EssayController = Ember.ObjectController.extend({
         select: function () {
             var model = this.get('model');
             this.get('controllers.essays').send('selectEssay', model);
-
         }
     },
+});
+
+App.EssayController = Ember.ObjectController.extend({
+
 });

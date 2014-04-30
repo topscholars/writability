@@ -44,6 +44,7 @@ App.EssayRoute = Ember.Route.extend({
             outlet: 'details-module',
         });
 
-        this.controller.send('select');
+        var id = this.controller.get('model').id;
+        this.controllerFor('essays').findBy('id', id).send('select');
     }
 });

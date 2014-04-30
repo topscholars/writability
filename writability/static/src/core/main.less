@@ -28,9 +28,9 @@
 /***********************************************************
 * SIZE DEFINITIONS
 ************************************************************/
-@bodyFontSize: 19px; // 14pt
-@smallBodyFontSize: 16px; // 12pt
-@bigBodyFontSize: 22px; // 16pt
+@bodyFontSize: 16px; // 14pt
+@smallBodyFontSize: 13px; // 12pt
+@bigBodyFontSize: 20px; // 16pt
 
 @headerFontSize: 40px; // 30pt
 @smallestHeaderFontSize: 22px; // 16pt
@@ -45,7 +45,7 @@
 @headerHeight: 45px;
 
 @bigMargin: 60px;
-@smallMargin: 30px;
+@smallMargin: 40px;
 
 @innerPadding: 25px;
 @smallPadding: 15px;
@@ -59,6 +59,22 @@
 /***********************************************************
 * FONTS (with help from http://fontsquirrel.com)
 ************************************************************/
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('/static/fonts/helvetica-neue-webfont.eot'); //ie9
+    src:
+        url('/static/fonts/helvetica-neue-webfont.eot?#iefix')
+            format('embedded-opentype'), // ie6-8
+        url('/static/fonts/helvetica-neue-webfont.woff')
+            format('woff'), // modern
+        url('/static/fonts/helvetica-neue-webfont.ttf')
+            format('truetype'), // safari, android, ios
+        url('/static/fonts/helvetica-neue-webfont.svg#HeleveticaNeue')
+            format('svg'); // old ios
+    font-weight: normal;
+    font-style: normal;
+}
+
 // Leage Gothic is a temporary replacement for Trade Gothic
 @font-face {
     font-family: 'League Gothic';
@@ -85,12 +101,12 @@
 }
 
 .bodyText() {
-    font-family: 'League Gothic', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     font-size: @bodyFontSize;
 }
 
 .highlightedText() {
-    font-family: 'League Gothic', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     font-size: @bigBodyFontSize;
 }
 
@@ -101,7 +117,7 @@
 
 .sectionHeaderText() {
     font-family: 'Kameron', serif;
-    font-size: @smallHeaderFontSize;
+    font-size: @smallestHeaderFontSize;
 }
 
 .itemHeaderText() {
@@ -110,7 +126,7 @@
 }
 
 .smallText() {
-    font-family: 'League Gothic', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     font-size: @smallBodyFontSize;
 }
 
@@ -263,8 +279,6 @@ li {
     .module {
         width: 50%;
         min-width: 480px;
-        padding-top: @bigMargin;
-        padding-bottom: @bigMargin;
     }
 }
 
@@ -296,13 +310,15 @@ li {
 #list-module {
     background-color: @greyLighter;
     position: absolute;
+    padding-top: @bigMargin;
+    padding-bottom: @bigMargin;
     left: 0px;
 
     .module-title {
         .moduleHeaderText();
         float: left;
         padding-left: @bigMargin;
-        margin-bottom: @smallMargin;
+        margin-bottom: @innerPadding;
     }
 
     .list {
@@ -315,7 +331,7 @@ li {
         cursor: pointer;
         float: left;
         list-style: none;
-        padding: @smallMargin @bigMargin;
+        padding: @innerPadding @bigMargin;
         width: 100%;
 
         &:hover {
@@ -372,6 +388,53 @@ li {
     position: fixed;
     z-index: 15;
 
+    .details-nav {
+        .sectionHeaderText();
+
+        border-bottom: @thinBorder @grey solid;
+        color: @grey;
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+
+        .tab-header {
+            border-right: @thinBorder @greyLighter solid;
+            cursor: pointer;
+            display: table-cell;
+            padding-bottom: @innerPadding;
+            padding-top: @innerPadding;
+            text-align: center;
+
+            &:last-of-type {
+                border-right: 0px;
+            }
+
+            &:hover {
+                background-color: @greyLight;
+                color: @black;
+            }
+
+            &.is-selected {
+                background-color: white;
+                color: @black;
+                cursor: auto;
+            }
+        }
+    }
+
+    .tab-content {
+        clear: both;
+        padding: @smallMargin @bigMargin;
+    }
+
+    .details-field {
+        .key {
+            padding-bottom: @smallPadding;
+        }
+        .value {
+            padding-bottom: @innerPadding;
+        }
+    }
 }
 
 /***********************************************************

@@ -1,5 +1,11 @@
-Build details pane
-ID: {{id}}
-{{audience}}
-
-something
+<nav class="details-nav">
+    {{#each tab in view.tabs}}
+        <div id="tab-{{unbound tab.key}}" {{action "select" tab.key
+        target="view"}} class="tab-header">
+            {{tab.title}}
+        </div>
+    {{/each}}
+</nav>
+<div class="tab-content">
+    {{view App.EssayTabs}}
+</div>
