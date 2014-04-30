@@ -21,7 +21,7 @@ class EssayResourceManager(ResourceManager):
     model_class = Essay
 
     def _add_parse_arguments(self):
-        self.parser.add_argument('prompt', required=True, type=str)
+        self.parser.add_argument('essay_prompt', required=True, type=str)
         self.parser.add_argument('audience', type=str)
         self.parser.add_argument('context', type=str)
         self.parser.add_argument('topic', type=str)
@@ -32,7 +32,7 @@ class EssayResourceManager(ResourceManager):
     def _add_item_fields(self):
         super(EssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
-            "prompt": fields.String,
+            "essay_prompt": fields.String,
             "audience": fields.String,
             "context": fields.String,
             "topic": fields.String,

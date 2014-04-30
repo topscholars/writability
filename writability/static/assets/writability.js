@@ -50,13 +50,13 @@ App.EssayController = Ember.ObjectController.extend({
 });
 
 App.Essay = DS.Model.extend({
-    //essay_prompt: DS.attr('string'),
     audience: DS.attr('string'),
     context: DS.attr('string'),
-    topic: DS.attr('string'),
-    word_count: DS.attr('number'),
+    due_date: DS.attr('string'),
+    essay_prompt: DS.attr('string'),
     num_of_drafts: DS.attr('number'),
-    due_date: DS.attr('string')
+    topic: DS.attr('string'),
+    word_count: DS.attr('number')
 });
 
 App.Router.reopen({

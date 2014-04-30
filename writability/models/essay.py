@@ -16,7 +16,7 @@ from .relationships import essay_associations
 class Essay(BaseModel):
 
     id = db.Column(db.Integer, primary_key=True)
-    prompt = db.Column(db.String, nullable=False)
+    essay_prompt = db.Column(db.String, nullable=False)
 
     audience = db.Column(db.String)
     context = db.Column(db.String)
