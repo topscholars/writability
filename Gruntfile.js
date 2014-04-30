@@ -32,7 +32,20 @@ module.exports = function(grunt) {
                 // the files to concatenate
                 src: ['writability/static/src/**/*.js'],
                 // the location of the resulting JS file
-                dest: 'writability/static/dist/writability.js'
+                dest: 'writability/static/assets/writability.js'
+            },
+            vendor: {
+                // the files to concatenate
+                src: [
+                    "writability/static/libs/lodash/dist/lodash.compat.js",
+                    "writability/static/libs/jquery/dist/jquery.js",
+                    "writability/static/libs/handlebars/handlebars.js",
+                    "writability/static/libs/ember/ember.js",
+                    "writability/static/libs/ember-data/ember-data.js",
+                    "writability/static/libs/bootstrap/dist/js/bootstrap.js"
+                ],
+                // the location of the resulting JS file
+                dest: 'writability/static/assets/vendors.js'
             }
         }
     });
