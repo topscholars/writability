@@ -4,9 +4,11 @@ App.Router.reopen({
 });
 
 App.Router.map(function () {
-    this.resource('essays', {path: '/essays'});
-    this.resource('essay', {path: '/essays/:id'});
-    //this.resource('drafts', {path: '/drafts'});
+    this.resource('essays', {path: '/essays'}, function () {
+        this.resource('essay', {path: '/:id'});
+    });
+
+    // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 });
 
@@ -17,34 +19,18 @@ App.EssaysRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('modules/header', {outlet: 'header'});
-        this.render({outlet: 'list-module'});
+        this.render('essays', {outlet: 'list-module'});
     }
 });
 
+
 App.EssayRoute = Ember.Route.extend({
     model: function (params) {
-        var id = params.id;
-        return Ember.RSVP.hash({
-            listModel: this.store.find('essay'),
-            itemModel: this.store.find('essay', id)
-        });
-    },
-
-    setupController: function (controller, model) {
-        controller.set('model', model.itemModel);
-        this.controllerFor('essays').set('model', model.listModel);
+        return this.store.find('essay', params.id);
     },
 
     renderTemplate: function () {
-        this.render('modules/header', {
-            outlet: 'header'
-        });
-        this.render('essays', {
-            outlet: 'list-module'
-        });
-        this.render({
-            outlet: 'details-module',
-        });
+        this.render({outlet: 'details-module'});
 
         var id = this.controller.get('model').id;
         this.controllerFor('essays').findBy('id', id).send('select');
