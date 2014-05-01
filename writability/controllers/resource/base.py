@@ -34,8 +34,8 @@ class ResourceManager(object):
 
     def _add_item_fields(self):
         self._item_fields.update({
-            "id": fields.Integer,
-            "uri": fields.Url(self.item_endpoint, absolute=True)
+            "id": fields.Integer
+            # "uri": fields.Url(self.item_endpoint, absolute=True)
         })
 
     def _add_list_field(self):
