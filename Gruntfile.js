@@ -18,7 +18,7 @@ module.exports = function(grunt) {
             compile: {
                 options: {
                     precompile: false, // remove for prod
-                    templateBasePath: "writability/static/src/views"
+                    templateBasePath: "writability/static/src"
                 },
                 files: {
                     "writability/static/src/templates.js": "writability/static/src/**/*.hbs"

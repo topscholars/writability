@@ -1,20 +1,3 @@
-App.ListView = Ember.View.extend({
-    templateName: 'modules/list',
-    title: null,
-    //sections: [],
-    listItem: ""
-});
-
-App.EssaysView = App.ListView.extend({
-    title: 'Essays',
-    //sections: ['To do', 'Not to do'],
-    listItem: "partials/essay-list-item"
-});
-
-App.DetailsView = Ember.View.extend({
-    templateName: 'modules/details'
-});
-
 App.EssayView = App.DetailsView.extend({
     selectedTab: 'overview',
 
@@ -45,17 +28,17 @@ App.EssayView = App.DetailsView.extend({
 
 App.EssayOverviewTab = Ember.View.extend({
     name: "Overview",
-    templateName: "partials/essay-details-overview"
+    templateName: "modules/_essay-details-overview"
 });
 
 App.EssayApplicationsTab = Ember.View.extend({
     name: "Applications",
-    templateName: "partials/essay-details-overview"
+    templateName: "modules/_essay-details-overview"
 });
 
 App.EssayArchiveTab = Ember.View.extend({
     name: "Archive",
-    templateName: "partials/essay-details-overview"
+    templateName: "modules/_essay-details-overview"
 });
 
 App.EssayTabs = Ember.ContainerView.extend({
@@ -64,9 +47,3 @@ App.EssayTabs = Ember.ContainerView.extend({
     application: App.EssayApplicationsTab.create(),
     archive: App.EssayArchiveTab.create()
 });
-
-App.EditorView = Ember.View.extend({
-    templateName: 'modules/editor'
-});
-
-App.DraftView = App.EditorView.extend();

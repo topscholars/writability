@@ -13,6 +13,11 @@ App.EssaysController = Ember.ArrayController.extend({
     }
 });
 
+App.EssaysView = App.ListView.extend({
+    title: 'Essays',
+    //sections: ['To do', 'Not to do'],
+    listItem: "modules/_essays-list-item"
+});
 
 App.EssayItemController = Ember.ObjectController.extend({
     isSelected: (function () {
@@ -28,8 +33,4 @@ App.EssayItemController = Ember.ObjectController.extend({
             this.get('controllers.essays').send('selectEssay', model);
         }
     },
-});
-
-App.EssayController = Ember.ObjectController.extend({
-
 });

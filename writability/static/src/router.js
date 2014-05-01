@@ -18,9 +18,9 @@ App.EssaysRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
-        this.render('layouts/main');
-        this.render('modules/header', {outlet: 'header'});
-        this.render({into: 'layouts/main', outlet: 'list-module'});
+        this.render('core/layouts/main');
+        this.render('core/modules/header', {outlet: 'header'});
+        this.render({into: 'core/layouts/main', outlet: 'list-module'});
     }
 });
 
@@ -44,8 +44,8 @@ App.DraftRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
-        this.render('layouts/editor');
-        this.render('modules/header', {outlet: 'header'});
-        this.render({into: 'layouts/editor', outlet: 'editor-module'});
+        this.render('core/layouts/editor');
+        this.render('core/modules/header', {outlet: 'header'});
+        this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
     }
 });
