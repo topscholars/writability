@@ -20,3 +20,4 @@ db = SQLAlchemy()
 # Imports at the bottom as they require db
 # They need to be imported to be added to the db
 from essay import Essay
+from draft import Draft

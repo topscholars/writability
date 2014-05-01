@@ -1,14 +1,20 @@
-# ----------------------------------------------------------------------------#
-# API Controllers
-# ----------------------------------------------------------------------------#
+"""
+controllers.api
+~~~~~~~~~~~~~~~
+
+This module contains the Flask-RESTful hook and loads all api URLs.
+
+"""
 from flask.ext import restful
 from resource.essay import EssayListResource, EssayResource
 from resource.essay import ThemeEssayListResource, ThemeEssayResource
 from resource.essay import ApplicationEssayListResource
 from resource.essay import ApplicationEssayResource
+from resource.draft import DraftListResource, DraftResource
 
 
 def add_resource_with_endpoint(api, resource_class, path):
+    """Help add a resource by standardizing the external interation."""
     api.add_resource(
         resource_class,
         path,
@@ -16,7 +22,7 @@ def add_resource_with_endpoint(api, resource_class, path):
 
 
 def initialize(app, api_prefix):
-
+    """Initialize Flask-RESTful API after the application is initialized."""
     # TODO: Add version numbers to API
     # version_prefix= "/v00.06"
     version_prefix = ""
@@ -38,3 +44,5 @@ def initialize(app, api_prefix):
         api,
         ApplicationEssayResource,
         "/application-essays/<int:id>")
+    add_resource_with_endpoint(api, DraftListResource, "/drafts")
+    add_resource_with_endpoint(api, DraftResource, "/drafts/<int:id>")

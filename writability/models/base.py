@@ -72,4 +72,5 @@ class BaseModel(db.Model):
 
     @classmethod
     def _replace_resource_ids_with_models(class_, object_dict):
+        """ Return an object dict with relationship ids replaced by models."""
         return object_dict

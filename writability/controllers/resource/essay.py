@@ -12,6 +12,7 @@ from models.essay import Essay, ThemeEssay, ApplicationEssay
 from .base import ResourceManager, ItemResource, ListResource
 from .types import resource_list, unicode_list
 from .fields import ResourceField
+import draft
 
 
 class EssayResourceManager(ResourceManager):
@@ -28,6 +29,9 @@ class EssayResourceManager(ResourceManager):
         self.parser.add_argument('word_count', type=int)
         self.parser.add_argument('num_of_drafts', type=int)
         self.parser.add_argument('due_date', type=types.date)
+        self.parser.add_argument(
+            "drafts",
+            type=resource_list)
 
     def _add_item_fields(self):
         super(EssayResourceManager, self)._add_item_fields()
@@ -39,6 +43,9 @@ class EssayResourceManager(ResourceManager):
             "word_count": fields.Integer,
             "num_of_drafts": fields.Integer,
             "due_date": fields.String,
+            "drafts": fields.List(ResourceField(
+                draft.DraftResourceManager.item_endpoint,
+                absolute=True))
         })
 
 
