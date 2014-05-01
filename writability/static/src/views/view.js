@@ -38,12 +38,7 @@ App.EssayView = App.DetailsView.extend({
                 } else {
                     Ember.$(el).removeClass("is-selected");
                 }
-
             });
-            /*if (this.selectedEssay !== model) {
-                this.transitionToRoute("essay", model.id);
-                this.set('selectedEssay', model);
-            } */
         }
     }
 });
@@ -63,10 +58,15 @@ App.EssayArchiveTab = Ember.View.extend({
     templateName: "partials/essay-details-overview"
 });
 
-
 App.EssayTabs = Ember.ContainerView.extend({
     childViews: ['overview'],
     overview: App.EssayOverviewTab.create(),
     application: App.EssayApplicationsTab.create(),
     archive: App.EssayArchiveTab.create()
 });
+
+App.EditorView = Ember.View.extend({
+    templateName: 'modules/editor'
+});
+
+App.DraftView = App.EditorView.extend();

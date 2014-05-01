@@ -267,7 +267,7 @@ li {
 .layout {
     min-width: 960px;
     position: absolute;
-    top: @headerHeight;
+    padding-top: @headerHeight;
     width: 100%;
     z-index: 10;
 }
@@ -276,6 +276,8 @@ li {
 * LAYOUTS
 ************************************************************/
 #main-layout {
+    background-color: @greyLighter;
+
     .module {
         width: 50%;
         min-width: 480px;
@@ -311,7 +313,6 @@ li {
     background-color: @greyLighter;
     position: absolute;
     padding-top: @bigMargin;
-    padding-bottom: @bigMargin;
     left: 0px;
 
     .module-title {

@@ -49,14 +49,30 @@ App.EssayController = Ember.ObjectController.extend({
 
 });
 
+App.Draft = DS.Model.extend({
+    // properties
+    plain_text: DS.attr('string'),
+    formatted_text: DS.attr('string'),
+    due_date: DS.attr('string'),
+    word_count: DS.attr('number'),
+    is_final_draft: DS.attr('boolean'),
+
+    // relationships
+    essay: DS.belongsTo('essay')
+});
+
 App.Essay = DS.Model.extend({
+    // properties
     audience: DS.attr('string'),
     context: DS.attr('string'),
     due_date: DS.attr('string'),
     essay_prompt: DS.attr('string'),
     num_of_drafts: DS.attr('number'),
     topic: DS.attr('string'),
-    word_count: DS.attr('number')
+    word_count: DS.attr('number'),
+
+    // relationships
+    drafts: DS.hasMany('draft')
 });
 
 App.Router.reopen({
@@ -67,6 +83,8 @@ App.Router.reopen({
 App.Router.map(function () {
     this.resource('essays', {path: '/essays'});
     this.resource('essay', {path: '/essays/:id'});
+    //this.resource('drafts', {path: '/drafts'});
+    this.resource('draft', {path: '/drafts/:id'});
 });
 
 App.EssaysRoute = Ember.Route.extend({
@@ -110,9 +128,23 @@ App.EssayRoute = Ember.Route.extend({
     }
 });
 
+App.DraftRoute = Ember.Route.extend({
+    model: function (params) {
+        var id = params.id;
+        return this.store.find('draft', id);
+    },
+
+    renderTemplate: function () {
+        this.render('modules/header', {outlet: 'header'});
+        this.render({outlet: 'editor-module'});
+    }
+});
+
 Ember.TEMPLATES["application"] = Ember.Handlebars.compile("<header id=\"header\">{{outlet header}}</header>\n<div id=\"main-layout\" class=\"layout\">\n    <section id=\"list-module\" class=\"module\">\n        {{outlet list-module}}\n    </section>\n    <section id=\"details-module\" class=\"module\">\n        {{outlet details-module}}\n    </section>\n</div>\n<div id=\"editor-layout\" class=\"layout\">\n    <section id=\"editor-module\" class=\"module\">{{outlet editor-module}}</section>\n</div>\n<div id=\"modal-container\">\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
 
 Ember.TEMPLATES["modules/details"] = Ember.Handlebars.compile("<nav class=\"details-nav\">\n    {{#each tab in view.tabs}}\n        <div id=\"tab-{{unbound tab.key}}\" {{action \"select\" tab.key\n        target=\"view\"}} class=\"tab-header\">\n            {{tab.title}}\n        </div>\n    {{/each}}\n</nav>\n<div class=\"tab-content\">\n    {{view App.EssayTabs}}\n</div>\n");
+
+Ember.TEMPLATES["modules/editor"] = Ember.Handlebars.compile("some stuff here\n");
 
 Ember.TEMPLATES["modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">Writability</div>\n");
 
@@ -161,12 +193,7 @@ App.EssayView = App.DetailsView.extend({
                 } else {
                     Ember.$(el).removeClass("is-selected");
                 }
-
             });
-            /*if (this.selectedEssay !== model) {
-                this.transitionToRoute("essay", model.id);
-                this.set('selectedEssay', model);
-            } */
         }
     }
 });
@@ -186,10 +213,15 @@ App.EssayArchiveTab = Ember.View.extend({
     templateName: "partials/essay-details-overview"
 });
 
-
 App.EssayTabs = Ember.ContainerView.extend({
     childViews: ['overview'],
     overview: App.EssayOverviewTab.create(),
     application: App.EssayApplicationsTab.create(),
     archive: App.EssayArchiveTab.create()
 });
+
+App.EditorView = Ember.View.extend({
+    templateName: 'modules/editor'
+});
+
+App.DraftView = App.EditorView.extend();

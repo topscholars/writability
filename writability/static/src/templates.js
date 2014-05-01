@@ -2,6 +2,8 @@ Ember.TEMPLATES["application"] = Ember.Handlebars.compile("<header id=\"header\"
 
 Ember.TEMPLATES["modules/details"] = Ember.Handlebars.compile("<nav class=\"details-nav\">\n    {{#each tab in view.tabs}}\n        <div id=\"tab-{{unbound tab.key}}\" {{action \"select\" tab.key\n        target=\"view\"}} class=\"tab-header\">\n            {{tab.title}}\n        </div>\n    {{/each}}\n</nav>\n<div class=\"tab-content\">\n    {{view App.EssayTabs}}\n</div>\n");
 
+Ember.TEMPLATES["modules/editor"] = Ember.Handlebars.compile("some stuff here\n");
+
 Ember.TEMPLATES["modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">Writability</div>\n");
 
 Ember.TEMPLATES["modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n\n<ol class=\"list\">\n{{#each}}\n    <li {{action \"select\"}} {{bind-attr class=\":list-item isSelected\"}}>\n        {{partial view.listItem}}\n    </li>\n{{/each}}\n</ol>\n");
