@@ -4,7 +4,7 @@ App.Router.reopen({
 });
 
 App.Router.map(function () {
-    this.resource('essays', {path: '/essays'}, function () {
+    this.resource('essays', function () {
         this.resource('essay', {path: '/:id'});
     });
 
@@ -18,11 +18,11 @@ App.EssaysRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
+        this.render('layouts/main');
         this.render('modules/header', {outlet: 'header'});
-        this.render('essays', {outlet: 'list-module'});
+        this.render({into: 'layouts/main', outlet: 'list-module'});
     }
 });
-
 
 App.EssayRoute = Ember.Route.extend({
     model: function (params) {
@@ -44,7 +44,8 @@ App.DraftRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
+        this.render('layouts/editor');
         this.render('modules/header', {outlet: 'header'});
-        this.render({outlet: 'editor-module'});
+        this.render({into: 'layouts/editor', outlet: 'editor-module'});
     }
 });

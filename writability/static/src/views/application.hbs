@@ -1,15 +1,5 @@
 <header id="header">{{outlet header}}</header>
-<div id="main-layout" class="layout">
-    <section id="list-module" class="module">
-        {{outlet list-module}}
-    </section>
-    <section id="details-module" class="module">
-        {{outlet details-module}}
-    </section>
-</div>
-<div id="editor-layout" class="layout">
-    <section id="editor-module" class="module">{{outlet editor-module}}</section>
-</div>
+<div id="layout-container">{{outlet}}</div>
 <div id="modal-container">
     <section id="modal-module" class="module">{{outlet modal-module}}</section>
 </div>
