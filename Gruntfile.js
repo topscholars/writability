@@ -42,7 +42,8 @@ module.exports = function(grunt) {
                     "writability/static/libs/handlebars/handlebars.js",
                     "writability/static/libs/ember/ember.js",
                     "writability/static/libs/ember-data/ember-data.js",
-                    "writability/static/libs/bootstrap/dist/js/bootstrap.js"
+                    "writability/static/libs/bootstrap/dist/js/bootstrap.js",
+                    "writability/static/libs/ckeditor/ckeditor.js"
                 ],
                 // the location of the resulting JS file
                 dest: 'writability/static/assets/vendors.js'
