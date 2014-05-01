@@ -49,6 +49,7 @@
 
 @innerPadding: 25px;
 @smallPadding: 15px;
+@smallestPadding: 10px;
 
 @thinBorder: 1px;
 @wideBorder: 4px;
@@ -194,7 +195,7 @@
 
 
 /***********************************************************
-* BASE RULES
+* BASE + CORE
 ************************************************************/
 * {
     box-sizing: border-box;
@@ -273,7 +274,7 @@ li {
 }
 
 /***********************************************************
-* LAYOUTS
+* CORE LAYOUTS
 ************************************************************/
 #main-layout {
     background-color: @greyLighter;
@@ -285,7 +286,7 @@ li {
 }
 
 /***********************************************************
-* MODULE: HEADER
+* CORE MODULE: HEADER
 ************************************************************/
 #header {
     .horizontal-section-shadow();
@@ -307,7 +308,7 @@ li {
 }
 
 /***********************************************************
-* MODULE: LIST
+* CORE MODULE: LIST
 ************************************************************/
 #list-module {
     background-color: @greyLighter;
@@ -377,7 +378,7 @@ li {
 }
 
 /***********************************************************
-* MODULE: DETAILS
+* CORE MODULE: DETAILS
 ************************************************************/
 #details-module {
     .vertical-section-shadow();
@@ -439,7 +440,7 @@ li {
 }
 
 /***********************************************************
-* PARTIALS: ESSAY(S)
+* CORE PARTIALS: ESSAY(S)
 ************************************************************/
 .list-item {
    .next-action {
@@ -448,4 +449,88 @@ li {
        color: @green;
        margin-bottom: @smallPadding;
    }
+}
+
+/***********************************************************
+* MODULE: DRAFT
+************************************************************/
+#editor-module {
+    @editor-top-margin: @headerHeight + @smallPadding;
+
+    .summary-column {
+        height: 100%;
+        position: fixed;
+        top: 0px;
+        width: 25%;
+        padding-top: @editor-top-margin;
+        padding-left: @bigMargin;
+
+        .essay-prompt {
+            clear: both;
+            padding-top: @innerPadding;
+            padding-bottom: @innerPadding;
+        }
+    }
+
+    .text-column {
+        border-left: @thinBorder @greyLight solid;
+        border-right: @thinBorder @greyLight solid;
+        height: 100%;
+        left: 25%;
+        position: fixed;
+        top: 0px;
+        width: 45%;
+
+        .formatting-buttons {
+            position: absolute;
+            text-align: center;
+            top: @editor-top-margin;
+            width: 100%;
+        }
+    }
+
+    .annotations-coumn {
+        width: 35%;
+    }
+}
+
+.draft-text {
+    .bodyText();
+
+    -moz-appearance: none;
+    outline: none;
+    border: 0px;
+    width: 100%;
+    height: 100%;
+    padding: (@headerHeight + @bigMargin) @smallMargin @smallMargin @smallMargin;
+    resize: none;
+}
+
+.editor-toggles {
+    .horizontal-section-shadow();
+
+    border: @thinBorder @grey solid;
+    position: relative;
+    float: left;
+
+    .editor-toggle {
+        .smallText();
+
+        background-color: @white;
+        border-right: @thinBorder @grey solid;
+        border-left: 0px;
+        border-top: 0px;
+        border-bottom: 0px;
+        color: @black;
+        -moz-appearance: none;
+        outline: none;
+        border-radius: 0px;
+        margin: 0px;
+        padding: @smallestPadding @smallPadding;
+        float: left;
+
+        &:last-child {
+            border: 0px;
+        }
+    }
 }
