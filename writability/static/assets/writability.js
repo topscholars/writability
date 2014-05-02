@@ -74,7 +74,99 @@ App.Essay = DS.Model.extend({
 
 
 App.DraftView = App.EditorView.extend({
-    templateName: 'modules/draft'
+    templateName: 'modules/draft',
+
+    _editor: null,
+
+    didInsertElement: function () {
+        // this._setupEditor();
+        this._setupInlineEditor();
+    },
+
+    _setupEditor: function () {
+        CKEDITOR.replace(
+            'draft-editor',
+            this._getEditorConfig());
+    },
+
+    _setupInlineEditor: function () {
+        CKEDITOR.inline(
+            'draft-editor',
+            this._getEditorConfig());
+
+        var view = this;
+        CKEDITOR.on('instanceReady', function (e) {
+            console.log('bogus');
+            view.set ("_editor", CKEDITOR.instances[e.editor.name]);
+            console.log(view.get('_editor').commands);
+        });
+    },
+
+    _getEditorConfig: function () {
+        return {
+            removePlugins: 'magicline',
+            extraPlugins: 'sharedspace',
+            startupFocus: true,
+            //toolbarStartupExpanded: true,
+            toolbar: [
+                ['Undo', 'Redo'],
+                ['Bold', 'Italic', 'Underline'],
+                ['NumberedList', 'BulletedList']
+            ],
+            sharedSpaces: {
+                top: "editor-toolbar",
+            },
+            //removePlugins: 'toolbar,elementspath,resize'
+            title: false, // hide hover title
+            //removePlugins: 'toolbar' // turn off toolbar
+        };
+    },
+
+    _getEditorData: function () {
+        return this._editor.getData();
+    },
+
+    _setEditorData: function (textData) {
+        // editor.setData(data, callback, internal);
+        this._editor.setData(textData);
+    },
+
+    _executeEditorCommand: function (command) {
+        console.log(command);
+        this._editor.execCommand(command);
+        this._editor.focus();
+
+    },
+
+    actions: {
+        bold: function () {
+            this._executeEditorCommand('bold');
+        },
+
+        italic: function () {
+            this._executeEditorCommand('italic');
+        },
+
+        underline: function () {
+            this._executeEditorCommand('underline');
+        },
+
+        number: function () {
+            this._executeEditorCommand('numberedList');
+        },
+
+        bullet: function () {
+            this._executeEditorCommand('bulletedList');
+        },
+
+        undo: function () {
+            this._executeEditorCommand('undo');
+        },
+
+        redo: function () {
+            this._executeEditorCommand('redo');
+        }
+    }
 });
 
 App.EssayView = App.DetailsView.extend({
@@ -234,4 +326,4 @@ Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div class=\"list-style-group\">{{id}} +7</div>\n<div class=\"main-group\">\n    <div class=\"main-line\">Theme</div>\n    <div class=\"sub-line\">Category</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">Start Topic</div>\n    <div class=\"draft-due\">Draft Due: May 3, 2014</div>\n    <div class=\"essay-due\">Essay Due: {{due_date}}</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button class=\"editor-toggle\">Details</button>\n        <button class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"formatting-buttons\">B I U</div>\n    <textarea\n        class=\"draft-text\"\n        placeholder=\"Begin writing here.\"></textarea>\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button class=\"editor-toggle\">Details</button>\n        <button class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    <textarea\n        id=\"draft-editor\"\n        class=\"draft-text\"\n        contenteditable=\"true\"\n        placeholder=\"Begin writing here.\"></textarea>\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");

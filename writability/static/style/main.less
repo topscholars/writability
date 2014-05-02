@@ -412,7 +412,7 @@ li {
             }
 
             &:hover {
-                background-color: @greyLight;
+                background-color: @greyLighter;
                 color: @black;
             }
 
@@ -480,12 +480,23 @@ li {
         position: fixed;
         top: 0px;
         width: 45%;
+        text-align: center;
 
-        .formatting-buttons {
+        .toolbar-container {
             position: absolute;
-            text-align: center;
             top: @editor-top-margin;
             width: 100%;
+
+            .editor-toolbar {
+                position: relative;
+                cursor: pointer;
+                display: inline-block;
+                // display: block !important;
+                z-index: 15;
+
+                .cke_detached {
+                }
+            }
         }
     }
 
@@ -494,9 +505,11 @@ li {
     }
 }
 
-.draft-text {
+
+.draft-text, .cke_textarea_inline {
     .bodyText();
 
+    overflow-y: scroll;
     -moz-appearance: none;
     outline: none;
     border: 0px;
@@ -504,6 +517,31 @@ li {
     height: 100%;
     padding: (@headerHeight + @bigMargin) @smallMargin @smallMargin @smallMargin;
     resize: none;
+    position: relative;
+    z-index: 12;
+    text-align: left;
+
+    ul {
+        list-style-type: disc;
+        list-style-position: inside;
+    }
+
+    ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+    }
+
+    ul ul, ol ul {
+        list-style-type: circle;
+        list-style-position: inside;
+        margin-left: 15px;
+    }
+
+    ol ol, ul ol {
+        list-style-type: lower-latin;
+        list-style-position: inside;
+        margin-left: 15px;
+    }
 }
 
 .editor-toggles {
