@@ -11,6 +11,8 @@ from resource.essay import ThemeEssayListResource, ThemeEssayResource
 from resource.essay import ApplicationEssayListResource
 from resource.essay import ApplicationEssayResource
 from resource.draft import DraftListResource, DraftResource
+from resource.university import UniversityListResource, UniversityResource
+from resource.theme import ThemeListResource, ThemeResource
 
 
 def add_resource_with_endpoint(api, resource_class, path):
@@ -46,3 +48,10 @@ def initialize(app, api_prefix):
         "/application-essays/<int:id>")
     add_resource_with_endpoint(api, DraftListResource, "/drafts")
     add_resource_with_endpoint(api, DraftResource, "/drafts/<int:id>")
+    add_resource_with_endpoint(api, UniversityListResource, "/universities")
+    add_resource_with_endpoint(
+        api,
+        UniversityResource,
+        "/universities/<int:id>")
+    add_resource_with_endpoint(api, ThemeListResource, "/themes")
+    add_resource_with_endpoint(api, ThemeResource, "/themes/<int:id>")
