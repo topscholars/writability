@@ -5,7 +5,8 @@ controllers.resource.base
 This module contains the base resources for the API.
 
 """
-from flask.ext.restful import Resource, reqparse, fields
+from flask import request
+from flask.ext.restful import Resource, fields
 from flask.ext.restful import marshal
 
 
@@ -19,18 +20,10 @@ class ResourceManager(object):
         self._item_fields = {}
         self.list_field = {}
         self.item_field = {}
-        self.parser = reqparse.RequestParser()
 
-        self._add_parse_arguments()
         self._add_item_fields()
         self._add_list_field()
         self._add_item_field()
-
-    def parse_args(self):
-        return self.parser.parse_args()
-
-    def _add_parse_arguments(self):
-        raise NotImplementedError()
 
     def _add_item_fields(self):
         self._item_fields.update({
@@ -78,6 +71,12 @@ class BaseResource(Resource):
     def get_endpoint(class_):
         raise NotImplementedError()
 
+    def _get_args(self):
+        json = request.get_json()
+        endpoint = self.resource_manager.item_endpoint
+        args = json[endpoint]
+        return args
+
 
 class ItemResource(BaseResource):
 
@@ -91,7 +90,7 @@ class ItemResource(BaseResource):
 
     def put(self, id):
         endpoint = self.resource_manager.item_endpoint
-        args = self.resource_manager.parse_args()
+        args = self._get_args()
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
@@ -121,7 +120,7 @@ class ListResource(BaseResource):
 
     def post(self):
         endpoint = self.resource_manager.item_endpoint
-        args = self.resource_manager.parse_args()
+        args = self._get_args()
         item_field = self.resource_manager.item_field
         model_class = self.resource_manager.model_class
 

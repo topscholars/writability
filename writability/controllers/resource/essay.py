@@ -5,12 +5,11 @@ controllers.resource.essay
 This module contains the resource Essay, ThemeEssay, and ApplicationEssay.
 
 """
-from flask.ext.restful import fields, types
+from flask.ext.restful import fields
 
 from models.essay import Essay, ThemeEssay, ApplicationEssay
 
 from .base import ResourceManager, ItemResource, ListResource
-from .types import resource_list, unicode_list
 from .fields import ResourceField
 import draft
 
@@ -20,18 +19,6 @@ class EssayResourceManager(ResourceManager):
     item_endpoint = "essay"
     list_endpoint = "essays"
     model_class = Essay
-
-    def _add_parse_arguments(self):
-        self.parser.add_argument('essay_prompt', required=True, type=str)
-        self.parser.add_argument('audience', type=str)
-        self.parser.add_argument('context', type=str)
-        self.parser.add_argument('topic', type=str)
-        self.parser.add_argument('word_count', type=int)
-        self.parser.add_argument('num_of_drafts', type=int)
-        self.parser.add_argument('due_date', type=types.date)
-        self.parser.add_argument(
-            "drafts",
-            type=resource_list)
 
     def _add_item_fields(self):
         super(EssayResourceManager, self)._add_item_fields()
@@ -65,15 +52,6 @@ class ThemeEssayResourceManager(EssayResourceManager):
     list_endpoint = "theme-essays"
     model_class = ThemeEssay
 
-    def _add_parse_arguments(self):
-        super(ThemeEssayResourceManager, self)._add_parse_arguments()
-        self.parser.add_argument(
-            "proposed_topics",
-            type=unicode_list)
-        self.parser.add_argument(
-            "application_essays",
-            type=resource_list)
-
     def _add_item_fields(self):
         super(ThemeEssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
@@ -99,10 +77,6 @@ class ApplicationEssayResourceManager(EssayResourceManager):
     item_endpoint = "application-essay"
     list_endpoint = "application-essays"
     model_class = ApplicationEssay
-
-    def _add_parse_arguments(self):
-        super(ApplicationEssayResourceManager, self)._add_parse_arguments()
-        # self.parser.add_argument('proposed_topics', type=list)
 
     def _add_item_fields(self):
         super(ApplicationEssayResourceManager, self)._add_item_fields()
