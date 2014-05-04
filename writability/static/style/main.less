@@ -60,18 +60,22 @@
 /***********************************************************
 * FONTS (with help from http://fontsquirrel.com)
 ************************************************************/
+.font-src(@filename) {
+    src: url("/static/fonts/@{filename}.eot"); //ie9
+    src:
+        url("/static/fonts/@{filename}.eot?#iefix")
+            format('embedded-opentype'), // ie6-8
+        url("/static/fonts/@{filename}.woff")
+            format('woff'), // modern
+        url("/static/fonts/@{filename}.ttf")
+            format('truetype'), // safari, android, ios
+        url("/static/fonts/@{filename}.svg#font")
+            format('svg'); // old ios
+}
+
 @font-face {
     font-family: 'Helvetica Neue';
-    src: url('/static/fonts/helvetica-neue-webfont.eot'); //ie9
-    src:
-        url('/static/fonts/helvetica-neue-webfont.eot?#iefix')
-            format('embedded-opentype'), // ie6-8
-        url('/static/fonts/helvetica-neue-webfont.woff')
-            format('woff'), // modern
-        url('/static/fonts/helvetica-neue-webfont.ttf')
-            format('truetype'), // safari, android, ios
-        url('/static/fonts/helvetica-neue-webfont.svg#HeleveticaNeue')
-            format('svg'); // old ios
+    .font-src('helvetica-neue-webfont');
     font-weight: normal;
     font-style: normal;
 }
@@ -79,22 +83,13 @@
 // Leage Gothic is a temporary replacement for Trade Gothic
 @font-face {
     font-family: 'League Gothic';
-    src: url('/static/fonts/leaguegothic-regular-webfont.eot'); //ie9
-    src:
-        url('/static/fonts/leaguegothic-regular-webfont.eot?#iefix')
-            format('embedded-opentype'), // ie6-8
-        url('/static/fonts/leaguegothic-regular-webfont.woff')
-            format('woff'), // modern
-        url('/static/fonts/leaguegothic-regular-webfont.ttf')
-            format('truetype'), // safari, android, ios
-        url('/static/fonts/leaguegothic-regular-webfont.svg#LeagueGothic')
-            format('svg'); // old ios
+    .font-src('leaguegothic-regular-webfont');
     font-weight: normal;
     font-style: normal;
 }
 
 // Kameron is a temporary replacement for Rockwell
-@import url('http://fonts.googleapis.com/css?family=Kameron');
+@import url('http://fonts.googleapis.com/css?family=Kameron:400,700');
 
 .headerText() {
     font-family: 'Kameron', serif;
@@ -102,9 +97,10 @@
 }
 
 .bodyText() {
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Kameron', sans-serif;
     font-size: @bodyFontSize;
 }
+
 
 .highlightedText() {
     font-family: 'Helvetica Neue', sans-serif;
@@ -215,6 +211,14 @@ body {
     color: @black;
     min-width: 980px;
 
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
 }
 
 button {
