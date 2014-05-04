@@ -71,11 +71,18 @@ class BaseResource(Resource):
     def get_endpoint(class_):
         raise NotImplementedError()
 
-    def _get_args(self):
+    def _get_payload(self):
+        """Get the JSON body of the request."""
         json = request.get_json()
         endpoint = self.resource_manager.item_endpoint
-        args = json[endpoint]
-        return args
+        payload = json[endpoint]
+        return payload
+
+    def _get_query_filters(self):
+        """Return the query filters with a single value for each one."""
+        args = request.args
+        # set flat=False to allow for multiple values.
+        return args.to_dict(flat=True)
 
 
 class ItemResource(BaseResource):
@@ -90,11 +97,12 @@ class ItemResource(BaseResource):
 
     def put(self, id):
         endpoint = self.resource_manager.item_endpoint
-        args = self._get_args()
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
-        item = {endpoint: model_class.update(id, args)}
+        payload = self._get_payload()
+        item = {endpoint: model_class.update(id, payload)}
+
         return marshal(item, item_field)
 
     def delete(self, id):
@@ -115,16 +123,19 @@ class ListResource(BaseResource):
         model_class = self.resource_manager.model_class
         list_field = self.resource_manager.list_field
 
-        items = {endpoint: model_class.read_all()}
+        query_filters = self._get_query_filters()
+        models = model_class.read_by_filter(query_filters)
+
+        items = {endpoint: models}
         return marshal(items, list_field)
 
     def post(self):
         endpoint = self.resource_manager.item_endpoint
-        args = self._get_args()
         item_field = self.resource_manager.item_field
         model_class = self.resource_manager.model_class
 
-        item = {endpoint: model_class.create(args)}
+        payload = self._get_payload()
+        item = {endpoint: model_class.create(payload)}
 
         return marshal(item, item_field), 201
 

@@ -42,8 +42,10 @@ class BaseModel(db.Model):
         return class_.query.get(id)
 
     @classmethod
-    def read_all(class_):
-        return class_.query.all()
+    def read_by_filter(class_, query_filters={}):
+        # TODO: Accept flat=False query filter dict by adding OR conditions
+        # to an embedded array.
+        return class_.query.filter_by(**query_filters).all()
 
     @classmethod
     def update(class_, id, updated_dict):
