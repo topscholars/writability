@@ -13,7 +13,7 @@ class University(BaseModel):
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
 
     # optional fields
     logo_url = db.Column(db.String)
