@@ -3,83 +3,179 @@
 import json
 import requests
 
-root_url = "http://localhost:5000/api/"
-headers = {'Content-type': 'application/json'}
+ROOT_URL = "http://localhost:5000/api/"
+HEADERS = {'Content-type': 'application/json'}
 
 
-def populate_universities():
-    path = "universities"
-    url = root_url + path
-    f = open('data/universities.txt', 'r')
+class Populator(object):
 
-    wins = []
-    losses = []
+    _PATH = None
+    _FILE_PATH = None
 
-    lines = f.read().splitlines()
+    def __init__(self):
+        self._wins = []
+        self._losses = []
 
-    for uni in lines:
-        payload = {"university": {"name": uni}}
+        f = open(self._FILE_PATH, "r")
+        lines = f.read().splitlines()
+
+        for line in lines:
+            if line:
+                payload = self._construct_payload(line)
+                title = self._get_title(payload)
+
+                is_success = self._populate_db(payload)
+
+                if is_success:
+                    self._wins.append(title)
+                else:
+                    self._losses.append(title)
+
+        self._print_outcome()
+
+    def _populate_db(self, payload):
         resp = requests.post(
-            url,
+            self._get_url(),
             data=json.dumps(payload),
-            headers=headers)
-        if resp.status_code == 201:
-            wins.append(uni)
-        else:
-            losses.append(uni)
+            headers=HEADERS)
 
-    print "Total: ", len(wins) + len(losses)
-    print "# wins: ", len(wins)
-    print "# losses: ", len(losses)
-    print "--------"
-    print "wins\n", wins
-    print "losses\n", losses
+        if resp.status_code != 201:
+            return False
+
+        return True
+
+    def _print_outcome(self):
+        print "Total: ", len(self._wins) + len(self._losses)
+        print "# wins: ", len(self._wins)
+        print "# losses: ", len(self._losses)
+        print "--------"
+        print "wins\n", self._wins
+        print "losses\n", self._losses
+
+    def _get_url(self):
+        return ROOT_URL + self._PATH
 
 
-def populate_themes():
-    path = "themes"
-    url = root_url + path
-    f = open('data/themes.txt', 'r')
+class UniversityPopulator(Populator):
 
-    wins = []
-    losses = []
+    _PATH = "universities"
+    _FILE_PATH = "data/universities.txt"
 
-    lines = f.read().splitlines()
+    def _construct_payload(self, line):
+        payload = {"university": {"name": line}}
+        return payload
 
-    for line in lines:
-        if line:
-            tokens = line.split(' ', 1)
-            category = tokens[0].strip()
-            theme = tokens[1].strip()
+    def _get_title(self, payload):
+        return payload["university"]["name"]
 
-            payload = {
-                "theme": {
-                    "name": theme,
-                    "category": category
-                }
+
+class ThemePopulator(Populator):
+
+    _PATH = "themes"
+    _FILE_PATH = "data/themes.txt"
+
+    def _construct_payload(self, line):
+        tokens = line.split(' ', 1)
+        category = tokens[0].strip()
+        theme = tokens[1].strip()
+
+        payload = {
+            "theme": {
+                "name": theme,
+                "category": category
             }
+        }
 
-            resp = requests.post(
-                url,
-                data=json.dumps(payload),
-                headers=headers)
-            if resp.status_code == 201:
-                wins.append(theme)
-            else:
+        return payload
 
-                losses.append(theme)
+    def _get_title(self, payload):
+        return payload["theme"]["name"]
 
-    print "Total: ", len(wins) + len(losses)
-    print "# wins: ", len(wins)
-    print "# losses: ", len(losses)
-    print "--------"
-    print "wins\n", wins
-    print "losses\n", losses
+
+class ThemeEssayTemplatePopulator(Populator):
+    pass
+
+
+class ApplicationEssayTemplatePopulator(Populator):
+
+    _PATH = "application-essay-templates"
+    _FILE_PATH = "data/application-essay-templates.csv"
+
+    def _construct_payload(self, line):
+        columns = line.split(',', 4)
+
+        # university
+        uni = columns[0].strip()
+        uni_id = self._get_uni_id(uni)
+
+        # word count
+        char_max = columns[1].strip()
+        word_count = columns[2].strip()
+        if not word_count:
+            word_count = int(char_max) / 5
+        word_count = int(word_count)
+
+        # theme
+        themecats = columns[3].split(';')
+        themes = []
+        for tc in themecats:
+            tokens = tc.split('-')
+            category = tokens[0].strip()
+            name = tokens[1].strip()
+            theme_id = self._get_theme_id(name, category)
+            themes.append(theme_id)
+
+        # essay_prompt
+        essay_prompt = columns[4].strip().strip("\"")
+
+        payload = {
+            "application_essay_template": {
+                "university": uni_id,
+                "word_count": word_count,
+                "themes": themes,
+                "essay_prompt": essay_prompt
+            }
+        }
+
+        return payload
+
+    def _get_theme_id(self, theme_name, category_name):
+        _THEME_QUERY_URL = "{}themes?".format(ROOT_URL)
+        _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
+        url = _THEME_QUERY_URL + _QUERY_STRING
+
+        return self._get_id_with_query_url(url, "themes")
+
+    def _get_uni_id(self, uni_name):
+        _UNI_QUERY_URL = "{}universities?".format(ROOT_URL)
+        _QUERY_STRING = "name=" + uni_name
+        url = _UNI_QUERY_URL + _QUERY_STRING
+
+        return self._get_id_with_query_url(url, "universities")
+
+    def _get_id_with_query_url(self, query_url, object_type):
+        resp = requests.get(query_url)
+
+        if resp.status_code != 200:
+            return False
+
+        item = resp.json()
+
+        return item[object_type][0]["id"]
+
+    def _get_title(self, payload):
+        return payload["application_essay_template"]["essay_prompt"][0:20]
+
+    def _populate_db(self, payload):
+        # TODO: remove this function
+        return True
 
 
 def populate_db():
-    # populate_universities()
-    populate_themes()
+    # UniversityPopulator()
+    # ThemePopulator()
+    # ThemeEssayTemplatePopulator()
+    ApplicationEssayTemplatePopulator()
 
 
 populate_db()
