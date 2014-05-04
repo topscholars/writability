@@ -1,10 +1,17 @@
 App.TextEditor = Ember.TextArea.extend({
+
+    actions: {
+        sync: function () {
+            console.log('wel then');
+        }
+
+    },
     classNames: ['draft-text'],
     attributeBindings: ['contenteditable'],
     contenteditable: 'true',
     editor: null,
     _suspendValueChange: false,
-    _minimumChangeMilliseconds: 5000,
+    _minimumChangeMilliseconds: 1000,
 
     didInsertElement: function () {
         this._setupInlineEditor();
@@ -13,36 +20,54 @@ App.TextEditor = Ember.TextArea.extend({
     _setupInlineEditor: function () {
         var id = this.get('elementId');
         var config = this._getEditorConfig();
-        var view = this;
 
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
 
         CKEDITOR.on('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
-            view.set ("editor", editor);
-            editor.on("change", view._onChange, view);
-        });
+            this.set ('editor', editor);
+
+            editor.on('change', this._onChange, this);
+            editor.on('focus', this._onFocus, this);
+        }, this);
     },
 
     _onChange: function () {
         // use timer to make sure that change event handling is throttled
-        var timer;
-        var view = this;
+        // var timer;
+        var component = this;
 
-        if (timer) { return; }
+        //if (timer) { return; }
 
-        timer = setTimeout(function () {
-            timer = 0;
-            view.suspendValueChange(function() {
-                view.set("value", view.get('editor').getData());
+        // TODO: Return timer and non-instant updates. But stop caret reset
+        // bug/
+        //timer = setTimeout(function () {
+        //    timer = 0;
+            component.suspendValueChange(function() {
+                component.set('value', component.get('editor').getData());
             });
-        }, view._minimumChangeMilliseconds);
+        //}, view._minimumChangeMilliseconds);
+    },
+
+    /**
+     * Handle focus by alerting a 'startedWriting' event and updating the text
+     * editor's content if old.
+     */
+    _onFocus: function () {
+        var component = this;
+        this.sendAction('action', function () {
+            var content = component.get('value');
+            var editor = component.get('editor');
+            if (content !== editor.getData()) {
+                editor.setData(content);
+            }
+        });
     },
 
     _getEditorConfig: function () {
         return {
-            removePlugins: 'magicline',
+            removePlugins: 'magicline,scayt',
             extraPlugins: 'sharedspace',
             startupFocus: true,
             toolbar: [
@@ -64,10 +89,15 @@ App.TextEditor = Ember.TextArea.extend({
     },
 
     valueChanged: function() {
-        // untested as all changes are propogating here.
+        // FIXME: don't respond to changes on value. this was creating a bug
+        // where pushes to the server caused setData and a caret reset. setData
+        // is asynchronous. That was probably the problem. It's only needed if
+        // multiple people are editing the document at the same time.
         if (this._suspendValueChange) { return; }
-        var content = this.get("value");
-        this.get("editor").setData(content);
+
+        // var content = this.get("value");
+        // var editor = this.get("editor");
+        // editor.setData(content);
     }.observes("value"),
 
     willDestroyElement: function() {

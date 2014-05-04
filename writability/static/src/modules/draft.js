@@ -12,8 +12,18 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     onFailure: function () {
-        console.log("Failed to save draft to server.");
-    }
+        console.log("Failure to sync draft to server.");
+    },
+
+    actions: {
+        /**
+         * When the user started writing make sure the server is in sync.
+         */
+        startedWriting: function (cb) {
+            var draft = this.get('model');
+            draft.reload().then(cb, this.onFailure);
+        }
+    },
 });
 
 App.DraftView = App.EditorView.extend({
