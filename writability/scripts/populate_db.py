@@ -175,7 +175,7 @@ def populate_db():
     # UniversityPopulator()
     # ThemePopulator()
     # ThemeEssayTemplatePopulator()
-    ApplicationEssayTemplatePopulator()
+    # ApplicationEssayTemplatePopulator()
 
 
 populate_db()
