@@ -55,6 +55,8 @@ class ThemeEssayResourceManager(EssayResourceManager):
     def _add_item_fields(self):
         super(ThemeEssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "state": fields.String,
+            "next_states": fields.List(fields.String),
             "proposed_topics": fields.List(fields.String),
             "application_essays": fields.List(ResourceField(
                 ApplicationEssayResourceManager.item_endpoint,

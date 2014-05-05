@@ -2,18 +2,22 @@
 models.base
 ~~~~~~~~~~~
 
-This module contains the base model that represents a database table.
+This module contains BaseModel and StatefulMixin.
 
 """
 from datetime import datetime
-from sqlalchemy.orm import properties, class_mapper
+from sqlalchemy.orm import properties, class_mapper, validates
 
 from .db import db
 from .fields import SerializableDateTime
 
 
 class BaseModel(db.Model):
+    """
+    BaseModel represents a database table. It provides generic CRUD methods and
+    required properties.
 
+    """
     __abstract__ = True
 
     _utcnow = datetime.utcnow()
@@ -26,7 +30,8 @@ class BaseModel(db.Model):
     updated_ts = db.Column(
         SerializableDateTime,
         nullable=False,
-        default=_utcnow)
+        default=_utcnow,
+        onupdate=_utcnow)
 
     deleted_ts = db.Column(SerializableDateTime)
 
@@ -95,6 +100,48 @@ class BaseModel(db.Model):
                     ]
                 else:
                     id = object_dict.get(relation.key)
-                    object_dict[relation.key] = relation_class.query.get(id)
+                    if id is None:
+                        object_dict[relation.key] = None
+                    else:
+                        object_dict[relation.key] = relation_class.query.get(
+                            id)
 
         return object_dict
+
+
+class StatefulModel(BaseModel):
+    """
+    StatefulModel has a 'state' property and helper functions.
+
+    """
+    __abstract__ = True
+
+    state = db.Column(db.String, nullable=False)
+
+    def __init__(self, **object_dict):
+        super(StatefulModel, self).__init__(**object_dict)
+        # if the object is new (no id) and has no state, give it one.
+        if not self.id and not self.state:
+            self.state = self._get_default_state()
+
+    @validates('state')
+    def validate_state(self, key, state):
+        """Assert that state is valid and conditions are satisfied."""
+        return self._validate_state(state)
+
+    @property
+    def next_states(self):
+        """Return list of valid next states."""
+        return self._get_next_states(self.state)
+
+    def _validate_state(self, state):
+        """Helper function to have subclasses validate state."""
+        raise NotImplementedError()
+
+    def _get_next_states(self, state):
+        """Helper function to have subclasses decide next states."""
+        raise NotImplementedError()
+
+    def _get_default_state(self):
+        """Get the default new state."""
+        raise NotImplementedError()
