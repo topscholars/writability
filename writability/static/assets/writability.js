@@ -19,9 +19,56 @@ App.ApplicationView = Ember.View.extend({
     }
 });
 
-// App.ApplicationAdapter = DS.FixtureAdapter.extend();
-DS.RESTAdapter.reopen({
+App.ApplicationAdapter = DS.RESTAdapter.extend({
+    // Turn Model camel cased class names to dashed urls.
+    pathForType: function (type) {
+        var dasherized = Ember.String.dasherize(type);
+        return Ember.String.pluralize(dasherized);
+    },
+
     namespace: 'api'
+});
+
+App.ApplicationSerializer = DS.RESTSerializer.extend({
+    // Turn root object snake cased into camel case for Ember.
+    typeForRoot: function (root) {
+        var camelized = Ember.String.camelize(root);
+        return Ember.String.singularize(camelized);
+    },
+    // Turn camel case into snake case for JSON body.
+    serializeIntoHash: function (data, type, record, options) {
+        var root = Ember.String.decamelize(type.typeKey);
+        data[root] = this.serialize(record, options);
+    },
+    // Add a readOnly attribute that blocks that attribute from updating
+    // to the server.
+    serializeAttribute: function(record, json, key, attribute) {
+        // TODO: Don't fail silently!
+        if (!attribute.options.readOnly) {
+            return this._super(record, json, key, attribute);
+        }
+    }
+});
+
+App.ArrayTransform = DS.Transform.extend({
+
+    serialize: function (jsonData) {
+        if (jsonData instanceof Array) {
+            return jsonData;
+        } else {
+            // TODO: Throw error.
+            return false;
+        }
+    },
+
+    deserialize: function (externalData) {
+        if (externalData instanceof Array) {
+            return externalData;
+        } else {
+            // TODO: Throw error.
+            return false;
+        }
+    }
 });
 
 App.DetailsView = Ember.View.extend({
@@ -63,6 +110,12 @@ App.Essay = DS.Model.extend({
 
     // relationships
     drafts: DS.hasMany('draft')
+});
+
+App.ThemeEssay = App.Essay.extend({
+    next_states: DS.attr('array', {readOnly: true}),
+    proposed_topics: DS.attr('array'),
+    state: DS.attr('string')
 });
 
 App.DraftController = Ember.ObjectController.extend({
@@ -310,7 +363,7 @@ App.Router.map(function () {
 
 App.EssaysRoute = Ember.Route.extend({
     model: function () {
-        return this.store.find('essay');
+        return this.store.find('themeEssay');
     },
 
     renderTemplate: function () {
@@ -322,7 +375,7 @@ App.EssaysRoute = Ember.Route.extend({
 
 App.EssayRoute = Ember.Route.extend({
     model: function (params) {
-        return this.store.find('essay', params.id);
+        return this.store.find('themeEssay', params.id);
     },
 
     renderTemplate: function () {

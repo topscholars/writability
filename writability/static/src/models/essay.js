@@ -11,3 +11,9 @@ App.Essay = DS.Model.extend({
     // relationships
     drafts: DS.hasMany('draft')
 });
+
+App.ThemeEssay = App.Essay.extend({
+    next_states: DS.attr('array', {readOnly: true}),
+    proposed_topics: DS.attr('array'),
+    state: DS.attr('string')
+});

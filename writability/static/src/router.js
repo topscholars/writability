@@ -14,7 +14,7 @@ App.Router.map(function () {
 
 App.EssaysRoute = Ember.Route.extend({
     model: function () {
-        return this.store.find('essay');
+        return this.store.find('themeEssay');
     },
 
     renderTemplate: function () {
@@ -26,7 +26,7 @@ App.EssaysRoute = Ember.Route.extend({
 
 App.EssayRoute = Ember.Route.extend({
     model: function (params) {
-        return this.store.find('essay', params.id);
+        return this.store.find('themeEssay', params.id);
     },
 
     renderTemplate: function () {
