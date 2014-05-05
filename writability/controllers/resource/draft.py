@@ -9,12 +9,12 @@ from flask.ext.restful import fields
 
 from models.draft import Draft
 
-from .base import ResourceManager, ItemResource, ListResource
+from .base import StatefulResourceManager, ItemResource, ListResource
 from .fields import ResourceField
 import essay
 
 
-class DraftResourceManager(ResourceManager):
+class DraftResourceManager(StatefulResourceManager):
 
     item_endpoint = "draft"
     list_endpoint = "drafts"

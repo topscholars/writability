@@ -56,17 +56,6 @@ class ThemeEssay(StatefulModel, Essay):
         secondary=essay_associations,
         backref=db.backref("theme_essay", lazy="dynamic"))
 
-    def _validate_state(self, state):
-        """Helper function to have subclasses validate state."""
-        old_state = self.state
-        assert state in self._STATES
-        if old_state is None:
-            assert state == self._get_default_state()
-        elif old_state != state:
-            assert state in self._get_next_states(old_state)
-
-        return state
-
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {

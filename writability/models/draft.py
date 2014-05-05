@@ -7,10 +7,12 @@ the Student writes.
 
 """
 from .db import db
-from .base import BaseModel
+from .base import StatefulModel
 
 
-class Draft(BaseModel):
+class Draft(StatefulModel):
+
+    _STATES = ["new", "in_progress", "submitted", "reviewed"]
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
@@ -24,3 +26,18 @@ class Draft(BaseModel):
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
+
+    def _get_next_states(self, state):
+        """Helper function to have subclasses decide next states."""
+        next_states_mapping = {
+            "new": ["in_progress"],
+            "in_progress": ["submitted"],
+            "submitted": ["reviewed"],
+            "reviewed": []
+        }
+
+        return next_states_mapping[state]
+
+    def _get_default_state(self):
+        """Get the default new state."""
+        return "new"

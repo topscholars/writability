@@ -2,7 +2,8 @@
 controllers.resource.base
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This module contains the base resources for the API.
+This module contains the base resources for the API. It also contains a
+StatefulResource.
 
 """
 from flask import request
@@ -142,3 +143,13 @@ class ListResource(BaseResource):
     @classmethod
     def get_endpoint(class_):
         return class_.resource_manager_class.list_endpoint
+
+
+class StatefulResourceManager(ResourceManager):
+
+    def _add_item_fields(self):
+        super(StatefulResourceManager, self)._add_item_fields()
+        self._item_fields.update({
+            "state": fields.String,
+            "next_states": fields.List(fields.String)
+        })

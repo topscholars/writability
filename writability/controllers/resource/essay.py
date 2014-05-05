@@ -10,6 +10,7 @@ from flask.ext.restful import fields
 from models.essay import Essay, ThemeEssay, ApplicationEssay
 
 from .base import ResourceManager, ItemResource, ListResource
+from .base import StatefulResourceManager
 from .fields import ResourceField
 import draft
 
@@ -46,7 +47,7 @@ class EssayListResource(ListResource):
     resource_manager_class = EssayResourceManager
 
 
-class ThemeEssayResourceManager(EssayResourceManager):
+class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
 
     item_endpoint = "theme-essay"
     list_endpoint = "theme-essays"
@@ -55,8 +56,6 @@ class ThemeEssayResourceManager(EssayResourceManager):
     def _add_item_fields(self):
         super(ThemeEssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
-            "state": fields.String,
-            "next_states": fields.List(fields.String),
             "proposed_topics": fields.List(fields.String),
             "application_essays": fields.List(ResourceField(
                 ApplicationEssayResourceManager.item_endpoint,

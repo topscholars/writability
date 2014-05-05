@@ -127,7 +127,15 @@ class StatefulModel(BaseModel):
     @validates('state')
     def validate_state(self, key, state):
         """Assert that state is valid and conditions are satisfied."""
-        return self._validate_state(state)
+        old_state = self.state
+
+        assert state in self._STATES
+        if old_state is None:
+            assert state == self._get_default_state()
+        elif old_state != state:
+            assert state in self._get_next_states(old_state)
+
+        return state
 
     @property
     def next_states(self):
