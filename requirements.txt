@@ -4,7 +4,7 @@ Flask-SQLAlchemy==1.0
 Flask-SSLify==0.1.4
 pyOpenSSL==0.14
 psycopg2==2.5.2
-passlib==1.6.2
+Flask-Security==1.7.2
 
 # dev
 nose

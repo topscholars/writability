@@ -37,6 +37,7 @@ class BaseModel(db.Model):
 
     @classmethod
     def create(class_, object_dict):
+        print "at create"
         prepared_dict = class_._replace_resource_ids_with_models(object_dict)
         model = class_(**prepared_dict)
         db.session.add(model)

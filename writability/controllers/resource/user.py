@@ -2,12 +2,14 @@
 controllers.resource.user
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This module contains the resource User, Teacher, Student.
+This module contains the resource User, Teacher, Student. All Resources are
+actually Users. Teachers and Students are different aspects of the same
+resource.
 
 """
 from flask.ext.restful import fields
 
-from models.user import User, Teacher, Student
+from models.user import User
 
 from .base import StatefulResourceManager, ItemResource, ListResource
 from .fields import ResourceField
@@ -44,7 +46,7 @@ class TeacherResourceManager(UserResourceManager):
 
     item_resource_name = "teacher"
     list_resource_name = "teachers"
-    model_class = Teacher
+    model_class = User
 
     def _add_item_fields(self):
         super(TeacherResourceManager, self)._add_item_fields()
@@ -69,7 +71,7 @@ class StudentResourceManager(UserResourceManager):
 
     item_resource_name = "student"
     list_resource_name = "students"
-    model_class = Student
+    model_class = User
 
     def _add_item_fields(self):
         super(StudentResourceManager, self)._add_item_fields()

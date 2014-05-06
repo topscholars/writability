@@ -34,7 +34,7 @@ class Essay(BaseModel):
     __mapper_args__ = {'polymorphic_on': discriminator}
 
     # relationships
-    student_id = db.Column(db.Integer, db.ForeignKey("student.id"))
+    student_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     drafts = db.relationship("Draft", backref="essay")
 
 

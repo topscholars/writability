@@ -7,10 +7,22 @@ This module contains all relationships for all models / tables.
 """
 from .db import db
 
+# role_user_associations: many to many relationship between users and roles
+role_user_associations = db.Table(
+    "role_user_associations",
+    db.Column(
+        "role_id",
+        db.Integer,
+        db.ForeignKey("role.id")),
+    db.Column(
+        "user_id",
+        db.Integer,
+        db.ForeignKey("user.id")))
+
 # essay_associations: many to many relationship between theme_essay and
 # application_essay.
 essay_associations = db.Table(
-    "essay_association",
+    "essay_associations",
     db.Column(
         "application_essay_id",
         db.Integer,
@@ -44,4 +56,4 @@ student_university_associations = db.Table(
     db.Column(
         "student_id",
         db.Integer,
-        db.ForeignKey("student.id")))
+        db.ForeignKey("user.id")))
