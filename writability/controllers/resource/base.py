@@ -13,8 +13,8 @@ from flask.ext.restful import marshal
 
 class ResourceManager(object):
 
-    item_endpoint = None
-    list_endpoint = None
+    item_resource_name = None
+    list_resource_name = None
     model_class = None
 
     def __init__(self):
@@ -33,20 +33,20 @@ class ResourceManager(object):
         })
 
     def _add_list_field(self):
-        if self.list_endpoint is None:
+        if self.list_resource_name is None:
             raise NotImplementedError
 
         self.list_field = {
-            self.list_endpoint: fields.List(
+            self.list_resource_name: fields.List(
                 fields.Nested(self._item_fields))
         }
 
     def _add_item_field(self):
-        if self.item_endpoint is None:
+        if self.item_resource_name is None:
             raise NotImplementedError
 
         self.item_field = {
-            self.item_endpoint: fields.Nested(self._item_fields)
+            self.item_resource_name: fields.Nested(self._item_fields)
         }
 
 
@@ -75,8 +75,8 @@ class BaseResource(Resource):
     def _get_payload(self):
         """Get the JSON body of the request."""
         json = request.get_json()
-        endpoint = self.resource_manager.item_endpoint
-        payload = json[endpoint]
+        resource_name = self.resource_manager.item_resource_name
+        payload = json[resource_name]
         return payload
 
     def _get_query_filters(self):
@@ -89,20 +89,20 @@ class BaseResource(Resource):
 class ItemResource(BaseResource):
 
     def get(self, id):
-        endpoint = self.resource_manager.item_endpoint
+        resource_name = self.resource_manager.item_resource_name
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
-        item = {endpoint: model_class.read(id)}
+        item = {resource_name: model_class.read(id)}
         return marshal(item, item_field)
 
     def put(self, id):
-        endpoint = self.resource_manager.item_endpoint
+        resource_name = self.resource_manager.item_resource_name
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
         payload = self._get_payload()
-        item = {endpoint: model_class.update(id, payload)}
+        item = {resource_name: model_class.update(id, payload)}
 
         return marshal(item, item_field)
 
@@ -114,35 +114,37 @@ class ItemResource(BaseResource):
 
     @classmethod
     def get_endpoint(class_):
-        return class_.resource_manager_class.item_endpoint
+        resource_name = class_.resource_manager_class.item_resource_name
+        return resource_name.replace("_", "-")
 
 
 class ListResource(BaseResource):
 
     def get(self):
-        endpoint = self.resource_manager.list_endpoint
+        resource_name = self.resource_manager.list_resource_name
         model_class = self.resource_manager.model_class
         list_field = self.resource_manager.list_field
 
         query_filters = self._get_query_filters()
         models = model_class.read_by_filter(query_filters)
 
-        items = {endpoint: models}
+        items = {resource_name: models}
         return marshal(items, list_field)
 
     def post(self):
-        endpoint = self.resource_manager.item_endpoint
+        resource_name = self.resource_manager.item_resource_name
         item_field = self.resource_manager.item_field
         model_class = self.resource_manager.model_class
 
         payload = self._get_payload()
-        item = {endpoint: model_class.create(payload)}
+        item = {resource_name: model_class.create(payload)}
 
         return marshal(item, item_field), 201
 
     @classmethod
     def get_endpoint(class_):
-        return class_.resource_manager_class.list_endpoint
+        resource_name = class_.resource_manager_class.list_resource_name
+        return resource_name.replace("_", "-")
 
 
 class StatefulResourceManager(ResourceManager):

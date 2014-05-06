@@ -17,8 +17,8 @@ import draft
 
 class EssayResourceManager(ResourceManager):
 
-    item_endpoint = "essay"
-    list_endpoint = "essays"
+    item_resource_name = "essay"
+    list_resource_name = "essays"
     model_class = Essay
 
     def _add_item_fields(self):
@@ -32,7 +32,7 @@ class EssayResourceManager(ResourceManager):
             "num_of_drafts": fields.Integer,
             "due_date": fields.String,
             "drafts": fields.List(ResourceField(
-                draft.DraftResourceManager.item_endpoint,
+                draft.DraftResourceManager.item_resource_name,
                 absolute=True))
         })
 
@@ -49,8 +49,8 @@ class EssayListResource(ListResource):
 
 class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
 
-    item_endpoint = "theme-essay"
-    list_endpoint = "theme-essays"
+    item_resource_name = "theme_essay"
+    list_resource_name = "theme_essays"
     model_class = ThemeEssay
 
     def _add_item_fields(self):
@@ -58,7 +58,7 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
         self._item_fields.update({
             "proposed_topics": fields.List(fields.String),
             "application_essays": fields.List(ResourceField(
-                ApplicationEssayResourceManager.item_endpoint,
+                ApplicationEssayResourceManager.item_resource_name,
                 absolute=True))
         })
 
@@ -75,8 +75,8 @@ class ThemeEssayListResource(EssayListResource):
 
 class ApplicationEssayResourceManager(EssayResourceManager):
 
-    item_endpoint = "application-essay"
-    list_endpoint = "application-essays"
+    item_resource_name = "application_essay"
+    list_resource_name = "application_essays"
     model_class = ApplicationEssay
 
     def _add_item_fields(self):

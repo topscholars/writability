@@ -81,4 +81,6 @@ class ApplicationEssay(Essay):
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     # optional fields
+
     # relationships
+    # theme_essays: don't explicitly declare it but it's here

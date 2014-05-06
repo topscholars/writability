@@ -23,3 +23,4 @@ from essay import Essay
 from draft import Draft
 from university import University
 from theme import Theme
+from essay_template import EssayTemplate

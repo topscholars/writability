@@ -20,3 +20,6 @@ class University(BaseModel):
 
     # inheritance
     # relationships
+    application_essay_templates = db.relationship(
+        "ApplicationEssayTemplate",
+        backref="university")

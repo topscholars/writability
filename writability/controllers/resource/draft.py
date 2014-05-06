@@ -16,8 +16,8 @@ import essay
 
 class DraftResourceManager(StatefulResourceManager):
 
-    item_endpoint = "draft"
-    list_endpoint = "drafts"
+    item_resource_name = "draft"
+    list_resource_name = "drafts"
     model_class = Draft
 
     def _add_item_fields(self):
@@ -29,7 +29,7 @@ class DraftResourceManager(StatefulResourceManager):
             "due_date": fields.String,
             "is_final_draft": fields.Boolean,
             "essay": ResourceField(
-                essay.EssayResourceManager.item_endpoint,
+                essay.EssayResourceManager.item_resource_name,
                 absolute=True)
         })
 

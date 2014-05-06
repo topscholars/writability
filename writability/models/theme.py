@@ -26,3 +26,8 @@ class Theme(BaseModel):
     # optional fields
     # inheritance
     # relationships
+    theme_essay_template = db.relationship(
+        "ThemeEssayTemplate",
+        uselist=False,
+        backref="theme")
+    # application_essay_templates: don't explicitly declase but it's here.

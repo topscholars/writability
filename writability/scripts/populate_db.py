@@ -137,6 +137,9 @@ class ApplicationEssayTemplatePopulator(Populator):
             }
         }
 
+        from pprint import pprint
+        pprint(payload)
+
         return payload
 
     def _get_theme_id(self, theme_name, category_name):
@@ -166,16 +169,12 @@ class ApplicationEssayTemplatePopulator(Populator):
     def _get_title(self, payload):
         return payload["application_essay_template"]["essay_prompt"][0:20]
 
-    def _populate_db(self, payload):
-        # TODO: remove this function
-        return True
-
 
 def populate_db():
     # UniversityPopulator()
     # ThemePopulator()
     # ThemeEssayTemplatePopulator()
-    # ApplicationEssayTemplatePopulator()
+    ApplicationEssayTemplatePopulator()
 
 
 populate_db()
