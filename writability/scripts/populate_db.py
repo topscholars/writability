@@ -55,6 +55,16 @@ class Populator(object):
     def _get_url(self):
         return ROOT_URL + self._PATH
 
+    def _get_id_with_query_url(self, query_url, object_type):
+        resp = requests.get(query_url)
+
+        if resp.status_code != 200:
+            return False
+
+        item = resp.json()
+
+        return item[object_type][0]["id"]
+
 
 class UniversityPopulator(Populator):
 
@@ -93,7 +103,47 @@ class ThemePopulator(Populator):
 
 
 class ThemeEssayTemplatePopulator(Populator):
-    pass
+
+    _PATH = "theme-essay-templates"
+    _FILE_PATH = "data/theme-essay-templates.csv"
+
+    def _construct_payload(self, line):
+        columns = line.split(',', 3)
+
+        # theme
+        category = columns[0].strip()
+        name = columns[1].strip()
+        theme_id = self._get_theme_id(name, category)
+
+        # audience
+        audience = columns[2].replace(";", ",").strip()
+
+        # context
+        context = ""
+
+        # essay_prompt
+        essay_prompt = columns[3][:-1].strip()
+
+        payload = {
+            "theme_essay_template": {
+                "theme": theme_id,
+                "audience": audience,
+                "context": context,
+                "essay_prompt": essay_prompt
+            }
+        }
+
+        return payload
+
+    def _get_theme_id(self, theme_name, category_name):
+        _THEME_QUERY_URL = "{}themes?".format(ROOT_URL)
+        _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
+        url = _THEME_QUERY_URL + _QUERY_STRING
+
+        return self._get_id_with_query_url(url, "themes")
+
+    def _get_title(self, payload):
+        return payload["theme_essay_template"]["essay_prompt"][0:20]
 
 
 class ApplicationEssayTemplatePopulator(Populator):
@@ -137,9 +187,6 @@ class ApplicationEssayTemplatePopulator(Populator):
             }
         }
 
-        from pprint import pprint
-        pprint(payload)
-
         return payload
 
     def _get_theme_id(self, theme_name, category_name):
@@ -156,16 +203,6 @@ class ApplicationEssayTemplatePopulator(Populator):
 
         return self._get_id_with_query_url(url, "universities")
 
-    def _get_id_with_query_url(self, query_url, object_type):
-        resp = requests.get(query_url)
-
-        if resp.status_code != 200:
-            return False
-
-        item = resp.json()
-
-        return item[object_type][0]["id"]
-
     def _get_title(self, payload):
         return payload["application_essay_template"]["essay_prompt"][0:20]
 
@@ -173,8 +210,8 @@ class ApplicationEssayTemplatePopulator(Populator):
 def populate_db():
     # UniversityPopulator()
     # ThemePopulator()
-    # ThemeEssayTemplatePopulator()
-    ApplicationEssayTemplatePopulator()
+    ThemeEssayTemplatePopulator()
+    # ApplicationEssayTemplatePopulator()
 
 
 populate_db()
