@@ -2,7 +2,7 @@
 models.base
 ~~~~~~~~~~~
 
-This module contains BaseModel and StatefulMixin.
+This module contains BaseModel and StatefulModel.
 
 """
 from datetime import datetime

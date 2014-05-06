@@ -6,12 +6,22 @@ This module contains an abstract User and its subclasses, Student and Teacher.
 For now, each User can't be both.
 
 """
+from sqlalchemy.schema import UniqueConstraint
+from passlib.apps import custom_app_context as pwd_context
+
 from .db import db
 from .base import StatefulModel
 from .relationships import student_university_associations
 
 
 class User(StatefulModel):
+
+    __table_args__ = (
+        # Because the email property is an index, unique must be defined
+        # separately.
+        UniqueConstraint('email'),
+        {}
+    )
 
     _STATES = ["new", "verified", "active", "inactive"]
 
@@ -29,6 +39,23 @@ class User(StatefulModel):
     __mapper_args__ = {'polymorphic_on': discriminator}
 
     # relationships
+
+    def __init__(self, **object_dict):
+        # remove password from dict
+        password = object_dict["password"]
+        del object_dict["password"]
+
+        # create user object
+        super(User, self).__init__(**object_dict)
+
+        # add password hash
+        self._hash_password(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+    def _hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
