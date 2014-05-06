@@ -23,3 +23,4 @@ class University(BaseModel):
     application_essay_templates = db.relationship(
         "ApplicationEssayTemplate",
         backref="university")
+    # students: don't explicitly declare it but it's here

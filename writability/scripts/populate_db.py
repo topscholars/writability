@@ -208,10 +208,10 @@ class ApplicationEssayTemplatePopulator(Populator):
 
 
 def populate_db():
-    # UniversityPopulator()
-    # ThemePopulator()
+    UniversityPopulator()
+    ThemePopulator()
     ThemeEssayTemplatePopulator()
-    # ApplicationEssayTemplatePopulator()
+    ApplicationEssayTemplatePopulator()
 
 
 populate_db()

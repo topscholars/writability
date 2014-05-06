@@ -34,6 +34,7 @@ class Essay(BaseModel):
     __mapper_args__ = {'polymorphic_on': discriminator}
 
     # relationships
+    student_id = db.Column(db.Integer, db.ForeignKey("student.id"))
     drafts = db.relationship("Draft", backref="essay")
 
 
@@ -54,7 +55,7 @@ class ThemeEssay(StatefulModel, Essay):
     application_essays = db.relationship(
         "ApplicationEssay",
         secondary=essay_associations,
-        backref=db.backref("theme_essay", lazy="dynamic"))
+        backref=db.backref("theme_essays", lazy="dynamic"))
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""

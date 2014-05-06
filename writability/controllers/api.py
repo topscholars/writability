@@ -19,6 +19,9 @@ from resource.essay_template import ThemeEssayTemplateListResource
 from resource.essay_template import ThemeEssayTemplateResource
 from resource.essay_template import ApplicationEssayTemplateListResource
 from resource.essay_template import ApplicationEssayTemplateResource
+from resource.user import UserListResource, UserResource
+from resource.user import TeacherListResource, TeacherResource
+from resource.user import StudentListResource, StudentResource
 
 
 def add_resource_with_endpoint(api, resource_class, path):
@@ -101,3 +104,15 @@ def initialize(app, api_prefix):
         api,
         ApplicationEssayTemplateResource,
         "/application-essay-templates/<int:id>")
+
+    # user
+    add_resource_with_endpoint(api, UserListResource, "/users")
+    add_resource_with_endpoint(api, UserResource, "/users/<int:id>")
+
+    # teacher
+    add_resource_with_endpoint(api, TeacherListResource, "/teachers")
+    add_resource_with_endpoint(api, TeacherResource, "/teachers/<int:id>")
+
+    # student
+    add_resource_with_endpoint(api, StudentListResource, "/students")
+    add_resource_with_endpoint(api, StudentResource, "/students/<int:id>")

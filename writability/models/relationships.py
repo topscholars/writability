@@ -32,3 +32,16 @@ theme_application_template_associations = db.Table(
         "application_essay_template_id",
         db.Integer,
         db.ForeignKey("application_essay_template.id")))
+
+# student_university_associations: many to many relationship between
+# student and university.
+student_university_associations = db.Table(
+    "student_university_associations",
+    db.Column(
+        "university_id",
+        db.Integer,
+        db.ForeignKey("university.id")),
+    db.Column(
+        "student_id",
+        db.Integer,
+        db.ForeignKey("student.id")))
