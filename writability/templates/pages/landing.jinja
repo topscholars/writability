@@ -22,16 +22,45 @@
         <p>Need help with you're writing? We'll work with you on your writing
         technique and also help you craft a great college application essay.
         </p>
-        <button class="button">Sign Up</button>
+        <button class="button modal-toggle">Sign Up</button>
       </div>
     </section>
   </div>
 </div>
 <div id="modal-container">
-  <section id="modal-module" class="module">
-
+  <section id="modal-module" class="landing-modal module">
+    <div class="modal-content">
+      <div class="modal-title">Sign Up</div>
+      <button class="close-button">X</button>
+      <form action="/register" method="POST" name="register_user_form">
+        <ol>
+          <li>
+            <input name="first_name" class="double-column" placeholder="First Name" />
+            <input name="last_name" class="double-column" placeholder="Last Name" />
+          </li>
+          <li>
+            <input name="email" type="email" class="single-column" placeholder="Email" />
+          </li>
+          <li>
+            <input name="password" type="password" class="double-column" placeholder="Password" />
+            <input name="password_confirm" type="password"
+            class="double-column" placeholder="Retype Password" />
+          </li>
+          <li>
+            <label class="double-column">
+              Are you a teacher?<input type="checkbox" />
+            </label>
+            <button name="submit" type="submit" value="Register" class="double-column">Create Account &gt;</button>
+          </li>
+        </ol>
+      </form>
+    </div>
   </section>
 </div>
 {% endblock %}
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script src="/static/libs/jquery/dist/jquery.min.js"></script>
+<script src="/static/landing/landing.js"></script>
+
+{% endblock %}

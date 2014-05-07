@@ -171,7 +171,7 @@
 
 .form-element {
     .bodyText;
-    border-radius: @round;
+    border-radius: 0px;
     .inner-box-shadow();
 
     //height: @listLineHeight;
@@ -239,19 +239,25 @@ a {
     z-index: 10;
 }
 
+#modal-container {
+}
+
 /***********************************************************
 * CORE COMPONENTS
 ************************************************************/
-.button {
-    .bodyText;
+input, button, label {
+    .bodyText();
 
     -moz-outline: none;
+    outline: none;
     background-color: @white;
-    border-color: @black;
     border-radius: 0px;
+}
+
+button, input[type="checkbox"] {
+    border-color: @black;
     border: @wideBorder solid;
     color: @black;
-    outline: none;
     padding-right: @innerPadding;
     padding-left: @innerPadding;
 
@@ -288,6 +294,84 @@ a {
     .module {
         width: 50%;
         min-width: 480px;
+    }
+}
+
+#modal-container {
+
+    visibility: hidden;
+    background-color: rgba(0, 0, 0, .92);
+    display: table;
+    height: 100%;
+    position: absolute;
+    position: absolute;
+    width: 100%;
+    z-index: 50;
+
+    .module {
+        position: relative;
+        vertical-align: middle;
+        display: table-cell;
+
+        .modal-content {
+            background-color: @black;
+            border-radius: @round;
+            border: @thinBorder @grey solid;
+            color: @white;
+            margin: auto;
+            overflow: hidden;
+            position: relative;
+            top: -25px;
+            width: 50%;
+            padding: 0px;
+        }
+
+        .modal-title {
+            .moduleHeaderText();
+
+            padding: @smallPadding @smallMargin;
+        }
+
+        .close-button {
+            position: absolute;
+            top: @smallPadding;
+            right: @smallMargin;
+            padding: 0px;
+        }
+
+        li {
+            border-top: @thinBorder @grey solid;
+            width: 100%;
+            clear: both;
+            float: left;
+            overflow: hidden;
+        }
+
+        .single-column {
+            width: 100%;
+        }
+
+        .double-column {
+            width: 50%;
+            float: left;
+
+            &:first-child {
+                border-right: @thinBorder @grey solid;
+            }
+
+        }
+
+        input, button, label {
+            background-color: @black;
+            color: @white;
+            border: 0px;
+            text-align: left;
+            padding: @smallPadding @smallMargin;
+        }
+
+        ::-webkit-input-placeholder {
+            color: @grey;
+        }
     }
 }
 
@@ -639,4 +723,8 @@ a {
         margin-top: @smallMargin;
         margin-bottom: @smallMargin;
     }
+}
+
+.landing-modal {
+
 }
