@@ -221,52 +221,14 @@ em {
     font-style: italic;
 }
 
-button {
-    .bodyText;
-    border-radius: @round;
-
-    &:hover {
-     cursor: pointer;
-    }
-
-    &[type=submit] {
-        border: 0px;
-        width: 100%;
-        .background-image-wrapper(
-            226px,
-            39px,
-            'submitButton.png',
-            transparent);
-
-        &:active {
-            .background-image-wrapper(
-                226px,
-                39px,
-                'submitButtonPressed.png',
-                transparent);
-        }
-
-        &:disabled {
-            .background-image-wrapper(
-                226px,
-                39px,
-                'submitButtonDisabled.png',
-                transparent);
-            cursor: default;
-        }
-    }
-}
-
 a {
-    color: @grey;
-    text-decoration: underline;
+    color: @black;
+    text-decoration: none;
 
     &:hover {
-        color: @green;
+        color: @grey;
+        text-decoration: underline;
     }
-}
-
-li {
 }
 
 .layout {
@@ -275,6 +237,46 @@ li {
     padding-top: @headerHeight;
     width: 100%;
     z-index: 10;
+}
+
+/***********************************************************
+* CORE COMPONENTS
+************************************************************/
+.button {
+    .bodyText;
+
+    -moz-outline: none;
+    background-color: @white;
+    border-color: @black;
+    border-radius: 0px;
+    border: @wideBorder solid;
+    color: @black;
+    outline: none;
+    padding-right: @innerPadding;
+    padding-left: @innerPadding;
+
+    &:hover {
+        background-color: @black;
+        border-color: @black;
+        color: @white;
+        cursor: pointer;
+    }
+
+    &:active {
+        border-color: @black;
+        background-color: lighten(@black, 40%);
+        color: @grey;
+    }
+
+    &:disabled {
+        cursor: default;
+        border-color: @greyLight;
+        color: @grey;
+    }
+}
+
+.icon {
+    .background-image-wrapper(45px, 45px, 'icon.gif', @white);
 }
 
 /***********************************************************
@@ -574,5 +576,67 @@ li {
         &:last-child {
             border: 0px;
         }
+    }
+}
+
+/***********************************************************
+* LAYOUT: LANDING
+************************************************************/
+#header.landing-header {
+    background-color: @white;
+    display: block;
+
+    .header-title {
+        display: table;
+        height: 100%;
+    }
+
+    .header-link {
+        display: table-cell;
+        vertical-align: middle;
+        padding-left: @innerPadding;
+        padding-right: @innerPadding;
+    }
+
+    .header-left-group {
+        float: left;
+    }
+
+    .header-right-group {
+        float: right;
+    }
+}
+
+#landing-layout {
+    height: 100%;
+    padding: 0px;
+
+    .module {
+        top: 0px;
+        width: 100%;
+        display: block;
+        //height 100%;
+        //display: table;
+        text-align: center;
+        padding-top: 15%;
+
+        .landing-content {
+            //display: table-cell;
+            //vertical-align: middle;
+            position: relative;
+        }
+    }
+
+    .landing-logo {
+        .background-image-wrapper(500px, 98px, 'logo.gif', @white);
+        margin: auto;
+    }
+
+    p {
+        width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: @smallMargin;
+        margin-bottom: @smallMargin;
     }
 }

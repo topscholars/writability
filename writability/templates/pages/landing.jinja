@@ -3,9 +3,35 @@
 {% block title %}Writability{% endblock %}
 
 {% block page_css %}
-<link type="text/css" rel="stylesheet" href="/static/css/pages/landing.css" />
+<!-- <link type="text/css" rel="stylesheet" href="/static/css/pages/landing.css" /> -->
 {% endblock%}
 
 {% block content %}
-Insert awesome Writability landing page here.
+<header id="header" class="landing-header">
+  <div class="header-left-group header-title"><div class="icon"></div></div>
+  <div class="header-right-group header-title">
+    <a class="header-link" href="/login">Login</a>
+  </div>
+</header>
+
+<div id="layout-container">
+  <div id="landing-layout" class="layout">
+    <section id="landing-module" class="module">
+      <div class="landing-content">
+        <div class="landing-logo"></div>
+        <p>Need help with you're writing? We'll work with you on your writing
+        technique and also help you craft a great college application essay.
+        </p>
+        <button class="button">Sign Up</button>
+      </div>
+    </section>
+  </div>
+</div>
+<div id="modal-container">
+  <section id="modal-module" class="module">
+
+  </section>
+</div>
 {% endblock %}
+
+{% block scripts %}{% endblock %}
