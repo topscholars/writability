@@ -6,9 +6,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Enable debug mode.
 DEBUG = False
 
-# Secret key for session management. You can generate random strings here:
+# Secret key for sessions and csrf forms. You can generate random strings here:
 # http://clsc.net/tools-old/random-string-generator.php
-SECRET_KEY = 'my precious'
+SECRET_KEY = "VBEDcMp6VknWYJ72"
 
 SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = "8VQ7FP3TE8B5Pyxm"
@@ -17,6 +17,7 @@ SECURITY_REGISTERABLE = True
 # Turn off email for temporary testing.
 # FIXME XXX: Set up email registration and confirmation
 SECURITY_SEND_REGISTER_EMAIL = False
+
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
 

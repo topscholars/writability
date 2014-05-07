@@ -1,7 +1,11 @@
 #!/usr/bin/env python
-# ----------------------------------------------------------------------------#
-# Imports.
-# ----------------------------------------------------------------------------#
+"""
+app
+~~~
+
+This is the Writability app.
+
+"""
 import os
 from flask import Flask, render_template
 from flask_sslify import SSLify

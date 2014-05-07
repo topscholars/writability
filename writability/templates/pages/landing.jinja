@@ -33,6 +33,7 @@
       <div class="modal-title">Sign Up</div>
       <button class="close-button">X</button>
       <form action="/register" method="POST" name="register_user_form">
+        {{ form.hidden_tag() }}
         <ol>
           <li>
             <input name="first_name" class="double-column" placeholder="First Name" />

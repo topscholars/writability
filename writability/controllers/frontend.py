@@ -9,6 +9,8 @@ All security controllers are implemented silently through Flask-Security.
 """
 from flask import Blueprint, render_template
 from flask.ext.login import current_user
+from flask_wtf import Form
+
 
 bp = Blueprint('frontend', __name__)
 
@@ -19,4 +21,4 @@ def index(path):
     if current_user.is_authenticated():
         return render_template('pages/app.jinja')
     else:
-        return render_template('pages/landing.jinja')
+        return render_template('pages/landing.jinja', form=Form())
