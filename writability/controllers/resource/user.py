@@ -8,6 +8,7 @@ resource.
 
 """
 from flask.ext.restful import fields
+from flask.ext.login import current_user
 
 from models.user import User
 
@@ -35,6 +36,13 @@ class UserResourceManager(StatefulResourceManager):
 class UserResource(ItemResource):
 
     resource_manager_class = UserResourceManager
+
+    def get(self, id):
+        """Get requested user or if id==0, then get current_user."""
+        if id == 0:
+            id = current_user.id
+
+        return super(UserResource, self).get(id)
 
 
 class UserListResource(ListResource):
