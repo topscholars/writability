@@ -1,3 +1,4 @@
+/* globals App, Ember */
 App.EssaysController = Ember.ArrayController.extend({
     itemController: 'essay.item',
 

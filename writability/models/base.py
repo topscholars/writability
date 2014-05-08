@@ -55,6 +55,10 @@ class BaseModel(db.Model):
         return class_.query.filter_by(**query_filters).all()
 
     @classmethod
+    def read_many(class_, ids):
+        return class_.query.filter(class_.id.in_(ids)).all()
+
+    @classmethod
     def update(class_, id, updated_dict):
         model = class_.read(id)
         db.session.add(model)

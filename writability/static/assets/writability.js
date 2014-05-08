@@ -137,11 +137,32 @@ App.ThemeEssay = App.Essay.extend({
 });
 
 /* globals App, DS */
+App.University = DS.Model.extend({
+    // properties
+    name: DS.attr('string'),
+    // logo_url: DS.attr('string'),
+});
+
+/* globals App, DS */
 App.User = DS.Model.extend({
     // properties
     email: DS.attr('string'),
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
+});
+
+App.Teacher = App.User.extend({
+    // properties
+    // relationships
+    students: DS.hasMany('student')
+});
+
+App.Student = App.User.extend({
+    // properties
+    // relationships
+    teacher: DS.belongsTo('teacher'),
+    essays: DS.hasMany('essay'),
+    universities: DS.hasMany('university', {async: true})
 });
 
 App.DraftController = Ember.ObjectController.extend({
@@ -226,6 +247,7 @@ App.EssayTabs = Ember.ContainerView.extend({
     archive: App.EssayArchiveTab.create()
 });
 
+/* globals App, Ember */
 App.EssaysController = Ember.ArrayController.extend({
     itemController: 'essay.item',
 
@@ -261,6 +283,15 @@ App.EssayItemController = Ember.ObjectController.extend({
             this.get('controllers.essays').send('selectEssay', model);
         }
     },
+});
+
+/* globals App, Ember */
+App.UniversitiesController = Ember.ArrayController.extend({
+});
+
+App.UniversitiesView = App.ListView.extend({
+    title: 'Universities',
+    listItem: 'modules/_universities-list-item'
 });
 
 App.TextEditor = Ember.TextArea.extend({
@@ -385,6 +416,31 @@ App.Router.map(function () {
 
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
+
+    this.resource('universities');
+    // no university item resource
+});
+
+App.ApplicationRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('user', 0);
+    }
+});
+
+App.UniversitiesRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('student', 0).then(function (student) {
+            console.log(student.id);
+            console.log(student.universities);
+            return student.get('universities');
+        });
+    },
+
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('core/modules/header', {outlet: 'header'});
+        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+    }
 });
 
 App.EssaysRoute = Ember.Route.extend({
@@ -396,12 +452,6 @@ App.EssaysRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('core/modules/header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
-    }
-});
-
-App.ApplicationRoute = Ember.Route.extend({
-    model: function () {
-        return this.store.find('user', 0);
     }
 });
 
@@ -448,5 +498,7 @@ Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"mo
 Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div class=\"list-style-group\">{{id}} +7</div>\n<div class=\"main-group\">\n    <div class=\"main-line\">Theme</div>\n    <div class=\"sub-line\">Category</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">Start Topic</div>\n    <div class=\"draft-due\">Draft Due: May 3, 2014</div>\n    <div class=\"essay-due\">Essay Due: {{due_date}}</div>\n</div>\n");
+
+Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button class=\"editor-toggle\">Details</button>\n        <button class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");

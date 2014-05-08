@@ -125,8 +125,15 @@ class ListResource(BaseResource):
         model_class = self.resource_manager.model_class
         list_field = self.resource_manager.list_field
 
-        query_filters = self._get_query_filters()
-        models = model_class.read_by_filter(query_filters)
+        ids = self._get_ids_from_query_params()
+        models = []
+        # if sent multiple ids then grab the list
+        if ids:
+            models = model_class.read_many(ids)
+        # or do a filter
+        else:
+            query_filters = self._get_query_filters()
+            models = model_class.read_by_filter(query_filters)
 
         items = {resource_name: models}
         return marshal(items, list_field)
@@ -145,6 +152,9 @@ class ListResource(BaseResource):
     def get_endpoint(class_):
         resource_name = class_.resource_manager_class.list_resource_name
         return resource_name.replace("_", "-")
+
+    def _get_ids_from_query_params(self):
+        return request.args.getlist("ids[]", None)
 
 
 class StatefulResourceManager(ResourceManager):

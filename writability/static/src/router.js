@@ -10,6 +10,31 @@ App.Router.map(function () {
 
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
+
+    this.resource('universities');
+    // no university item resource
+});
+
+App.ApplicationRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('user', 0);
+    }
+});
+
+App.UniversitiesRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('student', 0).then(function (student) {
+            console.log(student.id);
+            console.log(student.universities);
+            return student.get('universities');
+        });
+    },
+
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('core/modules/header', {outlet: 'header'});
+        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+    }
 });
 
 App.EssaysRoute = Ember.Route.extend({
@@ -21,12 +46,6 @@ App.EssaysRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('core/modules/header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
-    }
-});
-
-App.ApplicationRoute = Ember.Route.extend({
-    model: function () {
-        return this.store.find('user', 0);
     }
 });
 
