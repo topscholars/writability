@@ -1,8 +1,10 @@
 <div class="module-title">{{view.title}}</div>
 <ol class="list">
 {{#each}}
-    <li {{action "select"}} {{bind-attr class=":list-item isSelected"}}>
-        {{partial view.listItem}}
-    </li>
+    {{view view.listItem classNameBindings="isSelected" }}
 {{/each}}
+
+{{#if view.newItem}}
+    {{view view.newItem}}
+{{/if}}
 </ol>

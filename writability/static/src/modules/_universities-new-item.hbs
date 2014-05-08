@@ -1,0 +1,11 @@
+<div class="main-group">
+    <div class="main-line">
+        {{view Ember.Select
+        content=universities
+        selectionBinding="newUniversity"
+        optionValuePath="content.id"
+        optionLabelPath="content.name"
+        prompt="Select a school"}}
+    </div>
+</div>
+

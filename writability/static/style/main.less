@@ -245,7 +245,7 @@ a {
 /***********************************************************
 * CORE COMPONENTS
 ************************************************************/
-input, button, label {
+input, button, label, select {
     .bodyText();
 
     -moz-outline: none;
@@ -419,16 +419,17 @@ button, input[type="checkbox"] {
     }
 
     .list-item {
+        .itemHeaderText();
+
         border-bottom: @thinBorder @grey solid;
         cursor: pointer;
         float: left;
-        list-style: none;
-        padding: @innerPadding @bigMargin;
         width: 100%;
 
         &:hover {
             background-color: @greyLight;
         }
+
         &.is-selected {
             .horizontal-section-shadow();
 
@@ -436,7 +437,17 @@ button, input[type="checkbox"] {
             cursor: auto;
         }
 
+        .arrow-icon {
+            float: right;
+        }
+    }
+
+    .thick-list-item {
+        list-style: none;
+        padding: @innerPadding @bigMargin;
+
         .list-style-group {
+            .bodyText();
             float: left;
             margin-right: @smallPadding;
         }
@@ -446,11 +457,11 @@ button, input[type="checkbox"] {
             margin-right: @smallPadding;
 
             .main-line {
-                .itemHeaderText();
                 margin-bottom: @smallPadding;
             }
 
             .sub-line {
+                .bodyText();
             }
         }
 
@@ -460,10 +471,11 @@ button, input[type="checkbox"] {
             float: right;
             margin-right: @smallPadding;
         }
+    }
 
-        .arrow-icon {
-            float: right;
-        }
+    .thin-list-item {
+        list-style: decimal inside;
+        padding: @smallestPadding @bigMargin;
     }
 }
 
@@ -539,6 +551,14 @@ button, input[type="checkbox"] {
        color: @green;
        margin-bottom: @smallPadding;
    }
+}
+
+.new-item {
+    input, select {
+        .itemHeaderText();
+        padding: 0px;
+        width: 80%;
+    }
 }
 
 /***********************************************************

@@ -1,3 +1,4 @@
+/* globals App, Ember */
 App.Router.reopen({
     // use the history API
     location: 'history'
@@ -24,8 +25,6 @@ App.ApplicationRoute = Ember.Route.extend({
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
         return this.store.find('student', 0).then(function (student) {
-            console.log(student.id);
-            console.log(student.universities);
             return student.get('universities');
         });
     },
@@ -34,7 +33,18 @@ App.UniversitiesRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('core/modules/header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
+    },
+
+    actions: {
+        selectedUniversity: function (university) {
+            this.store.find('student', 0).then(function (student) {
+                var universities = student.get('universities');
+                universities.pushObject(university);
+            });
+        }
+
     }
+
 });
 
 App.EssaysRoute = Ember.Route.extend({

@@ -4,7 +4,6 @@ App.TextEditor = Ember.TextArea.extend({
         sync: function () {
             console.log('wel then');
         }
-
     },
     classNames: ['draft-text'],
     attributeBindings: ['contenteditable'],
