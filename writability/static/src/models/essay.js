@@ -1,3 +1,4 @@
+/* globals App, DS */
 App.Essay = DS.Model.extend({
     // properties
     audience: DS.attr('string'),

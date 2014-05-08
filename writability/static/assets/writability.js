@@ -1,3 +1,5 @@
+/* globals App, Ember, $, DS */
+
 window.App = Ember.Application.create({
     rootElement: '#application-root',
 
@@ -9,6 +11,19 @@ window.App = Ember.Application.create({
     // `beforeModel`, `model`, and `afterModel` hooks, and
     // information about redirects and aborted transitions
     // LOG_TRANSITIONS_INTERNAL: true
+});
+
+App.ApplicationController = Ember.ObjectController.extend({
+
+    globalizeUser: function () {
+        var user = this.get('model');
+        Ember.set('App.CurrentUser');
+    }.observes('model'),
+
+    currentUser: function() {
+        return this.get('model');
+    }
+
 });
 
 App.ApplicationView = Ember.View.extend({
@@ -100,6 +115,7 @@ App.Draft = DS.Model.extend({
     essay: DS.belongsTo('essay')
 });
 
+/* globals App, DS */
 App.Essay = DS.Model.extend({
     // properties
     audience: DS.attr('string'),
@@ -118,6 +134,14 @@ App.ThemeEssay = App.Essay.extend({
     next_states: DS.attr('array', {readOnly: true}),
     proposed_topics: DS.attr('array'),
     state: DS.attr('string')
+});
+
+/* globals App, DS */
+App.User = DS.Model.extend({
+    // properties
+    email: DS.attr('string'),
+    first_name: DS.attr('string'),
+    last_name: DS.attr('string'),
 });
 
 App.DraftController = Ember.ObjectController.extend({
@@ -372,6 +396,12 @@ App.EssaysRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('core/modules/header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
+    }
+});
+
+App.ApplicationRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('user', 0);
     }
 });
 

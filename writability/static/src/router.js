@@ -24,6 +24,12 @@ App.EssaysRoute = Ember.Route.extend({
     }
 });
 
+App.ApplicationRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('user', 0);
+    }
+});
+
 App.EssayRoute = Ember.Route.extend({
     model: function (params) {
         return this.store.find('themeEssay', params.id);

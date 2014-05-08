@@ -1,3 +1,5 @@
+/* globals App, Ember, $, DS */
+
 window.App = Ember.Application.create({
     rootElement: '#application-root',
 
@@ -9,6 +11,19 @@ window.App = Ember.Application.create({
     // `beforeModel`, `model`, and `afterModel` hooks, and
     // information about redirects and aborted transitions
     // LOG_TRANSITIONS_INTERNAL: true
+});
+
+App.ApplicationController = Ember.ObjectController.extend({
+
+    globalizeUser: function () {
+        var user = this.get('model');
+        Ember.set('App.CurrentUser');
+    }.observes('model'),
+
+    currentUser: function() {
+        return this.get('model');
+    }
+
 });
 
 App.ApplicationView = Ember.View.extend({
