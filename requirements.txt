@@ -9,6 +9,7 @@ psycopg2==2.5.2
 pyOpenSSL==0.14
 
 # dev
+requests==2.2.1
 nose
 
 # indirect
