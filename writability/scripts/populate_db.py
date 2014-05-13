@@ -66,6 +66,19 @@ class Populator(object):
         return item[object_type][0]["id"]
 
 
+class RolePopulator(Populator):
+
+    _PATH = "roles"
+    _FILE_PATH = "data/roles.txt"
+
+    def _construct_payload(self, line):
+        payload = {"role": {"name": line}}
+        return payload
+
+    def _get_title(self, payload):
+        return payload["role"]["name"]
+
+
 class UniversityPopulator(Populator):
 
     _PATH = "universities"
@@ -208,10 +221,11 @@ class ApplicationEssayTemplatePopulator(Populator):
 
 
 def populate_db():
-    UniversityPopulator()
-    ThemePopulator()
-    ThemeEssayTemplatePopulator()
-    ApplicationEssayTemplatePopulator()
+    RolePopulator()
+   #UniversityPopulator()
+   #ThemePopulator()
+   #ThemeEssayTemplatePopulator()
+   #ApplicationEssayTemplatePopulator()
 
 
 populate_db()

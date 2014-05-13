@@ -37,7 +37,6 @@ class BaseModel(db.Model):
 
     @classmethod
     def create(class_, object_dict):
-        print "at create"
         prepared_dict = class_._replace_resource_ids_with_models(object_dict)
         model = class_(**prepared_dict)
         db.session.add(model)
@@ -108,8 +107,13 @@ class BaseModel(db.Model):
                     if id is None:
                         object_dict[relation.key] = None
                     else:
-                        object_dict[relation.key] = relation_class.query.get(
-                            id)
+                        model = relation_class.query.get(id)
+                        if model is None:
+                            raise ValueError(
+                                "The relationship {} has no id {}".format(
+                                    relation.key,
+                                    id))
+                        object_dict[relation.key] = model
 
         return object_dict
 
@@ -136,7 +140,7 @@ class StatefulModel(BaseModel):
 
         assert state in self._STATES
         if old_state is None:
-            assert state == self._get_default_state()
+            assert state in self._get_initial_states()
         elif old_state != state:
             assert state in self._get_next_states(old_state)
 
@@ -157,4 +161,8 @@ class StatefulModel(BaseModel):
 
     def _get_default_state(self):
         """Get the default new state."""
+        raise NotImplementedError()
+
+    def _get_initial_states(self):
+        """Get the allowed initial states."""
         raise NotImplementedError()

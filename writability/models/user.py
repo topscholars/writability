@@ -10,7 +10,7 @@ from sqlalchemy.schema import UniqueConstraint
 from flask.ext.security import UserMixin
 
 from .db import db
-from .base import StatefulModel
+from .base import BaseModel, StatefulModel
 from .relationships import role_user_associations
 from .relationships import student_university_associations
 
@@ -24,7 +24,7 @@ class User(StatefulModel, UserMixin):
         {}
     )
 
-    _STATES = ["new", "confirmed", "active", "inactive"]
+    _STATES = ["invited", "unconfirmed", "confirmed", "active", "inactive"]
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
@@ -47,6 +47,9 @@ class User(StatefulModel, UserMixin):
         "User",
         backref="teacher",
         remote_side="User.id")
+    invitations = db.relationship(
+        "Invitation",
+        backref="teacher")
     # student relationships
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     essays = db.relationship("Essay", backref="student")
@@ -58,7 +61,7 @@ class User(StatefulModel, UserMixin):
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {
-            "new": ["confirmed"],
+            "unconfirmed": ["confirmed"],
             "confirmed": ["active, inactive"],
             "active": ["inactive"],
             "inactive": ["active"]
@@ -68,4 +71,28 @@ class User(StatefulModel, UserMixin):
 
     def _get_default_state(self):
         """Get the default new state."""
-        return "new"
+        return "unconfirmed"
+
+    def _get_initial_states(self):
+        """Get the allowed initial states."""
+        return ["unconfirmed", "confirmed"]
+
+
+class Invitation(BaseModel):
+
+    __table_args__ = (
+        # Because the email property is an index, unique must be defined
+        # separately.
+        UniqueConstraint("email"),
+        {}
+    )
+
+    # required fields
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String, nullable=False, index=True)
+    is_registered = db.Column(db.Boolean, nullable=False, default=False)
+
+    # optional fields
+
+    # relationships
+    teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
