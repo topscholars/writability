@@ -136,7 +136,7 @@ class StatefulModel(BaseModel):
 
         assert state in self._STATES
         if old_state is None:
-            assert state == self._get_default_state()
+            assert state in self._get_initial_states()
         elif old_state != state:
             assert state in self._get_next_states(old_state)
 
@@ -157,4 +157,8 @@ class StatefulModel(BaseModel):
 
     def _get_default_state(self):
         """Get the default new state."""
+        raise NotImplementedError()
+
+    def _get_initial_states(self):
+        """Get the allowed initial states."""
         raise NotImplementedError()

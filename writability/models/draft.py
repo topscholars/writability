@@ -41,3 +41,7 @@ class Draft(StatefulModel):
     def _get_default_state(self):
         """Get the default new state."""
         return "new"
+
+    def _get_initial_states(self):
+        """Get the allowed initial states."""
+        return ["new"]

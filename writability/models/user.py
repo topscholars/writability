@@ -24,14 +24,14 @@ class User(StatefulModel, UserMixin):
         {}
     )
 
-    _STATES = ["new", "confirmed", "active", "inactive"]
+    _STATES = ["invited", "unconfirmed", "confirmed", "active", "inactive"]
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, nullable=False, index=True)
-    password = db.Column(db.String, nullable=False)
 
     # optional fields
+    password = db.Column(db.String)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
     active = db.Column(db.Boolean)
@@ -58,7 +58,8 @@ class User(StatefulModel, UserMixin):
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {
-            "new": ["confirmed"],
+            "invited": ["unconfirmed, confirmed"],
+            "unconfirmed": ["confirmed"],
             "confirmed": ["active, inactive"],
             "active": ["inactive"],
             "inactive": ["active"]
@@ -68,4 +69,8 @@ class User(StatefulModel, UserMixin):
 
     def _get_default_state(self):
         """Get the default new state."""
-        return "new"
+        return "unconfirmed"
+
+    def _get_initial_states(self):
+        """Get the allowed initial states."""
+        return ["invited", "unconfirmed"]
