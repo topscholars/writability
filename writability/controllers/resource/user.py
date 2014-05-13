@@ -10,9 +10,10 @@ resource.
 from flask.ext.restful import fields
 from flask.ext.login import current_user
 
-from models.user import User
+from models.user import User, Invitation
 
-from .base import StatefulResourceManager, ItemResource, ListResource
+from .base import ResourceManager, ItemResource, ListResource
+from .base import StatefulResourceManager
 from .fields import ResourceField
 import essay
 import university
@@ -104,3 +105,30 @@ class StudentResource(UserResource):
 class StudentListResource(UserListResource):
 
     resource_manager_class = StudentResourceManager
+
+
+class InvitationResourceManager(ResourceManager):
+
+    item_resource_name = "invitation"
+    list_resource_name = "invitations"
+    model_class = Invitation
+
+    def _add_item_fields(self):
+        super(InvitationResourceManager, self)._add_item_fields()
+        self._item_fields.update({
+            "email": fields.String,
+            "is_registered": fields.Boolean,
+            "teacher": ResourceField(
+                TeacherResourceManager.item_resource_name,
+                absolute=True),
+        })
+
+
+class InvitationResource(ItemResource):
+
+    resource_manager_class = InvitationResourceManager
+
+
+class InvitationListResource(ListResource):
+
+    resource_manager_class = InvitationResourceManager

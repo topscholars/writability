@@ -37,7 +37,6 @@ class BaseModel(db.Model):
 
     @classmethod
     def create(class_, object_dict):
-        print "at create"
         prepared_dict = class_._replace_resource_ids_with_models(object_dict)
         model = class_(**prepared_dict)
         db.session.add(model)
@@ -108,8 +107,13 @@ class BaseModel(db.Model):
                     if id is None:
                         object_dict[relation.key] = None
                     else:
-                        object_dict[relation.key] = relation_class.query.get(
-                            id)
+                        model = relation_class.query.get(id)
+                        if model is None:
+                            raise ValueError(
+                                "The relationship {} has no id {}".format(
+                                    relation.key,
+                                    id))
+                        object_dict[relation.key] = model
 
         return object_dict
 

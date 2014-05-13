@@ -22,6 +22,7 @@ from resource.essay_template import ApplicationEssayTemplateResource
 from resource.user import UserListResource, UserResource
 from resource.user import TeacherListResource, TeacherResource
 from resource.user import StudentListResource, StudentResource
+from resource.user import InvitationListResource, InvitationResource
 
 
 def add_resource_with_endpoint(api, resource_class, path):
@@ -116,3 +117,10 @@ def initialize(app, api_prefix):
     # student
     add_resource_with_endpoint(api, StudentListResource, "/students")
     add_resource_with_endpoint(api, StudentResource, "/students/<int:id>")
+
+    # invitation
+    add_resource_with_endpoint(api, InvitationListResource, "/invitations")
+    add_resource_with_endpoint(
+        api,
+        InvitationResource,
+        "/invitations/<int:id>")
