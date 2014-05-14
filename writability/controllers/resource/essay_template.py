@@ -77,7 +77,7 @@ class ApplicationEssayTemplateResourceManager(EssayTemplateResourceManager):
     def _add_item_fields(self):
         super(ApplicationEssayTemplateResourceManager, self)._add_item_fields()
         self._item_fields.update({
-            "word_count": fields.Integer,
+            "max_words": fields.Integer,
             "university": ResourceField(
                 university.UniversityResourceManager.item_resource_name,
                 absolute=True),

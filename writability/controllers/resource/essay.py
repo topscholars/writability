@@ -29,7 +29,7 @@ class EssayResourceManager(ResourceManager):
             "audience": fields.String,
             "context": fields.String,
             "topic": fields.String,
-            "word_count": fields.Integer,
+            "max_words": fields.Integer,
             "num_of_drafts": fields.Integer,
             "due_date": fields.String,
             "theme": ResourceField(

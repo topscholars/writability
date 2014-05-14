@@ -141,7 +141,7 @@ App.Essay = DS.Model.extend({
     essay_prompt: DS.attr('string'),
     num_of_drafts: DS.attr('number'),
     topic: DS.attr('string'),
-    word_count: DS.attr('number'),
+    max_words: DS.attr('number'),
 
     // relationships
     drafts: DS.hasMany('draft')

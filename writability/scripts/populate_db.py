@@ -171,12 +171,12 @@ class ApplicationEssayTemplatePopulator(Populator):
         uni = columns[0].strip()
         uni_id = self._get_uni_id(uni)
 
-        # word count
-        char_max = columns[1].strip()
-        word_count = columns[2].strip()
-        if not word_count:
-            word_count = int(char_max) / 5
-        word_count = int(word_count)
+        # max words
+        max_chars = columns[1].strip()
+        max_words = columns[2].strip()
+        if not max_words:
+            max_words = int(max_chars) / 5
+        max_words = int(max_words)
 
         # theme
         themecats = columns[3].split(';')
@@ -194,7 +194,7 @@ class ApplicationEssayTemplatePopulator(Populator):
         payload = {
             "application_essay_template": {
                 "university": uni_id,
-                "word_count": word_count,
+                "max_words": max_words,
                 "themes": themes,
                 "essay_prompt": essay_prompt
             }
@@ -238,7 +238,7 @@ class ThemeEssayPopulator(Populator):
             "audience": columns[1].strip(),
             "context": columns[3].strip(),
             "due_date": columns[3].strip(),
-            "word_count": columns[4].strip(),
+            "max_words": columns[4].strip(),
             "topic": columns[5].strip(),
             "num_of_drafts": columns[6].strip(),
             "theme": theme_id

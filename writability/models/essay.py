@@ -25,7 +25,7 @@ class Essay(BaseModel):
     audience = db.Column(db.String)
     context = db.Column(db.String)
     topic = db.Column(db.String)
-    word_count = db.Column(db.Integer)
+    max_words = db.Column(db.Integer)
     num_of_drafts = db.Column(db.Integer)
     due_date = db.Column(db.Date)
 
