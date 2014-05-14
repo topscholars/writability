@@ -220,12 +220,39 @@ class ApplicationEssayTemplatePopulator(Populator):
         return payload["application_essay_template"]["essay_prompt"][0:20]
 
 
+class ThemeEssayPopulator(Populator):
+
+    _PATH = "theme-essays"
+    _FILE_PATH = "data/theme_essays.txt"
+
+    def _construct_payload(self, line):
+        columns = line.split(';')
+
+        theme_essay = {
+            "essay_prompt": columns[0].strip(),
+            "audience": columns[1].strip(),
+            "context": columns[3].strip(),
+            "due_date": columns[3].strip(),
+            "word_count": columns[4].strip(),
+            "topic": columns[5].strip(),
+            "num_of_drafts": columns[6].strip()
+        }
+
+        payload = {"theme_essay": theme_essay}
+
+        return payload
+
+    def _get_title(self, payload):
+        return payload["theme_essay"]["due_date"]
+
+
 def populate_db():
-    RolePopulator()
-   #UniversityPopulator()
-   #ThemePopulator()
-   #ThemeEssayTemplatePopulator()
-   #ApplicationEssayTemplatePopulator()
+#   RolePopulator()
+#   UniversityPopulator()
+#   ThemePopulator()
+#   ThemeEssayTemplatePopulator()
+#   ApplicationEssayTemplatePopulator()
+    ThemeEssayPopulator()
 
 
 populate_db()
