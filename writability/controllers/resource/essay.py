@@ -13,6 +13,7 @@ from .base import ResourceManager, ItemResource, ListResource
 from .base import StatefulResourceManager
 from .fields import ResourceField
 import draft
+import theme
 
 
 class EssayResourceManager(ResourceManager):
@@ -31,6 +32,9 @@ class EssayResourceManager(ResourceManager):
             "word_count": fields.Integer,
             "num_of_drafts": fields.Integer,
             "due_date": fields.String,
+            "theme": ResourceField(
+                theme.ThemeResourceManager.item_resource_name,
+                absolute=True),
             "drafts": fields.List(ResourceField(
                 draft.DraftResourceManager.item_resource_name,
                 absolute=True))

@@ -228,6 +228,11 @@ class ThemeEssayPopulator(Populator):
     def _construct_payload(self, line):
         columns = line.split(';')
 
+        # theme
+        category = columns[7].strip()
+        name = columns[8].strip()
+        theme_id = self._get_theme_id(name, category)
+
         theme_essay = {
             "essay_prompt": columns[0].strip(),
             "audience": columns[1].strip(),
@@ -235,23 +240,31 @@ class ThemeEssayPopulator(Populator):
             "due_date": columns[3].strip(),
             "word_count": columns[4].strip(),
             "topic": columns[5].strip(),
-            "num_of_drafts": columns[6].strip()
+            "num_of_drafts": columns[6].strip(),
+            "theme": theme_id
         }
 
         payload = {"theme_essay": theme_essay}
 
         return payload
 
+    def _get_theme_id(self, theme_name, category_name):
+        _THEME_QUERY_URL = "{}themes?".format(ROOT_URL)
+        _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
+        url = _THEME_QUERY_URL + _QUERY_STRING
+
+        return self._get_id_with_query_url(url, "themes")
+
     def _get_title(self, payload):
         return payload["theme_essay"]["due_date"]
 
 
 def populate_db():
-#   RolePopulator()
-#   UniversityPopulator()
-#   ThemePopulator()
-#   ThemeEssayTemplatePopulator()
-#   ApplicationEssayTemplatePopulator()
+    RolePopulator()
+    UniversityPopulator()
+    ThemePopulator()
+    ThemeEssayTemplatePopulator()
+    ApplicationEssayTemplatePopulator()
     ThemeEssayPopulator()
 
 

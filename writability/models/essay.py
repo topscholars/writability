@@ -52,6 +52,8 @@ class ThemeEssay(StatefulModel, Essay):
     proposed_topics = db.Column(SerializableStringList)
 
     # relationships
+    theme_id = db.Column(db.Integer, db.ForeignKey("theme.id"))
+    theme = db.relationship("Theme")
     application_essays = db.relationship(
         "ApplicationEssay",
         secondary=essay_associations,
