@@ -17,6 +17,7 @@ from .base import StatefulResourceManager
 from .fields import ResourceField
 import essay
 import university
+import role
 
 
 class UserResourceManager(StatefulResourceManager):
@@ -30,7 +31,10 @@ class UserResourceManager(StatefulResourceManager):
         self._item_fields.update({
             "email": fields.String,
             "first_name": fields.String,
-            "last_name": fields.String
+            "last_name": fields.String,
+            "roles": fields.List(ResourceField(
+                role.RoleResourceManager.item_resource_name,
+                absolute=True))
         })
 
 

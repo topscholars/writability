@@ -15,17 +15,19 @@ from logging import Formatter, FileHandler
 # from forms import LoginForm, RegisterForm, ForgotForm
 
 from models.db import init_app
-from controllers import frontend, api
+from controllers import frontend, api, security
 
 # ----------------------------------------------------------------------------#
 # App Config.
 # ----------------------------------------------------------------------------#
 
 app = Flask(__name__)
+
 sslify = SSLify(app, subdomains=True)
 
 app.config.from_object('config')
-init_app(app)
+
+init_app(app, security.security_forms)
 
 # Automatically tear down SQLAlchemy.
 '''
