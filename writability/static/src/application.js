@@ -10,7 +10,7 @@ window.App = Ember.Application.create({
     // step made while transitioning into a route, including
     // `beforeModel`, `model`, and `afterModel` hooks, and
     // information about redirects and aborted transitions
-    // LOG_TRANSITIONS_INTERNAL: true
+    LOG_TRANSITIONS_INTERNAL: true
 });
 
 App.ApplicationController = Ember.ObjectController.extend({

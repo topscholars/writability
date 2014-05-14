@@ -10,7 +10,7 @@ window.App = Ember.Application.create({
     // step made while transitioning into a route, including
     // `beforeModel`, `model`, and `afterModel` hooks, and
     // information about redirects and aborted transitions
-    // LOG_TRANSITIONS_INTERNAL: true
+    LOG_TRANSITIONS_INTERNAL: true
 });
 
 App.ApplicationController = Ember.ObjectController.extend({
@@ -154,6 +154,12 @@ App.ThemeEssay = App.Essay.extend({
 });
 
 /* globals App, DS */
+App.Role = DS.Model.extend({
+    // properties
+    name: DS.attr('string')
+});
+
+/* globals App, DS */
 App.University = DS.Model.extend({
     // properties
     name: DS.attr('string'),
@@ -166,6 +172,7 @@ App.User = DS.Model.extend({
     email: DS.attr('string'),
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
+    roles: DS.hasMany('role', {async: true})
 });
 
 App.Teacher = App.User.extend({
@@ -467,6 +474,29 @@ App.Router.map(function () {
 App.ApplicationRoute = Ember.Route.extend({
     model: function () {
         return this.store.find('user', 0);
+    }
+});
+
+App.IndexRoute = Ember.Route.extend({
+
+    model: function () {
+        return this.store.find('user', 0);
+    },
+
+    redirect: function (model, transition) {
+        var route = this;
+        model.get('roles').then(function (roles) {
+            // use first role to determine home page
+            var roleName = roles.objectAt(0).get('name');
+
+            if (roleName === 'student') {
+                // students see their essays
+                route.transitionTo('essays');
+            } else if (roleName === 'teacher') {
+                // teachers see their students
+                route.transitionTo('students');
+            }
+        });
     }
 });
 
