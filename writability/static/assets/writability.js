@@ -199,7 +199,7 @@ App.Student = App.User.extend({
     // relationships
     teacher: DS.belongsTo('teacher'),
     essays: DS.hasMany('essay'),
-    universities: DS.hasMany('university', {async: true})
+    universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there
 });
 
 App.DraftController = Ember.ObjectController.extend({
@@ -327,6 +327,74 @@ App.EssaysView = App.ListView.extend({
     title: 'Essays',
     //sections: ['To do', 'Not to do'],
     listItem: App.EssayItemView
+});
+
+App.StudentView = App.DetailsView.extend({
+    selectedTab: 'overview',
+
+    tabs: [
+        {key: 'overview', title: 'Overview'},
+        {key: 'application', title: 'Applications'},
+        //{key: 'archive', title: 'Archive'},
+    ],
+
+    didInsertElement: function () {
+        Ember.$('#tab-' + this.selectedTab).addClass('is-selected');
+    },
+
+    actions: {
+        select: function (tabKey) {
+            //TODO: make this cleaner
+            Ember.$('.tab-header').each(function (index, el) {
+                var elID = Ember.$(el).attr('id');
+                if (elID === ("tab-" + tabKey)) {
+                    Ember.$(el).addClass("is-selected");
+                } else {
+                    Ember.$(el).removeClass("is-selected");
+                }
+            });
+        }
+    }
+});
+
+App.StudentOverviewTab = Ember.View.extend({
+    name: "Overview",
+    templateName: "modules/_student-details-overview"
+});
+
+App.StudentApplicationsTab = Ember.View.extend({
+    name: "Applications",
+    templateName: "modules/_student-details-overview"
+});
+
+App.StudentTabs = Ember.ContainerView.extend({
+    childViews: ['overview'],
+    overview: App.StudentOverviewTab.create(),
+    application: App.StudentApplicationsTab.create()
+});
+
+/* globals App, Ember */
+App.StudentItemView = App.ThinListItem.extend({
+    templateName: "modules/_students-list-item",
+});
+
+App.StudentNewItemView = App.ThinNewItem.extend({
+    templateName: "modules/_students-new-item"
+});
+
+App.StudentsController = Ember.ArrayController.extend({
+    students: function () {
+        return this.store.find('student');
+    }.property(),
+    select: function () {
+        this.send('selectedStudent', this.get('newStudent'));
+    }.observes("newStudent")
+});
+
+App.StudentsView = App.ListView.extend({
+    title: 'Students',
+    listItem: App.StudentItemView,
+    newItem: App.StudentNewItemView
 });
 
 /* globals App, Ember */
@@ -496,6 +564,10 @@ App.Router.map(function () {
         this.resource('essay', {path: '/:id'});
     });
 
+    this.resource('students', function () {
+        this.resource('student', {path: '/:id'});
+    });
+
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 
@@ -532,6 +604,7 @@ App.IndexRoute = Ember.Route.extend({
     }
 });
 
+// Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
         return this.store.find('student', 0).then(function (student) {
@@ -550,6 +623,32 @@ App.UniversitiesRoute = Ember.Route.extend({
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
+            });
+        }
+    }
+});
+// Actions are events. 2 types of events. Within-module (select element in list + update list)  
+                            // and 
+App.StudentsRoute = Ember.Route.extend({
+    model: function () { //
+        return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
+            return teacher.get('students');
+        });
+    },
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('core/modules/header', {outlet: 'header'});
+        this.render({into: 'core/layouts/main', outlet: 'list-module'}); 
+                // needs into explicity because core/layouts/main was rendered within function
+    },
+    actions: {
+        inviteStudent: function (student) {
+            this.store.find('teacher', 0).then(function (teacher) { //returns model ,list of univ
+                var students = teacher.get('students');
+                students.pushObject(student); // pushes univ onto univ list above
+                // Set status to server
+                students.save();  // Ember magic   s.model has a save with 
+                // student.invitation.create
             });
         }
     }
@@ -612,6 +711,10 @@ Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div clas
 Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div class=\"list-style-group\">{{id}} +7</div>\n<div class=\"main-group\">\n    <div class=\"main-line\">Theme</div>\n    <div class=\"sub-line\">Category</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">Start Topic</div>\n    <div class=\"draft-due\">Draft Due: May 3, 2014</div>\n    <div class=\"essay-due\">Essay Due: {{due_date}}</div>\n</div>\n");
+
+Ember.TEMPLATES["modules/_students-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
+
+Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.TextField placeholder=\"Student's Email\"}}\n\n        <div>\n          <!-- button -->\n        </div>\n    </div>\n</div>");
 
 Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
