@@ -29,3 +29,4 @@ from theme import Theme
 from essay_template import EssayTemplate
 from user import User, Invitation
 from role import Role
+from review import Review

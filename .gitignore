@@ -1,3 +1,6 @@
+.env
+node_modules/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -6,7 +9,12 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.env
+*sublime-project
+*sublime-workspace
 .Python
+venv/
+venv_writ/
 env/
 bin/
 build/
@@ -21,11 +29,11 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-venv/
 
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+scratch.txt
 
 # Unit test / coverage reports
 htmlcov/

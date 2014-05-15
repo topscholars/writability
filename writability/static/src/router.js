@@ -9,6 +9,10 @@ App.Router.map(function () {
         this.resource('essay', {path: '/:id'});
     });
 
+    this.resource('students', function () {
+        this.resource('student', {path: '/:id'});
+    });
+
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 
@@ -45,6 +49,7 @@ App.IndexRoute = Ember.Route.extend({
     }
 });
 
+// Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
         return this.store.find('student', 0).then(function (student) {
@@ -63,6 +68,35 @@ App.UniversitiesRoute = Ember.Route.extend({
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
+            });
+        }
+    }
+});
+// Actions are events. 2 types of events. Within-module (select element in list + update list)  
+                            // and 
+App.StudentsRoute = Ember.Route.extend({
+    model: function () { //
+        return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
+
+            //concatenate invites and students
+            return teacher.get('students');
+        });
+    },
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('core/modules/header', {outlet: 'header'});
+        this.render({into: 'core/layouts/main', outlet: 'list-module'}); 
+                // needs into explicity because core/layouts/main was rendered within function
+    },
+    actions: {
+        // TODO This should create an invitation model and add to list
+        inviteStudent: function (student) {
+            this.store.find('teacher', 0).then(function (teacher) { 
+                var students = teacher.get('students');
+                students.pushObject(student); 
+                // Set status to server
+                students.save();  // Ember magic   s.model has a save with 
+                // student.invitation.create
             });
         }
     }
