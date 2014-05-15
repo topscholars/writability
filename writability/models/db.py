@@ -9,13 +9,13 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 
 
-def init_app(app):
+def init_app(app, security_forms):
     db.init_app(app)
     with app.app_context():
         # Extensions like Flask-SQLAlchemy now know what the "current" app
         # is while within this block. Therefore, you can now run........
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-        security = Security(app, user_datastore)
+        Security(app, user_datastore, **security_forms)
         db.create_all()
 
 db = SQLAlchemy()

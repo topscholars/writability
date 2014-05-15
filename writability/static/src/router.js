@@ -22,6 +22,29 @@ App.ApplicationRoute = Ember.Route.extend({
     }
 });
 
+App.IndexRoute = Ember.Route.extend({
+
+    model: function () {
+        return this.store.find('user', 0);
+    },
+
+    redirect: function (model, transition) {
+        var route = this;
+        model.get('roles').then(function (roles) {
+            // use first role to determine home page
+            var roleName = roles.objectAt(0).get('name');
+
+            if (roleName === 'student') {
+                // students see their essays
+                route.transitionTo('essays');
+            } else if (roleName === 'teacher') {
+                // teachers see their students
+                route.transitionTo('students');
+            }
+        });
+    }
+});
+
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
         return this.store.find('student', 0).then(function (student) {

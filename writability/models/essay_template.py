@@ -58,7 +58,7 @@ class ApplicationEssayTemplate(EssayTemplate):
         db.Integer,
         db.ForeignKey('essay_template.id'),
         primary_key=True)
-    word_count = db.Column(db.Integer)
+    max_words = db.Column(db.Integer)
 
     # optional fields
     # relationships
