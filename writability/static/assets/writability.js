@@ -129,7 +129,8 @@ App.Draft = DS.Model.extend({
     state: DS.attr('string'),
 
     // relationships
-    essay: DS.belongsTo('essay')
+    essay: DS.belongsTo('essay'),
+    review: DS.belongsTo('review')
 });
 
 /* globals App, DS */
@@ -153,6 +154,20 @@ App.ThemeEssay = App.Essay.extend({
     state: DS.attr('string')
 });
 
+App.Review = DS.Model.extend({
+    // properties
+    text: DS.attr('string'),
+    is_draft_approved: DS.attr('boolean'),
+    due_date: DS.attr('string'),
+    review_type: DS.attr('string'),
+
+    next_states: DS.attr('array', {readOnly: true}),
+    state: DS.attr('string'),
+
+    // relationships
+    draft: DS.belongsTo('draft'),
+    teacher: DS.belongsTo('teacher')
+});
 /* globals App, DS */
 App.Role = DS.Model.extend({
     // properties
@@ -178,7 +193,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student')
+    students: DS.hasMany('student'),
+    reviews: DS.hasMany('review')
 });
 
 App.Student = App.User.extend({
@@ -213,6 +229,12 @@ App.DraftController = Ember.ObjectController.extend({
         startedWriting: function (cb) {
             var draft = this.get('model');
             draft.reload().then(cb, this.onFailure);
+        },
+        /*
+         * Clicking the Details / Review button toggles the current displayed item.
+         */
+        editorToggle: function () {
+            alert("Hello");
         }
     },
 });
@@ -577,6 +599,8 @@ Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"
 
 Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
+Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
+
 Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div class=\"list-style-group\">{{id}} +7</div>\n<div class=\"main-group\">\n    <div class=\"main-line\">Theme</div>\n    <div class=\"sub-line\">Category</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">Start Topic</div>\n    <div class=\"draft-due\">Draft Due: May 3, 2014</div>\n    <div class=\"essay-due\">Essay Due: {{due_date}}</div>\n</div>\n");
@@ -585,4 +609,4 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button class=\"editor-toggle\">Details</button>\n        <button class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");

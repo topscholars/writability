@@ -11,7 +11,7 @@ from models.draft import Draft
 
 from .base import StatefulResourceManager, ItemResource, ListResource
 from .fields import ResourceField
-import essay
+import essay, review
 
 
 class DraftResourceManager(StatefulResourceManager):
@@ -30,6 +30,9 @@ class DraftResourceManager(StatefulResourceManager):
             "is_final_draft": fields.Boolean,
             "essay": ResourceField(
                 essay.EssayResourceManager.item_resource_name,
+                absolute=True),
+            "review": ResourceField(
+                review.ReviewResourceManager.item_resource_name,
                 absolute=True)
         })
 

@@ -25,7 +25,7 @@ class ReviewResourceManager(StatefulResourceManager):
         self._item_fields.update({
             "text": fields.String,
             "is_draft_approved": fields.Boolean,
-            "due_date": fields.DateTime,
+            "due_date": fields.String,
             "review_type": fields.String,
             "draft": ResourceField(
                 draft.DraftResourceManager.item_resource_name,

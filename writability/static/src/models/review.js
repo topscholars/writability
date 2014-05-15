@@ -9,6 +9,6 @@ App.Review = DS.Model.extend({
     state: DS.attr('string'),
 
     // relationships
-    draft: DS.belongsTo('draft')
+    draft: DS.belongsTo('draft'),
     teacher: DS.belongsTo('teacher')
 });

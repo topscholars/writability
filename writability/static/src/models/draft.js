@@ -9,6 +9,6 @@ App.Draft = DS.Model.extend({
     state: DS.attr('string'),
 
     // relationships
-    essay: DS.belongsTo('essay')
+    essay: DS.belongsTo('essay'),
     review: DS.belongsTo('review')
 });
