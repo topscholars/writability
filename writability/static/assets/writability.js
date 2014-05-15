@@ -94,6 +94,18 @@ App.EditorView = Ember.View.extend({
     templateName: 'core/modules/editor'
 });
 
+/* globals App, Ember */
+App.HeaderView = Ember.View.extend({
+    tagName: 'header',
+    elementId: 'header',
+    templateName: 'core/modules/header',
+    title: 'Writability'
+});
+
+App.NavHeaderView = App.HeaderView.extend({
+
+});
+
 App.ListView = Ember.View.extend({
     templateName: 'core/modules/list',
     title: null,
@@ -509,7 +521,7 @@ App.UniversitiesRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
     },
 
@@ -532,7 +544,7 @@ App.EssaysRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
     }
 });
@@ -558,12 +570,12 @@ App.DraftRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/editor');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
     }
 });
 
-Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("<header id=\"header\">{{outlet header}}</header>\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\">\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
+Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\">\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
 
 Ember.TEMPLATES["core/layouts/editor"] = Ember.Handlebars.compile("<div id=\"editor-layout\" class=\"layout\">\n    <section id=\"editor-module\" class=\"module\">{{outlet editor-module}}</section>\n</div>\n");
 

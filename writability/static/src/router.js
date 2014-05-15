@@ -54,7 +54,7 @@ App.UniversitiesRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
     },
 
@@ -77,7 +77,7 @@ App.EssaysRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
     }
 });
@@ -103,7 +103,7 @@ App.DraftRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/editor');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
     }
 });
