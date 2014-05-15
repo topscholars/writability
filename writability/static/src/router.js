@@ -77,6 +77,8 @@ App.UniversitiesRoute = Ember.Route.extend({
 App.StudentsRoute = Ember.Route.extend({
     model: function () { //
         return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
+
+            //concatenate invites and students
             return teacher.get('students');
         });
     },
@@ -87,10 +89,11 @@ App.StudentsRoute = Ember.Route.extend({
                 // needs into explicity because core/layouts/main was rendered within function
     },
     actions: {
+        // TODO This should create an invitation model and add to list
         inviteStudent: function (student) {
-            this.store.find('teacher', 0).then(function (teacher) { //returns model ,list of univ
+            this.store.find('teacher', 0).then(function (teacher) { 
                 var students = teacher.get('students');
-                students.pushObject(student); // pushes univ onto univ list above
+                students.pushObject(student); 
                 // Set status to server
                 students.save();  // Ember magic   s.model has a save with 
                 // student.invitation.create

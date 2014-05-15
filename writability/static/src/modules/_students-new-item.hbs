@@ -1,9 +1,9 @@
 <div class="main-group">
     <div class="main-line">
-        {{view Ember.TextField placeholder="Student's Email"}}
+        {{view Ember.TextField placeholder="Student's Email" valueBinding="invitedStudentEmail"}}
 
-        <div>
-          <!-- button -->
-        </div>
+        <span {{action "inviteStudentCont"}} class="inviteStudent">+</span>
+
+          <!-- onclick="alert('Hit the invitation endpoint!'); return false;"  -->
     </div>
 </div>

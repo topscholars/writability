@@ -8,12 +8,19 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 });
 
 App.StudentsController = Ember.ArrayController.extend({
+    invitedStudentEmail: null,
+
     students: function () {
         return this.store.find('student');
     }.property(),
-    select: function () {
-        this.send('selectedStudent', this.get('newStudent'));
-    }.observes("newStudent")
+    
+    actions: { 
+        inviteStudentCont: function () {
+            // This should create invitation model
+            // Should also push the new invitation object to the /students list
+            // this.send('invitedStudent', this.get('newStudent'));
+        }.observes("newStudent")
+    }
 });
 
 App.StudentsView = App.ListView.extend({
