@@ -10,4 +10,5 @@ App.Draft = DS.Model.extend({
 
     // relationships
     essay: DS.belongsTo('essay')
+    review: DS.belongsTo('review')
 });

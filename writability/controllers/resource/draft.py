@@ -23,7 +23,7 @@ class DraftResourceManager(StatefulResourceManager):
     def _add_item_fields(self):
         super(DraftResourceManager, self)._add_item_fields()
         self._item_fields.update({
-            "plan_text": fields.String,
+            "plain_text": fields.String,
             "formatted_text": fields.String,
             "word_count": fields.Integer,
             "due_date": fields.String,
