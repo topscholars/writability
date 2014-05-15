@@ -336,18 +336,25 @@ App.UniversityItemView = App.ThinListItem.extend({
 
 
 App.UniversityNewItemView = App.ThinNewItem.extend({
-    templateName: "modules/_universities-new-item"
+    templateName: "modules/_universities-new-item",
 });
 
 
 App.UniversitiesController = Ember.ArrayController.extend({
 
+    // set select for new item
+    defaultValueOption: "3",
+
     universities: function () {
         return this.store.find('university');
     }.property(),
 
-    select: function () {
-        this.send('selectedUniversity', this.get('newUniversity'));
+    select: function (ev) {
+        var newUniversity = this.get('newUniversity');
+        if (newUniversity) {
+            this.send('selectedUniversity', this.get('newUniversity'));
+            this.set('defaultValueOption', null);
+        }
     }.observes("newUniversity")
 });
 
@@ -545,9 +552,7 @@ App.UniversitiesRoute = Ember.Route.extend({
                 universities.pushObject(university);
             });
         }
-
     }
-
 });
 
 App.EssaysRoute = Ember.Route.extend({
@@ -610,7 +615,7 @@ Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div cl
 
 Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
+Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button class=\"editor-toggle\">Details</button>\n        <button class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 

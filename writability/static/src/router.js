@@ -65,9 +65,7 @@ App.UniversitiesRoute = Ember.Route.extend({
                 universities.pushObject(university);
             });
         }
-
     }
-
 });
 
 App.EssaysRoute = Ember.Route.extend({
