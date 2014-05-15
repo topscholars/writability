@@ -7,5 +7,6 @@ App.HeaderView = Ember.View.extend({
 });
 
 App.NavHeaderView = App.HeaderView.extend({
-
+    templateName: 'core/modules/nav_header',
+    classNames: ['nav-header']
 });

@@ -23,6 +23,7 @@
 @greyLighter: rgb(245, 243, 243);
 @greyLight: rgb(233, 232, 231);
 @grey: rgb(175, 173, 173);
+@greyDark: rgb(100, 100, 100);
 @green: rgb(84, 179, 72);
 
 /***********************************************************
@@ -281,6 +282,29 @@ button, input[type="checkbox"] {
     }
 }
 
+.nav-button {
+    background-color: @black;
+    border: 0px;
+    color: @white;
+    height: 100%;
+    width: 100%;
+
+    &:hover {
+        background-color: @black;
+        cursor: pointer;
+        color: @grey;
+    }
+
+    &:active {
+        background-color: @greyDark;
+        color: @black;
+    }
+
+    &:disabled {
+        visibility: hidden;
+    }
+}
+
 .icon {
     .background-image-wrapper(45px, 45px, 'icon.gif', @white);
 }
@@ -394,6 +418,25 @@ button, input[type="checkbox"] {
     .header-title {
         display: table-cell;
         vertical-align: middle;
+    }
+}
+
+/***********************************************************
+* CORE MODULE: NAV HEADER
+************************************************************/
+.nav-header  {
+    .nav-section {
+        height: 100%;
+    }
+
+    .left-nav {
+        border-right: @thinBorder @greyDark solid;
+        float: left;
+    }
+
+    .right-nav {
+        border-left: @thinBorder @greyDark solid;
+        float: right;
     }
 }
 

@@ -54,7 +54,7 @@ App.UniversitiesRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('Header', {outlet: 'header'});
+        this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
     },
 

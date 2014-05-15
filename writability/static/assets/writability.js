@@ -103,7 +103,8 @@ App.HeaderView = Ember.View.extend({
 });
 
 App.NavHeaderView = App.HeaderView.extend({
-
+    templateName: 'core/modules/nav_header',
+    classNames: ['nav-header']
 });
 
 App.ListView = Ember.View.extend({
@@ -356,6 +357,18 @@ App.UniversitiesView = App.ListView.extend({
     newItem: App.UniversityNewItemView
 });
 
+/* globals App, Ember */
+App.Button = Ember.View.extend({
+    tagName: 'button',
+    templateName: 'partials/button',
+    text: 'Submit'
+});
+
+App.NavButton = App.Button.extend({
+    classNames: ['nav-button'],
+    text: 'Next'
+});
+
 App.TextEditor = Ember.TextArea.extend({
 
     actions: {
@@ -521,7 +534,7 @@ App.UniversitiesRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('Header', {outlet: 'header'});
+        this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
     },
 
@@ -585,9 +598,11 @@ Ember.TEMPLATES["core/modules/details"] = Ember.Handlebars.compile("<nav class=\
 
 Ember.TEMPLATES["core/modules/editor"] = Ember.Handlebars.compile("\n");
 
-Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">Writability</div>\n");
+Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">{{view.title}}</div>\n");
 
 Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
+
+Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.NavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.NavButton text=\"Next >\"}}</div>\n");
 
 Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n");
 
@@ -598,3 +613,5 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button class=\"editor-toggle\">Details</button>\n        <button class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+
+Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}\n");
