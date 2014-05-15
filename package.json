@@ -10,7 +10,10 @@
     "ember-template-compiler": "~1.5.1",
     "grunt-ember-templates": "~0.4.20",
     "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-concat": "~0.4.0"
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-less": "~0.11.0"
   },
-  "engines": {"npm": "1.4.10"}
+  "engines": {
+    "npm": "1.4.10"
+  }
 }

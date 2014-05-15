@@ -12,6 +12,13 @@ module.exports = function(grunt) {
             concat: {
                 files: 'writability/static/src/**/*.js',
                 tasks: ['concat']
+            },
+            styles: {
+                files: ['writability/static/style/**/*.less'],
+                tasks: ['less'],
+                options: {
+                    nospawn: true
+                }
             }
         },
         emberTemplates: {
@@ -47,13 +54,27 @@ module.exports = function(grunt) {
                 ],
                 // the location of the resulting JS file
                 dest: 'writability/static/assets/vendors.js'
+            },
+        },
+        less: {
+            development: {
+                options: {
+                    compress: true,
+                    yuicompress: true,
+                    optimization: 2
+                },
+                files: {
+                // target.css file: source.less file
+                "writability/static/style/css/main.css": "writability/static/style/main.less"
+                }
             }
-        }
+        },
     });
 
     grunt.loadNpmTasks('grunt-ember-templates');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
-    grunt.registerTask('default', ['emberTemplates', 'concat']);
+    grunt.registerTask('default', ['emberTemplates', 'concat', 'less']);
 };
