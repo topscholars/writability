@@ -142,7 +142,8 @@ App.Draft = DS.Model.extend({
     state: DS.attr('string'),
 
     // relationships
-    essay: DS.belongsTo('essay')
+    essay: DS.belongsTo('essay'),
+    review: DS.belongsTo('review')
 });
 
 /* globals App, DS */
@@ -166,6 +167,20 @@ App.ThemeEssay = App.Essay.extend({
     state: DS.attr('string')
 });
 
+App.Review = DS.Model.extend({
+    // properties
+    text: DS.attr('string'),
+    is_draft_approved: DS.attr('boolean'),
+    due_date: DS.attr('string'),
+    review_type: DS.attr('string'),
+
+    next_states: DS.attr('array', {readOnly: true}),
+    state: DS.attr('string'),
+
+    // relationships
+    draft: DS.belongsTo('draft'),
+    teacher: DS.belongsTo('teacher')
+});
 /* globals App, DS */
 App.Role = DS.Model.extend({
     // properties
@@ -191,7 +206,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student')
+    students: DS.hasMany('student'),
+    reviews: DS.hasMany('review')
 });
 
 App.Student = App.User.extend({
@@ -226,6 +242,12 @@ App.DraftController = Ember.ObjectController.extend({
         startedWriting: function (cb) {
             var draft = this.get('model');
             draft.reload().then(cb, this.onFailure);
+        },
+        /*
+         * Clicking the Details / Review button toggles the current displayed item.
+         */
+        editorToggle: function () {
+            alert("Hello");
         }
     },
 });

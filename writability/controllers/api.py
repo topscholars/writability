@@ -11,6 +11,7 @@ from resource.essay import ThemeEssayListResource, ThemeEssayResource
 from resource.essay import ApplicationEssayListResource
 from resource.essay import ApplicationEssayResource
 from resource.draft import DraftListResource, DraftResource
+from resource.review import ReviewListResource, ReviewResource
 from resource.university import UniversityListResource, UniversityResource
 from resource.theme import ThemeListResource, ThemeResource
 from resource.essay_template import EssayTemplateListResource
@@ -66,6 +67,10 @@ def initialize(app, api_prefix):
     # draft
     add_resource_with_endpoint(api, DraftListResource, "/drafts")
     add_resource_with_endpoint(api, DraftResource, "/drafts/<int:id>")
+
+    # review
+    add_resource_with_endpoint(api, ReviewListResource, "/reviews")
+    add_resource_with_endpoint(api, ReviewResource, "/reviews/<int:id>")
 
     # university
     add_resource_with_endpoint(api, UniversityListResource, "/universities")

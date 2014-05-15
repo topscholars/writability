@@ -10,7 +10,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student')
+    students: DS.hasMany('student'),
+    reviews: DS.hasMany('review')
 });
 
 App.Student = App.User.extend({
