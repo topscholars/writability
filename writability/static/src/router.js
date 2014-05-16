@@ -84,7 +84,7 @@ App.StudentsRoute = Ember.Route.extend({
     },
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'}); 
                 // needs into explicity because core/layouts/main was rendered within function
     },
