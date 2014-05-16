@@ -54,8 +54,9 @@ App.IndexRoute = Ember.Route.extend({
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
-        return this.store.find('student', 0).then(function (student) {
-            return student.get('universities');
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
         });
     },
 
@@ -63,27 +64,37 @@ App.UniversitiesRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        /* this.render(
+            'applicationEssayTemplates',
+            {into: 'core/layouts/main', outlet: 'details-module'}); */
     },
 
     actions: {
         selectedUniversity: function (university) {
+            var that = this;
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
+                //that.render('applicationEssayTemplates', {outlet: 'details-module'});
             });
         }
     }
 });
 
 App.UniversitiesIndexRoute = Ember.Route.extend({
+    controllerName: 'applicationEssayTemplates',
+
     model: function () {
-        return this.store.find('student', 0).then(function (student) {
-            return student.get('universities');
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
         });
     },
 
     renderTemplate: function () {
-        this.render('applicationEssayTemplates', {outlet: 'details-module'});
+        this.render(
+            'applicationEssayTemplates',
+            {outlet: 'details-module'});
     }
 });
 
