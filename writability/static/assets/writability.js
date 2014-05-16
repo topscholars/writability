@@ -167,6 +167,15 @@ App.ThemeEssay = App.Essay.extend({
     state: DS.attr('string')
 });
 
+/* globals App, DS */
+App.Invitation = DS.Model.extend({
+    // properties
+    id: DS.attr('integer'),
+    email: DS.attr('string'),
+    is_registered: DS.attr('boolean'),
+    teacher: DS.belongsTo('teacher')
+});
+
 App.Review = DS.Model.extend({
     // properties
     text: DS.attr('string'),
@@ -407,10 +416,6 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 App.StudentsController = Ember.ArrayController.extend({
     invitedStudentEmail: null,
 
-    students: function () {
-        return this.store.find('student');
-    }.property(),
-    
     actions: { 
         inviteStudentCont: function () {
             // This should create invitation model
@@ -662,13 +667,14 @@ App.StudentsRoute = Ember.Route.extend({
     model: function () { //
         return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
 
-            //concatenate invites and students
+            console.log(teacher.get('students'));
+                        //concatenate invites and students
             return teacher.get('students');
         });
     },
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('core/modules/header', {outlet: 'header'});
+        this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'}); 
                 // needs into explicity because core/layouts/main was rendered within function
     },
@@ -748,7 +754,7 @@ Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div cl
 
 Ember.TEMPLATES["modules/_students-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.TextField placeholder=\"Student's Email\" valueBinding=\"invitedStudentEmail\"}}\n\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n\n          <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>");
+Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.TextField placeholder=\"Student's Email\" valueBinding=\"invitedStudentEmail\"}}\n\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n\n        <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>");
 
 Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
