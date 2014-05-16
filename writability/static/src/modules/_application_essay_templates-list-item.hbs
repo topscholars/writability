@@ -1,8 +1,5 @@
-<div class="main-group">
-    <div class="main-line">
-    {{#each t in application_essay_templates}}
-      <br /><br />
-      <strong>{{../name}}</strong>: {{t.essay_prompt}}
-    {{/each}}
-    </div>
-</div>
+
+{{#each t in application_essay_templates }}
+    <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}
+    <br />
+{{/each}}

@@ -1,6 +1,6 @@
 /* globals App, Ember */
-App.ApplicationEssayTemplatesItemView = App.ThinListItem.extend({
-    templateName: "modules/_application_essay_templates-list-item",
+App.ApplicationEssayTemplatesItemView = App.FakeListItem.extend({
+    templateName: "modules/_application_essay_templates-list-item"
 });
 
 
@@ -12,5 +12,5 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
     title: 'Application Essays',
     listItem: App.ApplicationEssayTemplatesItemView,
     newItem: null
-    
+
 });

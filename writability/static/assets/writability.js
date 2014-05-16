@@ -86,6 +86,29 @@ App.ArrayTransform = DS.Transform.extend({
     }
 });
 
+Ember.Handlebars.helper('dotdotfifty', function(str) {
+  if (str)
+    if (str.length > 50)
+      return str.substring(0,50) + '...';
+  return str;
+});
+Ember.Handlebars.helper("debug", function(optionalValue) {
+  console.log("Current Context");
+  console.log("====================");
+  console.log(this);
+ 
+  if (optionalValue) {
+    console.log("Value");
+    console.log("====================");
+    console.log(optionalValue);
+  }
+});
+//Handlebars.registerHelper('dotdotfifty', function(str) {
+//  if (str.length > 50)
+//    return str.substring(0,50) + '...';
+//  return str;
+//});
+
 App.DetailsView = Ember.View.extend({
     templateName: 'core/modules/details',
     
@@ -122,9 +145,13 @@ App.ListView = Ember.View.extend({
     classNames: ["module", "list-module"]
 });
 
+App.FakeListItem = Ember.View.extend({
+    classNames: ["fake-list-item"]
+});
+
 App.ListItem = Ember.View.extend({
     tagName: "li",
-    classNames: ["list-item"],
+    classNames: ["list-item"]
 });
 
 App.ThinListItem = App.ListItem.extend({
@@ -264,8 +291,8 @@ App.Student = App.User.extend({
 });
 
 /* globals App, Ember */
-App.ApplicationEssayTemplatesItemView = App.ThinListItem.extend({
-    templateName: "modules/_application_essay_templates-list-item",
+App.ApplicationEssayTemplatesItemView = App.FakeListItem.extend({
+    templateName: "modules/_application_essay_templates-list-item"
 });
 
 
@@ -277,8 +304,9 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
     title: 'Application Essays',
     listItem: App.ApplicationEssayTemplatesItemView,
     newItem: null
-    
+
 });
+
 App.DraftController = Ember.ObjectController.extend({
 
     formattedTextObserver: function () {
@@ -824,7 +852,7 @@ Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"mo
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.NavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.NavButton text=\"Next >\"}}</div>\n");
 
-Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n    {{#each t in application_essay_templates}}\n      <br /><br />\n      <strong>{{../name}}</strong>: {{t.essay_prompt}}\n    {{/each}}\n    </div>\n</div>");
+Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    <br />\n{{/each}}");
 
 Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
 
