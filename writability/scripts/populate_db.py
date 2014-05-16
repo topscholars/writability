@@ -6,7 +6,7 @@ import requests
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-ROOT_URL = "http://localhost:5000/api/"
+ROOT_URL = "http://localhost:{}/api/".format(os.environ.get("PORT", "5000"))
 HEADERS = {'Content-type': 'application/json'}
 
 class Populator(object):
