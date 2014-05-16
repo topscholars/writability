@@ -22,7 +22,7 @@ Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div cl
 
 Ember.TEMPLATES["modules/_students-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.TextField placeholder=\"Student's Email\" valueBinding=\"invitedStudentEmail\"}}\n\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n\n          <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>");
+Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.TextField placeholder=\"Student's Email\" valueBinding=\"invitedStudentEmail\"}}\n\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n\n        <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>");
 
 Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
