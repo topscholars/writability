@@ -14,7 +14,7 @@ Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"mo
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.NavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.NavButton text=\"Next >\"}}</div>\n");
 
-Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n    {{#each t in application_essay_templates}}\n      <br /><br />\n      <strong>{{../name}}</strong>: {{t.essay_prompt}}\n    {{/each}}\n    </div>\n</div>");
+Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    <br />\n{{/each}}");
 
 Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
 

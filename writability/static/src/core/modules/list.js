@@ -8,9 +8,13 @@ App.ListView = Ember.View.extend({
     classNames: ["module", "list-module"]
 });
 
+App.FakeListItem = Ember.View.extend({
+    classNames: ["fake-list-item"]
+});
+
 App.ListItem = Ember.View.extend({
     tagName: "li",
-    classNames: ["list-item"],
+    classNames: ["list-item"]
 });
 
 App.ThinListItem = App.ListItem.extend({
