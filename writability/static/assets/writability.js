@@ -218,10 +218,17 @@ App.Role = DS.Model.extend({
 });
 
 /* globals App, DS */
+App.Theme = DS.Model.extend({
+    // properties
+    name: DS.attr('string'),
+    category: DS.attr('string')
+});
+/* globals App, DS */
 App.University = DS.Model.extend({
     // properties
     name: DS.attr('string'),
     // logo_url: DS.attr('string'),
+    application_essay_templates: DS.hasMany('application_essay_template', {async: true})
 });
 
 /* globals App, DS */
@@ -256,20 +263,13 @@ App.ApplicationEssayTemplatesItemView = App.ThinListItem.extend({
 
 App.ApplicationEssayTemplatesController = Ember.ArrayController.extend({
 
-    content: function () {
-        var universities = this.get('model').get('universities');
-        var templates = [];
-        universities.forEach(function (item, index) {
-            templates.update(item.get('application_essay_templates'));
-        });
-
-    }.property('universities')
 });
 
 App.ApplicationEssayTemplatesView = App.ListView.extend({
     title: 'Application Essays',
     listItem: App.ApplicationEssayTemplatesItemView,
     newItem: null
+    
 });
 App.DraftController = Ember.ObjectController.extend({
 
@@ -687,8 +687,9 @@ App.IndexRoute = Ember.Route.extend({
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
-        return this.store.find('student', 0).then(function (student) {
-            return student.get('universities');
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
         });
     },
 
@@ -696,27 +697,37 @@ App.UniversitiesRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        /* this.render(
+            'applicationEssayTemplates',
+            {into: 'core/layouts/main', outlet: 'details-module'}); */
     },
 
     actions: {
         selectedUniversity: function (university) {
+            var that = this;
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
+                //that.render('applicationEssayTemplates', {outlet: 'details-module'});
             });
         }
     }
 });
 
 App.UniversitiesIndexRoute = Ember.Route.extend({
+    controllerName: 'applicationEssayTemplates',
+
     model: function () {
-        return this.store.find('student', 0).then(function (student) {
-            return student.get('universities');
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
         });
     },
 
     renderTemplate: function () {
-        this.render('applicationEssayTemplates', {outlet: 'details-module'});
+        this.render(
+            'applicationEssayTemplates',
+            {outlet: 'details-module'});
     }
 });
 
@@ -805,7 +816,7 @@ Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"mo
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.NavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.NavButton text=\"Next >\"}}</div>\n");
 
-Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">{{id}}</div>\n</div>");
+Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n    {{#each t in application_essay_templates}}\n      <br /><br />\n      <strong>{{../name}}</strong>: {{t.essay_prompt}}\n    {{/each}}\n    </div>\n</div>");
 
 Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
 
