@@ -315,7 +315,7 @@ button, input[type="checkbox"] {
 #main-layout {
     background-color: @greyLighter;
 
-    .module {
+    .outlet {
         width: 50%;
         min-width: 480px;
     }
@@ -440,14 +440,26 @@ button, input[type="checkbox"] {
     }
 }
 
+/****** CUSTOM ***/
+#right-side {
+    border-left: @thinBorder @grey solid;
+    height: 100%;
+    left: 50%;
+    position: fixed;
+}
+#left-side {
+    position: fixed;
+    left: 0px;
+    height: 100%;
+}
+
 /***********************************************************
 * CORE MODULE: LIST
 ************************************************************/
-#list-module {
+.list-module {
+    .scrollable();
+    
     background-color: @greyLighter;
-    position: absolute;
-    padding-top: @bigMargin;
-    left: 0px;
 
     .module-title {
         .moduleHeaderText();
@@ -525,14 +537,11 @@ button, input[type="checkbox"] {
 /***********************************************************
 * CORE MODULE: DETAILS
 ************************************************************/
-#details-module {
+.details-module {
+
     .vertical-section-shadow();
 
     background-color: @white;
-    border-left: @thinBorder @grey solid;
-    height: 100%;
-    left: 50%;
-    position: fixed;
     z-index: 15;
 
     .details-nav {

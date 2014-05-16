@@ -63,10 +63,10 @@ App.UniversitiesRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
         /* this.render(
             'applicationEssayTemplates',
-            {into: 'core/layouts/main', outlet: 'details-module'}); */
+            {into: 'core/layouts/main', outlet: 'details-module'}); */ //details=right-side-outlet
     },
 
     actions: {
@@ -75,7 +75,7 @@ App.UniversitiesRoute = Ember.Route.extend({
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
-                //that.render('applicationEssayTemplates', {outlet: 'details-module'});
+                //that.render('applicationEssayTemplates', {outlet: 'details-module'});/details=right-side-outlet
             });
         }
     }
@@ -94,7 +94,7 @@ App.UniversitiesIndexRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render(
             'applicationEssayTemplates',
-            {outlet: 'details-module'});
+            {outlet: 'right-side-outlet'});
     }
 });
 
@@ -112,7 +112,7 @@ App.StudentsRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'}); 
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'}); 
                 // needs into explicity because core/layouts/main was rendered within function
     },
     actions: {
@@ -137,7 +137,7 @@ App.EssaysRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
     }
 });
 
@@ -147,7 +147,7 @@ App.EssayRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
-        this.render({outlet: 'details-module'});
+        this.render({outlet: 'right-side-outlet'});
 
         var id = this.controller.get('model').id;
         this.controllerFor('essays').findBy('id', id).send('select');
