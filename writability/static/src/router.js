@@ -16,7 +16,9 @@ App.Router.map(function () {
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 
-    this.resource('universities');
+    this.resource('universities', function () {
+        this.route('/');
+    });
     // no university item resource
 });
 
@@ -72,6 +74,19 @@ App.UniversitiesRoute = Ember.Route.extend({
         }
     }
 });
+
+App.UniversitiesIndexRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('student', 0).then(function (student) {
+            return student.get('universities');
+        });
+    },
+
+    renderTemplate: function () {
+        this.render('applicationEssayTemplates', {outlet: 'details-module'});
+    }
+});
+
 // Actions are events. 2 types of events. Within-module (select element in list + update list)  
                             // and 
 App.StudentsRoute = Ember.Route.extend({

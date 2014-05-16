@@ -167,6 +167,27 @@ App.ThemeEssay = App.Essay.extend({
     state: DS.attr('string')
 });
 
+App.ApplicationEssay = App.Essay.extend({
+});
+
+/* globals App, DS */
+App.EssayTemplate = DS.Model.extend({
+    // properties
+    due_date: DS.attr('string'),
+    essay_prompt: DS.attr('string'),
+});
+
+App.ThemeEssayTemplate = App.EssayTemplate.extend({
+    audience: DS.attr('string'),
+    context: DS.attr('string'),
+    theme: DS.belongsTo('theme', {async: true})
+});
+
+App.ApplicationEssayTemplate = App.EssayTemplate.extend({
+    max_words: DS.attr('string'),
+    university: DS.belongsTo('university', {async: true}),
+    themes: DS.hasMany('theme', {async: true})
+});
 /* globals App, DS */
 App.Invitation = DS.Model.extend({
     // properties
@@ -227,6 +248,29 @@ App.Student = App.User.extend({
     universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there
 });
 
+/* globals App, Ember */
+App.ApplicationEssayTemplatesItemView = App.ThinListItem.extend({
+    templateName: "modules/_application_essay_templates-list-item",
+});
+
+
+App.ApplicationEssayTemplatesController = Ember.ArrayController.extend({
+
+    content: function () {
+        var universities = this.get('model').get('universities');
+        var templates = [];
+        universities.forEach(function (item, index) {
+            templates.update(item.get('application_essay_templates'));
+        });
+
+    }.property('universities')
+});
+
+App.ApplicationEssayTemplatesView = App.ListView.extend({
+    title: 'Application Essays',
+    listItem: App.ApplicationEssayTemplatesItemView,
+    newItem: null
+});
 App.DraftController = Ember.ObjectController.extend({
 
     formattedTextObserver: function () {
@@ -605,7 +649,9 @@ App.Router.map(function () {
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 
-    this.resource('universities');
+    this.resource('universities', function () {
+        this.route('/');
+    });
     // no university item resource
 });
 
@@ -661,6 +707,19 @@ App.UniversitiesRoute = Ember.Route.extend({
         }
     }
 });
+
+App.UniversitiesIndexRoute = Ember.Route.extend({
+    model: function () {
+        return this.store.find('student', 0).then(function (student) {
+            return student.get('universities');
+        });
+    },
+
+    renderTemplate: function () {
+        this.render('applicationEssayTemplates', {outlet: 'details-module'});
+    }
+});
+
 // Actions are events. 2 types of events. Within-module (select element in list + update list)  
                             // and 
 App.StudentsRoute = Ember.Route.extend({
@@ -745,6 +804,8 @@ Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"
 Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.NavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.NavButton text=\"Next >\"}}</div>\n");
+
+Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">{{id}}</div>\n</div>");
 
 Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
 
