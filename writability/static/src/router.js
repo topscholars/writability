@@ -53,6 +53,11 @@ App.IndexRoute = Ember.Route.extend({
 
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
+    setupController: function(controller) {
+        controller.set('backDisabled', true);
+        // controller.set('nextDisabled', true); // Use same for next button in other views
+    },
+
     model: function () {
         return this.store.find('student', 0)
             .then(function (student) {
@@ -62,7 +67,7 @@ App.UniversitiesRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('NavHeader', {outlet: 'header'});
+        this.render('NavHeader', {outlet: 'header'}); // pass in backDisabled
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
         /* this.render(
             'applicationEssayTemplates',
