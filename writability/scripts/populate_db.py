@@ -288,11 +288,11 @@ class ThemeEssayPopulator(Populator):
 
 def populate_db():
     # predefined
-#   RolePopulator()
-#   UniversityPopulator()
-#   ThemePopulator()
-#   ThemeEssayTemplatePopulator()
-#   ApplicationEssayTemplatePopulator()
+    RolePopulator()
+    UniversityPopulator()
+    ThemePopulator()
+    ThemeEssayTemplatePopulator()
+    ApplicationEssayTemplatePopulator()
     # custom data
     UserPopulator()
     #ThemeEssayPopulator()

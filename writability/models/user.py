@@ -43,16 +43,18 @@ class User(StatefulModel, UserMixin):
         secondary=role_user_associations,
         backref=db.backref("users", lazy="dynamic"))
     # teacher relationships
-    students = db.relationship(
-        "User",
-        backref=backref("teacher", uselist=False),
-        uselist=True,
-        remote_side="User.id")
+    # students: self-referential is declared below (teacher, teacher_id)
     invitations = db.relationship(
         "Invitation",
         backref="teacher")
     # student relationships
+    teacher = db.relationship(
+        "User",
+        backref=backref("students", uselist=True),
+        uselist=False,
+        remote_side="User.id")
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
     essays = db.relationship("Essay", backref="student")
     universities = db.relationship(
         "University",
