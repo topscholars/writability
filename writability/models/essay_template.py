@@ -20,13 +20,14 @@ class EssayTemplate(BaseModel):
     essay_prompt = db.Column(db.String, nullable=False)
 
     # optional fields
-    due_date = db.Column(db.Date)
 
     # inheritance
     discriminator = db.Column('type', db.String(50))
     __mapper_args__ = {'polymorphic_on': discriminator}
 
     # relationships
+    # TODO: this request could will get super expensive
+    essays = db.relationship("Essay", backref="essay_template")
 
 
 class ThemeEssayTemplate(EssayTemplate):
@@ -61,6 +62,8 @@ class ApplicationEssayTemplate(EssayTemplate):
     max_words = db.Column(db.Integer)
 
     # optional fields
+    due_date = db.Column(db.Date)
+
     # relationships
     university_id = db.Column(db.Integer, db.ForeignKey("university.id"))
     themes = db.relationship(

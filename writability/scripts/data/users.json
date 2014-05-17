@@ -4,7 +4,8 @@
         "password": "password",
         "first_name": "Big",
         "last_name": "Teach",
-        "roles": [1]
+        "roles": [1],
+        "active": true
     },
     {
         "email": "student1@writ.co",
@@ -12,7 +13,8 @@
         "first_name": "Yupp",
         "last_name": "James",
         "roles": [2],
-        "teacher": 1
+        "teacher": 1,
+        "active": true
     },
     {
         "email": "student2@writ.co",
@@ -20,6 +22,7 @@
         "first_name": "Rachel",
         "last_name": "Parsons",
         "roles": [2],
-        "teacher": 1
+        "teacher": 1,
+        "active": true
     }
 ]

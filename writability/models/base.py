@@ -35,10 +35,15 @@ class BaseModel(db.Model):
 
     deleted_ts = db.Column(SerializableDateTime)
 
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        pass
+
     @classmethod
     def create(class_, object_dict):
         prepared_dict = class_._replace_resource_ids_with_models(object_dict)
         model = class_(**prepared_dict)
+        model.process_before_create()
         db.session.add(model)
         db.session.commit()
         return model

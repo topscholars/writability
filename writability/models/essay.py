@@ -36,6 +36,15 @@ class Essay(BaseModel):
     # relationships
     student_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     drafts = db.relationship("Draft", backref="essay")
+    essay_template_id = db.Column(db.Integer, db.ForeignKey("essay_template.id"))
+
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        super(Essay, self).process_before_create()
+        if not self.essay_template:
+            raise ValueError("essay template cannot be empty.")
+
+        self.essay_prompt = self.essay_template.essay_prompt
 
 
 class ThemeEssay(StatefulModel, Essay):
@@ -58,6 +67,15 @@ class ThemeEssay(StatefulModel, Essay):
         "ApplicationEssay",
         secondary=essay_associations,
         backref=db.backref("theme_essays", lazy="dynamic"))
+
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        super(ThemeEssay, self).process_before_create()
+        theme_essay_template = self.essay_template
+        self.audience = theme_essay_template.audience
+        self.context = theme_essay_template.context
+        self.theme = theme_essay_template.theme
+
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
@@ -91,3 +109,11 @@ class ApplicationEssay(Essay):
 
     # relationships
     # theme_essays: don't explicitly declare it but it's here
+
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        super(ApplicationEssay, self).process_before_create()
+        app_essay_template = self.essay_template
+        self.max_words = app_essay_template.max_words
+        self.due_date = self.essay_template.due_date
+        self.university = app_essay_template.university

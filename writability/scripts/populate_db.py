@@ -59,7 +59,7 @@ class Populator(object):
     def _get_url(self):
         return ROOT_URL + self._PATH
 
-    def _get_id_with_query_url(self, query_url, object_type):
+    def _get_field_with_query_url(self, query_url, object_type, field):
         resp = requests.get(query_url)
 
         if resp.status_code != 200:
@@ -67,7 +67,7 @@ class Populator(object):
 
         item = resp.json()
 
-        return item[object_type][0]["id"]
+        return item[object_type][0][field]
 
 
 class JsonPopulator(Populator):
@@ -168,7 +168,7 @@ class ThemeEssayTemplatePopulator(Populator):
         _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
         url = _THEME_QUERY_URL + _QUERY_STRING
 
-        return self._get_id_with_query_url(url, "themes")
+        return self._get_field_with_query_url(url, "themes", "id")
 
     def _get_title(self, payload):
         return payload["theme_essay_template"]["essay_prompt"][0:20]
@@ -222,14 +222,14 @@ class ApplicationEssayTemplatePopulator(Populator):
         _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
         url = _THEME_QUERY_URL + _QUERY_STRING
 
-        return self._get_id_with_query_url(url, "themes")
+        return self._get_field_with_query_url(url, "themes", "id")
 
     def _get_uni_id(self, uni_name):
         _UNI_QUERY_URL = "{}universities?".format(ROOT_URL)
         _QUERY_STRING = "name=" + uni_name
         url = _UNI_QUERY_URL + _QUERY_STRING
 
-        return self._get_id_with_query_url(url, "universities")
+        return self._get_field_with_query_url(url, "universities", "id")
 
     def _get_title(self, payload):
         return payload["application_essay_template"]["essay_prompt"][0:20]
@@ -257,16 +257,21 @@ class ThemeEssayPopulator(JsonPopulator):
         # theme
         name = obj["theme"]["name"]
         category = obj["theme"]["category"]
-        obj["theme"] = self._get_theme_id(name, category)
+        obj["essay_template"] = self._get_theme_essay_template_id(
+            name,
+            category)
+        del obj["theme"]
 
         return super(ThemeEssayPopulator, self)._construct_payload(obj)
 
-    def _get_theme_id(self, theme_name, category_name):
+    def _get_theme_essay_template_id(self, theme_name, category_name):
         _THEME_QUERY_URL = "{}themes?".format(ROOT_URL)
         _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
         url = _THEME_QUERY_URL + _QUERY_STRING
 
-        return self._get_id_with_query_url(url, "themes")
+        theme_essay_template_id = self._get_field_with_query_url(url, "themes",
+                "theme_essay_template")
+        return theme_essay_template_id
 
     def _get_title(self, payload):
         return payload["theme_essay"]["due_date"]

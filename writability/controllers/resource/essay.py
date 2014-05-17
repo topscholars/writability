@@ -15,6 +15,7 @@ from .fields import ResourceField
 import draft
 import theme
 import user
+import essay_template
 
 
 class EssayResourceManager(ResourceManager):
@@ -41,6 +42,9 @@ class EssayResourceManager(ResourceManager):
                 absolute=True)),
             "student": ResourceField(
                 user.StudentResourceManager.item_resource_name,
+                absolute=True),
+            "essay_template": ResourceField(
+                essay_template.EssayTemplateResourceManager.item_resource_name,
                 absolute=True)
         })
 
