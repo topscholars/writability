@@ -53,7 +53,8 @@ App.IndexRoute = Ember.Route.extend({
 
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
-    setupController: function(controller) {
+    setupController: function(controller, model) {
+        controller.set('model', model); //Required boilerplate
         controller.set('backDisabled', true);
         // controller.set('nextDisabled', true); // Use same for next button in other views
     },
@@ -69,19 +70,16 @@ App.UniversitiesRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'}); // pass in backDisabled
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
-        /* this.render(
-            'applicationEssayTemplates',
-            {into: 'core/layouts/main', outlet: 'details-module'}); */ //details=right-side-outlet
     },
 
     actions: {
         selectedUniversity: function (university) {
+            console.log('selectedUniversity() action');
             var that = this;
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
-                //that.render('applicationEssayTemplates', {outlet: 'details-module'});/details=right-side-outlet
-            });
+             });
         }
     }
 });
@@ -97,20 +95,20 @@ App.UniversitiesIndexRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
+        console.log('univIndexRoute UniversitiesIndexRoute');
         this.render(
             'applicationEssayTemplates',
             {outlet: 'right-side-outlet'});
     }
 });
 
-// Actions are events. 2 types of events. Within-module (select element in list + update list)  
-                            // and 
 App.StudentsRoute = Ember.Route.extend({
     model: function () { //
         return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
 
             console.log(teacher.get('students'));
-                        //concatenate invites and students
+            //concatenate invites and students
+
             return teacher.get('students');
         });
     },
@@ -118,7 +116,7 @@ App.StudentsRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'}); 
-                // needs into explicity because core/layouts/main was rendered within function
+            // needs 'into' explicity because core/layouts/main was rendered in same function
     },
     actions: {
         // TODO This should create an invitation model and add to list
