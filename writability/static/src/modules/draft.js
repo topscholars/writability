@@ -22,6 +22,12 @@ App.DraftController = Ember.ObjectController.extend({
         startedWriting: function (cb) {
             var draft = this.get('model');
             draft.reload().then(cb, this.onFailure);
+        },
+        /*
+         * Clicking the Details / Review button toggles the current displayed item.
+         */
+        editorToggle: function () {
+            alert("Hello");
         }
     },
 });

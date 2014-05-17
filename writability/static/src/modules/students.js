@@ -10,10 +10,6 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 App.StudentsController = Ember.ArrayController.extend({
     invitedStudentEmail: null,
 
-    students: function () {
-        return this.store.find('student');
-    }.property(),
-    
     actions: { 
         inviteStudentCont: function () {
             // This should create invitation model

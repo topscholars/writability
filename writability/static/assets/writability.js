@@ -86,8 +86,36 @@ App.ArrayTransform = DS.Transform.extend({
     }
 });
 
+Ember.Handlebars.helper('dotdotfifty', function(str) {
+  if (str)
+    if (str.length > 50)
+      return str.substring(0,50) + '...';
+  return str;
+});
+Ember.Handlebars.helper("debug", function(optionalValue) {
+  console.log("Current Context");
+  console.log("====================");
+  console.log(this);
+ 
+  if (optionalValue) {
+    console.log("Value");
+    console.log("====================");
+    console.log(optionalValue);
+  }
+});
+//Handlebars.registerHelper('dotdotfifty', function(str) {
+//  if (str.length > 50)
+//    return str.substring(0,50) + '...';
+//  return str;
+//});
+
 App.DetailsView = Ember.View.extend({
-    templateName: 'core/modules/details'
+    templateName: 'core/modules/details',
+    
+    //elementId: "details-module", 
+    tagName: "section",
+    classNames: ["module", "details-module"]
+
 });
 
 App.EditorView = Ember.View.extend({
@@ -111,12 +139,19 @@ App.ListView = Ember.View.extend({
     templateName: 'core/modules/list',
     title: null,
     //sections: [],
-    listItem: ""
+    listItem: "",
+    //elementId: "list-module",  // No id, could have multiple on page.
+    tagName: "section",
+    classNames: ["module", "list-module"]
+});
+
+App.FakeListItem = Ember.View.extend({
+    classNames: ["fake-list-item"]
 });
 
 App.ListItem = Ember.View.extend({
     tagName: "li",
-    classNames: ["list-item"],
+    classNames: ["list-item"]
 });
 
 App.ThinListItem = App.ListItem.extend({
@@ -142,7 +177,8 @@ App.Draft = DS.Model.extend({
     state: DS.attr('string'),
 
     // relationships
-    essay: DS.belongsTo('essay')
+    essay: DS.belongsTo('essay'),
+    review: DS.belongsTo('review')
 });
 
 /* globals App, DS */
@@ -166,6 +202,50 @@ App.ThemeEssay = App.Essay.extend({
     state: DS.attr('string')
 });
 
+App.ApplicationEssay = App.Essay.extend({
+});
+
+/* globals App, DS */
+App.EssayTemplate = DS.Model.extend({
+    // properties
+    due_date: DS.attr('string'),
+    essay_prompt: DS.attr('string'),
+});
+
+App.ThemeEssayTemplate = App.EssayTemplate.extend({
+    audience: DS.attr('string'),
+    context: DS.attr('string'),
+    theme: DS.belongsTo('theme', {async: true})
+});
+
+App.ApplicationEssayTemplate = App.EssayTemplate.extend({
+    max_words: DS.attr('string'),
+    university: DS.belongsTo('university', {async: true}),
+    themes: DS.hasMany('theme', {async: true})
+});
+/* globals App, DS */
+App.Invitation = DS.Model.extend({
+    // properties
+    id: DS.attr('integer'),
+    email: DS.attr('string'),
+    is_registered: DS.attr('boolean'),
+    teacher: DS.belongsTo('teacher')
+});
+
+App.Review = DS.Model.extend({
+    // properties
+    text: DS.attr('string'),
+    is_draft_approved: DS.attr('boolean'),
+    due_date: DS.attr('string'),
+    review_type: DS.attr('string'),
+
+    next_states: DS.attr('array', {readOnly: true}),
+    state: DS.attr('string'),
+
+    // relationships
+    draft: DS.belongsTo('draft'),
+    teacher: DS.belongsTo('teacher')
+});
 /* globals App, DS */
 App.Role = DS.Model.extend({
     // properties
@@ -173,10 +253,17 @@ App.Role = DS.Model.extend({
 });
 
 /* globals App, DS */
+App.Theme = DS.Model.extend({
+    // properties
+    name: DS.attr('string'),
+    category: DS.attr('string')
+});
+/* globals App, DS */
 App.University = DS.Model.extend({
     // properties
     name: DS.attr('string'),
     // logo_url: DS.attr('string'),
+    application_essay_templates: DS.hasMany('application_essay_template', {async: true})
 });
 
 /* globals App, DS */
@@ -191,7 +278,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student', {async: true})
+    students: DS.hasMany('student'),
+    reviews: DS.hasMany('review')
 });
 
 App.Student = App.User.extend({
@@ -200,6 +288,23 @@ App.Student = App.User.extend({
     teacher: DS.belongsTo('teacher'),
     essays: DS.hasMany('essay'),
     universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there
+});
+
+/* globals App, Ember */
+App.ApplicationEssayTemplatesItemView = App.FakeListItem.extend({
+    templateName: "modules/_application_essay_templates-list-item"
+});
+
+
+App.ApplicationEssayTemplatesController = Ember.ArrayController.extend({
+
+});
+
+App.ApplicationEssayTemplatesView = App.ListView.extend({
+    title: 'Application Essays',
+    listItem: App.ApplicationEssayTemplatesItemView,
+    newItem: null
+
 });
 
 App.DraftController = Ember.ObjectController.extend({
@@ -226,6 +331,12 @@ App.DraftController = Ember.ObjectController.extend({
         startedWriting: function (cb) {
             var draft = this.get('model');
             draft.reload().then(cb, this.onFailure);
+        },
+        /*
+         * Clicking the Details / Review button toggles the current displayed item.
+         */
+        editorToggle: function () {
+            alert("Hello");
         }
     },
 });
@@ -385,10 +496,6 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 App.StudentsController = Ember.ArrayController.extend({
     invitedStudentEmail: null,
 
-    students: function () {
-        return this.store.find('student');
-    }.property(),
-    
     actions: { 
         inviteStudentCont: function () {
             // This should create invitation model
@@ -578,7 +685,9 @@ App.Router.map(function () {
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 
-    this.resource('universities');
+    this.resource('universities', function () {
+        this.route('/');
+    });
     // no university item resource
 });
 
@@ -614,40 +723,65 @@ App.IndexRoute = Ember.Route.extend({
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
-        return this.store.find('student', 0).then(function (student) {
-            return student.get('universities');
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
         });
     },
 
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
+        /* this.render(
+            'applicationEssayTemplates',
+            {into: 'core/layouts/main', outlet: 'details-module'}); */ //details=right-side-outlet
     },
 
     actions: {
         selectedUniversity: function (university) {
+            var that = this;
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
+                //that.render('applicationEssayTemplates', {outlet: 'details-module'});/details=right-side-outlet
             });
         }
     }
 });
+
+App.UniversitiesIndexRoute = Ember.Route.extend({
+    controllerName: 'applicationEssayTemplates',
+
+    model: function () {
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
+        });
+    },
+
+    renderTemplate: function () {
+        this.render(
+            'applicationEssayTemplates',
+            {outlet: 'right-side-outlet'});
+    }
+});
+
 // Actions are events. 2 types of events. Within-module (select element in list + update list)  
                             // and 
 App.StudentsRoute = Ember.Route.extend({
     model: function () { //
         return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
 
-            //concatenate invites and students
+            console.log(teacher.get('students'));
+                        //concatenate invites and students
             return teacher.get('students');
         });
     },
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'}); 
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'}); 
                 // needs into explicity because core/layouts/main was rendered within function
     },
     actions: {
@@ -672,7 +806,7 @@ App.EssaysRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
     }
 });
 
@@ -682,7 +816,7 @@ App.EssayRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
-        this.render({outlet: 'details-module'});
+        this.render({outlet: 'right-side-outlet'});
 
         var id = this.controller.get('model').id;
         this.controllerFor('essays').findBy('id', id).send('select');
@@ -706,7 +840,7 @@ Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}
 
 Ember.TEMPLATES["core/layouts/editor"] = Ember.Handlebars.compile("<div id=\"editor-layout\" class=\"layout\">\n    <section id=\"editor-module\" class=\"module\">{{outlet editor-module}}</section>\n</div>\n");
 
-Ember.TEMPLATES["core/layouts/main"] = Ember.Handlebars.compile("<div id=\"main-layout\" class=\"layout\">\n    <section id=\"list-module\" class=\"module\">\n        {{outlet list-module}}\n    </section>\n    <section id=\"details-module\" class=\"module\">\n        {{outlet details-module}}\n    </section>\n</div>\n");
+Ember.TEMPLATES["core/layouts/main"] = Ember.Handlebars.compile("<div id=\"main-layout\" class=\"layout\">\n    <section id=\"left-side\" class=\"outlet\">\n        {{outlet left-side-outlet}}\n    </section>\n    <section id=\"right-side\" class=\"outlet\">\n        {{outlet right-side-outlet}}\n    </section>\n</div>\n\n\n<!--\n<div id=\"main-layout\" class=\"layout\">\n    <section id=\"list-module\" class=\"module\">\n        {{outlet list-module}}\n    </section>\n    <section id=\"details-module\" class=\"module\">\n        {{outlet details-module}}\n    </section>\n</div>\n\n-->");
 
 Ember.TEMPLATES["core/modules/details"] = Ember.Handlebars.compile("<nav class=\"details-nav\">\n    {{#each tab in view.tabs}}\n        <div id=\"tab-{{unbound tab.key}}\" {{action \"select\" tab.key\n        target=\"view\"}} class=\"tab-header\">\n            {{tab.title}}\n        </div>\n    {{/each}}\n</nav>\n<div class=\"tab-content\">\n    {{view App.EssayTabs}}\n</div>\n");
 
@@ -714,9 +848,13 @@ Ember.TEMPLATES["core/modules/editor"] = Ember.Handlebars.compile("\n");
 
 Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">{{view.title}}</div>\n");
 
-Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
+Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\" class=\"scrollable\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.NavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.NavButton text=\"Next >\"}}</div>\n");
+
+Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    <br />\n{{/each}}");
+
+Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
 
 Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n");
 
@@ -724,12 +862,12 @@ Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div cl
 
 Ember.TEMPLATES["modules/_students-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.TextField placeholder=\"Student's Email\" valueBinding=\"invitedStudentEmail\"}}\n\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n\n          <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>");
+Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.TextField placeholder=\"Student's Email\" valueBinding=\"invitedStudentEmail\"}}\n\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n\n        <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>");
 
 Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button class=\"editor-toggle\">Details</button>\n        <button class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}\n");

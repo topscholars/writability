@@ -16,7 +16,9 @@ App.Router.map(function () {
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 
-    this.resource('universities');
+    this.resource('universities', function () {
+        this.route('/');
+    });
     // no university item resource
 });
 
@@ -52,40 +54,65 @@ App.IndexRoute = Ember.Route.extend({
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
     model: function () {
-        return this.store.find('student', 0).then(function (student) {
-            return student.get('universities');
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
         });
     },
 
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
+        /* this.render(
+            'applicationEssayTemplates',
+            {into: 'core/layouts/main', outlet: 'details-module'}); */ //details=right-side-outlet
     },
 
     actions: {
         selectedUniversity: function (university) {
+            var that = this;
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
+                //that.render('applicationEssayTemplates', {outlet: 'details-module'});/details=right-side-outlet
             });
         }
     }
 });
+
+App.UniversitiesIndexRoute = Ember.Route.extend({
+    controllerName: 'applicationEssayTemplates',
+
+    model: function () {
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('universities');
+        });
+    },
+
+    renderTemplate: function () {
+        this.render(
+            'applicationEssayTemplates',
+            {outlet: 'right-side-outlet'});
+    }
+});
+
 // Actions are events. 2 types of events. Within-module (select element in list + update list)  
                             // and 
 App.StudentsRoute = Ember.Route.extend({
     model: function () { //
         return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
 
-            //concatenate invites and students
+            console.log(teacher.get('students'));
+                        //concatenate invites and students
             return teacher.get('students');
         });
     },
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'}); 
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'}); 
                 // needs into explicity because core/layouts/main was rendered within function
     },
     actions: {
@@ -110,7 +137,7 @@ App.EssaysRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'list-module'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
     }
 });
 
@@ -120,7 +147,7 @@ App.EssayRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
-        this.render({outlet: 'details-module'});
+        this.render({outlet: 'right-side-outlet'});
 
         var id = this.controller.get('model').id;
         this.controllerFor('essays').findBy('id', id).send('select');

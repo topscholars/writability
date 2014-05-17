@@ -26,6 +26,7 @@ class Draft(StatefulModel):
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
+    review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
