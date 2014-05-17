@@ -18,3 +18,6 @@ App.ThemeEssay = App.Essay.extend({
     proposed_topics: DS.attr('array'),
     state: DS.attr('string')
 });
+
+App.ApplicationEssay = App.Essay.extend({
+});
