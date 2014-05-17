@@ -272,6 +272,15 @@ class ThemeEssayPopulator(JsonPopulator):
         return payload["theme_essay"]["due_date"]
 
 
+class DraftPopulator(JsonPopulator):
+
+    _PATH = "drafts"
+    _FILE_PATH = "data/drafts.json"
+    _OBJECT_NAME = "draft"
+
+    def _get_title(self, payload):
+        return payload["draft"]["formatted_text"][0:40]
+
 def populate_db():
     # predefined
     RolePopulator()
@@ -282,6 +291,7 @@ def populate_db():
     # custom data
     UserPopulator()
     ThemeEssayPopulator()
+    DraftPopulator()
 
 
 populate_db()
