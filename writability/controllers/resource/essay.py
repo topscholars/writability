@@ -14,6 +14,7 @@ from .base import StatefulResourceManager
 from .fields import ResourceField
 import draft
 import theme
+import user
 
 
 class EssayResourceManager(ResourceManager):
@@ -37,7 +38,10 @@ class EssayResourceManager(ResourceManager):
                 absolute=True),
             "drafts": fields.List(ResourceField(
                 draft.DraftResourceManager.item_resource_name,
-                absolute=True))
+                absolute=True)),
+            "student": ResourceField(
+                user.StudentResourceManager.item_resource_name,
+                absolute=True)
         })
 
 

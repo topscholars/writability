@@ -247,33 +247,19 @@ class UserPopulator(JsonPopulator):
             payload["user"]["last_name"])
 
 
-class ThemeEssayPopulator(Populator):
+class ThemeEssayPopulator(JsonPopulator):
 
     _PATH = "theme-essays"
-    _FILE_PATH = "data/theme_essays.txt"
+    _FILE_PATH = "data/theme_essays.json"
+    _OBJECT_NAME = "theme_essay"
 
-    def _construct_payload(self, line):
-        columns = line.split(';')
-
+    def _construct_payload(self, obj):
         # theme
-        category = columns[7].strip()
-        name = columns[8].strip()
-        theme_id = self._get_theme_id(name, category)
+        name = obj["theme"]["name"]
+        category = obj["theme"]["category"]
+        obj["theme"] = self._get_theme_id(name, category)
 
-        theme_essay = {
-            "essay_prompt": columns[0].strip(),
-            "audience": columns[1].strip(),
-            "context": columns[3].strip(),
-            "due_date": columns[3].strip(),
-            "max_words": columns[4].strip(),
-            "topic": columns[5].strip(),
-            "num_of_drafts": columns[6].strip(),
-            "theme": theme_id
-        }
-
-        payload = {"theme_essay": theme_essay}
-
-        return payload
+        return super(ThemeEssayPopulator, self)._construct_payload(obj)
 
     def _get_theme_id(self, theme_name, category_name):
         _THEME_QUERY_URL = "{}themes?".format(ROOT_URL)
@@ -295,7 +281,7 @@ def populate_db():
     ApplicationEssayTemplatePopulator()
     # custom data
     UserPopulator()
-    #ThemeEssayPopulator()
+    ThemeEssayPopulator()
 
 
 populate_db()
