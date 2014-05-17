@@ -85,3 +85,26 @@ App.ArrayTransform = DS.Transform.extend({
         }
     }
 });
+
+Ember.Handlebars.helper('dotdotfifty', function(str) {
+  if (str)
+    if (str.length > 50)
+      return str.substring(0,50) + '...';
+  return str;
+});
+Ember.Handlebars.helper("debug", function(optionalValue) {
+  console.log("Current Context");
+  console.log("====================");
+  console.log(this);
+ 
+  if (optionalValue) {
+    console.log("Value");
+    console.log("====================");
+    console.log(optionalValue);
+  }
+});
+//Handlebars.registerHelper('dotdotfifty', function(str) {
+//  if (str.length > 50)
+//    return str.substring(0,50) + '...';
+//  return str;
+//});
