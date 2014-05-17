@@ -536,7 +536,27 @@ App.UniversitiesController = Ember.ArrayController.extend({
             this.send('selectedUniversity', this.get('newUniversity'));
             this.set('defaultValueOption', null);
         }
-    }.observes("newUniversity")
+    }.observes("newUniversity"),
+
+    actions: {
+        next: function() {
+            that = this;
+
+            this.store.find('student', 0)
+                .then(function (student) {
+                    //Log univ.count //student.get('universities').then(function (univs) { console.log( univs.get('length') ); });
+                    student.save()
+                        .then(  function () { that.transitionToRoute("essays") })
+                        .catch( function () { alert("Sorry! We've encountered an error."); });
+                });
+        }
+
+        // Transition to /essays   [DONE]
+        // 1. save universities    [DONE]
+        // 2. convert app_essay_templates into app_essays and save
+        // 3. convert ap_es_tmp into theme_es_tmp    
+        // 4. convert them_es_tmp into theme_essays   save
+    }
 });
 
 App.UniversitiesView = App.ListView.extend({
@@ -567,6 +587,10 @@ App.RightNavButton = App.Button.extend({
     text: 'Next >',
     attributeBindings: ['disabled'],
     disabled: Ember.computed.alias("controller.nextDisabled"),
+    click: function(evt) {
+      this.get('controller').send('next');
+    }
+
 });
 App.TextEditor = Ember.TextArea.extend({
 
@@ -732,7 +756,8 @@ App.IndexRoute = Ember.Route.extend({
 
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
-    setupController: function(controller) {
+    setupController: function(controller, model) {
+        controller.set('model', model); //Required boilerplate
         controller.set('backDisabled', true);
         // controller.set('nextDisabled', true); // Use same for next button in other views
     },
@@ -748,19 +773,16 @@ App.UniversitiesRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'}); // pass in backDisabled
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
-        /* this.render(
-            'applicationEssayTemplates',
-            {into: 'core/layouts/main', outlet: 'details-module'}); */ //details=right-side-outlet
     },
 
     actions: {
         selectedUniversity: function (university) {
+            console.log('selectedUniversity() action');
             var that = this;
             this.store.find('student', 0).then(function (student) {
                 var universities = student.get('universities');
                 universities.pushObject(university);
-                //that.render('applicationEssayTemplates', {outlet: 'details-module'});/details=right-side-outlet
-            });
+             });
         }
     }
 });
@@ -776,20 +798,20 @@ App.UniversitiesIndexRoute = Ember.Route.extend({
     },
 
     renderTemplate: function () {
+        console.log('univIndexRoute UniversitiesIndexRoute');
         this.render(
             'applicationEssayTemplates',
             {outlet: 'right-side-outlet'});
     }
 });
 
-// Actions are events. 2 types of events. Within-module (select element in list + update list)  
-                            // and 
 App.StudentsRoute = Ember.Route.extend({
     model: function () { //
         return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
 
             console.log(teacher.get('students'));
-                        //concatenate invites and students
+            //concatenate invites and students
+
             return teacher.get('students');
         });
     },
@@ -797,7 +819,7 @@ App.StudentsRoute = Ember.Route.extend({
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'}); 
-                // needs into explicity because core/layouts/main was rendered within function
+            // needs 'into' explicity because core/layouts/main was rendered in same function
     },
     actions: {
         // TODO This should create an invitation model and add to list
@@ -885,4 +907,4 @@ Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<d
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
-Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}\n");
+Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");

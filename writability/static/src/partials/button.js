@@ -20,4 +20,8 @@ App.RightNavButton = App.Button.extend({
     text: 'Next >',
     attributeBindings: ['disabled'],
     disabled: Ember.computed.alias("controller.nextDisabled"),
+    click: function(evt) {
+      this.get('controller').send('next');
+    }
+
 });
