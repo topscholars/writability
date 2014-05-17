@@ -1,0 +1,25 @@
+[
+    {
+        "email": "teach@writability.co",
+        "password": "password",
+        "first_name": "Big",
+        "last_name": "Teach",
+        "roles": [1]
+    },
+    {
+        "email": "student1@writ.co",
+        "password": "password",
+        "first_name": "Yupp",
+        "last_name": "James",
+        "roles": [2],
+        "teacher": 1
+    },
+    {
+        "email": "student2@writ.co",
+        "password": "password",
+        "first_name": "Rachel",
+        "last_name": "Parsons",
+        "roles": [2],
+        "teacher": 1
+    }
+]

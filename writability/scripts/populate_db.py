@@ -17,21 +17,25 @@ class Populator(object):
         self._losses = []
 
         f = open(self._FILE_PATH, "r")
-        lines = f.read().splitlines()
+        file = f.read()
 
-        for line in lines:
-            if line:
-                payload = self._construct_payload(line)
-                title = self._get_title(payload)
+        for obj in self._parse_file_into_objects(file):
+            payload = self._construct_payload(obj)
+            title = self._get_title(payload)
 
-                is_success = self._populate_db(payload)
+            is_success = self._populate_db(payload)
 
-                if is_success:
-                    self._wins.append(title)
-                else:
-                    self._losses.append(title)
+            if is_success:
+                self._wins.append(title)
+            else:
+                self._losses.append(title)
 
         self._print_outcome()
+
+    def _parse_file_into_objects(self, file):
+        objects = [line for line in file.splitlines() if line]
+        return objects
+
 
     def _populate_db(self, payload):
         resp = requests.post(
@@ -64,6 +68,17 @@ class Populator(object):
         item = resp.json()
 
         return item[object_type][0]["id"]
+
+
+class JsonPopulator(Populator):
+
+    _OBJECT_NAME = None
+
+    def _parse_file_into_objects(self, file):
+        return json.loads(file)
+
+    def _construct_payload(self, obj):
+        return {self._OBJECT_NAME: obj}
 
 
 class RolePopulator(Populator):
@@ -220,6 +235,18 @@ class ApplicationEssayTemplatePopulator(Populator):
         return payload["application_essay_template"]["essay_prompt"][0:20]
 
 
+class UserPopulator(JsonPopulator):
+
+    _PATH = "users"
+    _FILE_PATH = "data/users.json"
+    _OBJECT_NAME = "user"
+
+    def _get_title(self, payload):
+        return "{} {}".format(
+            payload["user"]["first_name"],
+            payload["user"]["last_name"])
+
+
 class ThemeEssayPopulator(Populator):
 
     _PATH = "theme-essays"
@@ -260,12 +287,15 @@ class ThemeEssayPopulator(Populator):
 
 
 def populate_db():
-    RolePopulator()
-    UniversityPopulator()
-    ThemePopulator()
-    ThemeEssayTemplatePopulator()
-    ApplicationEssayTemplatePopulator()
-    ThemeEssayPopulator()
+    # predefined
+#   RolePopulator()
+#   UniversityPopulator()
+#   ThemePopulator()
+#   ThemeEssayTemplatePopulator()
+#   ApplicationEssayTemplatePopulator()
+    # custom data
+    UserPopulator()
+    #ThemeEssayPopulator()
 
 
 populate_db()
