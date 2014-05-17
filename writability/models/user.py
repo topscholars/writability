@@ -14,10 +14,6 @@ from .base import BaseModel, StatefulModel
 from .relationships import role_user_associations
 from .relationships import student_university_associations
 from sqlalchemy.orm import backref
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 
 class User(StatefulModel, UserMixin):
 
@@ -49,10 +45,6 @@ class User(StatefulModel, UserMixin):
     # teacher relationships
     students = db.relationship(
         "User",
-<<<<<<< HEAD
-=======
-        #backref="teacher",
->>>>>>> master
         backref=backref("teacher", uselist=False),
         uselist=True,
         remote_side="User.id")

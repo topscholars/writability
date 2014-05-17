@@ -226,7 +226,6 @@ App.ApplicationEssayTemplate = App.EssayTemplate.extend({
 /* globals App, DS */
 App.Invitation = DS.Model.extend({
     // properties
-    id: DS.attr('integer'),
     email: DS.attr('string'),
     is_registered: DS.attr('boolean'),
     teacher: DS.belongsTo('teacher')
@@ -848,7 +847,7 @@ Ember.TEMPLATES["core/modules/editor"] = Ember.Handlebars.compile("\n");
 
 Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">{{view.title}}</div>\n");
 
-Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\" class=\"scrollable\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
+Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.NavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.NavButton text=\"Next >\"}}</div>\n");
 
