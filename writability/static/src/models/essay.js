@@ -10,8 +10,8 @@ App.Essay = DS.Model.extend({
     max_words: DS.attr('number'),
 
     // relationships
-    drafts: DS.hasMany('draft'),
-    essay_template: DS.belongsTo('essay_template') 
+    drafts: DS.hasMany('draft', {async: true}),
+    essay_template: DS.belongsTo('essay_template')
 });
 
 App.ThemeEssay = App.Essay.extend({

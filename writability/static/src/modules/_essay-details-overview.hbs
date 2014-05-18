@@ -10,11 +10,13 @@
     <div class="key">Context:</div>
     <div class="value app-text">{{context}}</div>
 </div>
+
 {{#if topic }}
     <div class="details-field">
         <div class="key">Topic:</div>
         <div class="value student-text">{{topic}}</div>
     </div>
+    {{view App.Button text="Write"}}
 {{else}}
     <div class="details-field">
         <div class="key">Topic 1:</div>
