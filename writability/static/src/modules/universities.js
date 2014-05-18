@@ -27,6 +27,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
     }.observes("newUniversity"),
 
     convertEssays: function (student) {  //pass in?   scope = this
+        var deferred = $.Deferred();
         console.log('convertEssays() called');
         var that = this;
         var app_essay_templates;    // ManyArray, universities.all.app_essay_templates
@@ -44,28 +45,23 @@ App.UniversitiesController = Ember.ArrayController.extend({
         this.getAllTemplatesForStudent(student)
             .then( function (app_essay_templates) {
                 var all_themes = [];
-                console.log(' done! templates: '); 
-                console.log(app_essay_templates);
-                console.log( 'app_essay_templates.toString: ' + app_essay_templates.toString() );
                 app_essay_templates.forEach(function (item, index) {            // For each AppEssay Template
-
                     if (existing_app_essay_tmp_ids.indexOf(item.id) == -1) {    // If related Essay doesn't exist
                         var item_id = item.get('id');  
                         var themes_id_obj_dict = [];
 
-                        // Create App Essay  
-                        // Setting app_essay during theme_essay creation handles both sides of the relationship
+                        // Create App Essay. Setting app_essay during theme_essay creation handles both sides of the relationship
                         var app_essay_id = that.createAppEssay(student, item);
 
                         // Create Theme Essays for each app essay template
                         item.get('themes').then(function (themes) {             // Each app_ess_tmp hasMany themes
                             var themes_length =  themes.get('length');
 
-                            themes.forEach( function (theme) {                      // This theme variable doesn't contain 
+                            themes.forEach( function (theme, index) {                      // This theme variable doesn't contain 
                                 var theme_id = theme.get('id'); 
                                 console.log('theme: ' + theme + 'theme_id: ' + theme_id);                     // Collect data before entering these functions
-                                theme.get('theme_essay_template')                   // This is horrific.
-                                    .then(function (theme_essay_template) {
+                                theme.get('theme_essay_template')                   // TODO: API call here is horrific
+                                    .then(function (theme_essay_template) {         // ERROR: This sometimes gives a NULL error. (theme_id=6)
                                     //console.log('thm_ess_template:' + theme_essay_template);
                                         //all_themes.addObject(theme);                  // Ember, adds if does not exist.                    //
                                         if ( all_themes.indexOf(theme_id) == -1 ) {     // If themeEssay not yet created    
@@ -81,6 +77,9 @@ App.UniversitiesController = Ember.ArrayController.extend({
                                             });
                                             theme_essay.save();                      // Create theme_essay
                                         }
+                                        if (index == themes_length - 1) {             // Resolve when complete!
+                                            deferred.resolve();
+                                        }
                                 });
                             });
                         });
@@ -89,7 +88,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     }
                 });
             });
-
+        return deferred.promise();
         
     },
     createAppEssay: function (student, item) {
@@ -141,10 +140,17 @@ App.UniversitiesController = Ember.ArrayController.extend({
             this.store.find('student', 0)
                 .then(function (student) {
                     student.save()
-                        .then(  function () { 
-                            that.convertEssays(student);                // Create App & Theme essays from Univs' prompts
-                            student.set('state', 'active');             // Set student state to active
-                            that.transitionToRoute("essays");           // Redirect to Essays page
+                        .then( function () { 
+                            that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
+                                .then( function () {
+                                    student.set('state', 'active');             // Set student state to active
+                                    student.save();
+                                    console.log('transitioning to /essays');
+                                    that.transitionToRoute("essays");           // Redirect to Essays page
+                                })
+                                .catch( function (error) {
+                                    console.log(error);
+                                });                
                         })
                         .catch( function (error) { 
                             console.log(error);
