@@ -28,10 +28,9 @@ App.UniversitiesController = Ember.ArrayController.extend({
 
     convertEssays: function (student) {  //pass in?   scope = this
         console.log('convertEssays() called');
-        that = this;
+        var that = this;
         var app_essay_templates;    // ManyArray, universities.all.app_essay_templates
                
-        /* Comment for merge
         this.getAllTemplatesForStudent(student)
             .then( function (app_essay_templates) {
                 var all_themes = [];
@@ -47,25 +46,29 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     // Here assumes that setting app_essay during theme_essay creation 
                     // handles both sides of the relationship
                     var app_essay = that.store.createRecord('application_essay', {
-                        essay: item_id  // id OR obj  // added via backref above ? //essay_template
+                        student: student,
+                        essay_template: item  // id OR obj  // added via backref above ? //essay_template
                     });
+                    console.log(app_essay);
                     app_essay.save();
-                    app_essay_id = app_essay.get('id');
+                    var app_essay_id = app_essay.get('id');
+                    
                     // Create Theme Essays for each
-                    item.get('themes').then(function (themes) {         // Each app_ess_tmp hasMany themes
+                    item.get('themes').then(function (themes) {             // Each app_ess_tmp hasMany themes
                         var themes_length =  themes.get('length');
 
                         themes.forEach( function (theme) {  
                             var theme_id = theme.get('id');   
-                            //all_themes.addObject(theme);              // Ember, adds if does not exist.                    //
+                            //all_themes.addObject(theme);                  // Ember, adds if does not exist.                    //
                             if ( all_themes.indexOf(theme_id) == -1 ) {    // If themeEssay not yet created    
                                 all_themes.push(theme_id);
-                                themes_id_obj_dict.push({
-                                    key:   item_id,
-                                    value: theme
-                                });
-                                var theme_essay = that.store.createRecord('essay', {
-                                    essay_template: theme_id,
+                                // Try using this if backref rels not handled below
+                                //themes_id_obj_dict.push({
+                                //    key:   item_id,
+                                //    value: theme
+                                //});
+                                var theme_essay = that.store.createRecord('theme_essay', {
+                                    theme: theme,
                                     application_essays: app_essay_id,  // should be app_essay, not app_essay_template
                                     student: student
                                 });
@@ -76,7 +79,6 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     });
                 });
             });
-        */
     },
     // app_essay_templates are always unique. May 14, 2014
     getAllTemplatesForStudent: function (student) {
@@ -103,6 +105,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     })
                     .catch( function (error) { 
                         console.log('Error in univs.forEach loop.'); 
+                        console.log(error);
                         deferred.reject(error);
                     });
             });
@@ -112,7 +115,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
 
     actions: {
         next: function() {
-            that = this;
+            var that = this;
 
             this.store.find('student', 0)
                 .then(function (student) {
