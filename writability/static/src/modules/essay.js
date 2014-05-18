@@ -1,3 +1,33 @@
+/* globals App, Ember */
+App.EssayController = Ember.ObjectController.extend({
+
+    // If we're explicit then Ember binding is simpler.
+    proposed_topic_0: function () {
+        console.log('PROP 0');
+        return this.get('model').get('proposed_topics')[0];
+    }.property('proposed_topics'),
+
+    proposed_topic_1: function () {
+        console.log('PROP 1');
+        return this.get('model').get('proposed_topics')[1];
+    }.property('proposed_topics'),
+
+    /**
+     * Helper method to cause observer to fire only once.
+     */
+    _proposed_topics_merged: function () {
+        return this.get('proposed_topic_0') + this.get('proposed_topic_1');
+    }.property('proposed_topic_0', 'proposed_topic_1'),
+
+    proposedTopicsChanged: function () {
+        var newProposedTopics = [
+            this.get('proposed_topic_0'),
+            this.get('proposed_topic_1')
+        ];
+        this.get('model').set('proposed_topics', newProposedTopics);
+    }.observes('_proposed_topics_merged')
+});
+
 App.EssayView = App.DetailsView.extend({
     selectedTab: 'overview',
 

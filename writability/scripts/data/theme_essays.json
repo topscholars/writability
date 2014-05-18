@@ -13,7 +13,6 @@
     {
         "due_date": "2014-06-06",
         "max_words": 400,
-        "topic": "Parables from the Hercules",
         "num_of_drafts": 6,
         "theme": {
             "name": "Contribute",
@@ -24,7 +23,7 @@
     {
         "due_date": "2014-11-14",
         "max_words": 550,
-        "topic": "Let yourself grow",
+        "proposed_topics": ["Let yourself grow", "asd"],
         "num_of_drafts": 1,
         "theme": {
             "name": "Ethics",

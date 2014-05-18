@@ -102,7 +102,6 @@
     font-size: @bodyFontSize;
 }
 
-
 .highlightedText() {
     font-family: 'Helvetica Neue', sans-serif;
     font-size: @bigBodyFontSize;
@@ -246,13 +245,26 @@ a {
 /***********************************************************
 * CORE COMPONENTS
 ************************************************************/
-input, button, label, select {
+input, button, label, select, textarea {
     .bodyText();
 
     -moz-outline: none;
     outline: none;
     background-color: @white;
     border-radius: 0px;
+}
+
+textarea {
+    .bodyText();
+
+    border-radius: @round;
+    border: @thinBorder @grey solid;
+    padding: @innerPadding;
+    resize: none;
+
+    &:focus {
+        border: @thinBorder @black solid;
+    }
 }
 
 button, input[type="checkbox"] {
@@ -308,6 +320,7 @@ button, input[type="checkbox"] {
 .icon {
     .background-image-wrapper(45px, 45px, 'icon.gif', @white);
 }
+
 
 /***********************************************************
 * CORE LAYOUTS
@@ -456,7 +469,7 @@ button, input[type="checkbox"] {
 ************************************************************/
 .list-module {
     .scrollable();
-    
+
     background-color: @greyLighter;
 
     .module-title {
@@ -583,10 +596,20 @@ button, input[type="checkbox"] {
 
     .details-field {
         .key {
-            padding-bottom: @smallPadding;
+            margin-bottom: @smallPadding;
         }
         .value {
-            padding-bottom: @innerPadding;
+            margin-bottom: @innerPadding;
+            width: 100%;
+        }
+
+        .student-text {
+            .bodyText();
+
+        }
+
+        .app-text {
+            .highlightedText();
         }
     }
 }
@@ -595,7 +618,7 @@ button, input[type="checkbox"] {
 * CORE PARTIALS: ESSAY(S)
 ************************************************************/
 
-.inviteStudent { 
+.inviteStudent {
     border: 1px black solid;
     height: 50px;
     width: 50px;
