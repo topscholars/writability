@@ -258,7 +258,7 @@ textarea {
     .bodyText();
 
     border-radius: @round;
-    border: @thinBorder @grey solid;
+    border: @thinBorder @grey dashed;
     padding: @innerPadding;
     resize: none;
 
@@ -331,7 +331,18 @@ button, input[type="checkbox"] {
     .outlet {
         width: 50%;
         min-width: 480px;
+        position: fixed;
+        top: @headerHeight;
+        bottom: 0px;
     }
+}
+
+#right-side {
+    border-left: @thinBorder @grey solid;
+    left: 50%;
+}
+#left-side {
+    left: 0px;
 }
 
 #modal-container {
@@ -340,7 +351,6 @@ button, input[type="checkbox"] {
     background-color: rgba(0, 0, 0, .92);
     display: table;
     height: 100%;
-    position: absolute;
     position: absolute;
     width: 100%;
     z-index: 50;
@@ -451,18 +461,6 @@ button, input[type="checkbox"] {
     }
 }
 
-/****** CUSTOM ***/
-#right-side {
-    border-left: @thinBorder @grey solid;
-    height: 100%;
-    left: 50%;
-    position: fixed;
-}
-#left-side {
-    position: fixed;
-    left: 0px;
-    height: 100%;
-}
 
 /***********************************************************
 * CORE MODULE: LIST
@@ -471,6 +469,7 @@ button, input[type="checkbox"] {
     .scrollable();
 
     background-color: @greyLighter;
+    padding-top: @smallMargin;
 
     .module-title {
         .moduleHeaderText();
@@ -549,20 +548,24 @@ button, input[type="checkbox"] {
 * CORE MODULE: DETAILS
 ************************************************************/
 .details-module {
-
     .vertical-section-shadow();
 
     background-color: @white;
+    height: 100%;
     z-index: 15;
 
     .details-nav {
         .sectionHeaderText();
 
         border-bottom: @thinBorder @grey solid;
+        background-color: @white;
         color: @grey;
         display: table;
         table-layout: fixed;
-        width: 100%;
+
+        // super janky. it makes tab-content the right size.
+        position: fixed;
+        width: 50%;
 
         .tab-header {
             border-right: @thinBorder @greyLighter solid;
@@ -590,8 +593,10 @@ button, input[type="checkbox"] {
     }
 
     .tab-content {
+        .scrollable();
+
         clear: both;
-        padding: @smallMargin @bigMargin;
+        padding: (@smallMargin + 72px) @bigMargin @smallMargin @bigMargin;
     }
 
     .details-field {
