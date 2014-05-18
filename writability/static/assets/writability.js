@@ -280,20 +280,15 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student'),
+    students: DS.hasMany('student', { async: true }),
     reviews: DS.hasMany('review')
 });
 
 App.Student = App.User.extend({
     // properties
-    // relationships
+    // relationships 
     teacher: DS.belongsTo('teacher'),
-<<<<<<< HEAD
     essays: DS.hasMany('themeEssay', {async: true}),
-=======
-    essays: DS.hasMany('themeEssay', {async: true}),  // iffy
-
->>>>>>> test
     universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there
 });
 
@@ -640,7 +635,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                         .then(  function () { 
                             that.convertEssays(student);
                             //that.transitionToRoute("essays") 
-                        });
+                        })
                         .catch( function (error) { 
                             console.log(error);
                             alert("Sorry! We've encountered an error."); 
@@ -896,11 +891,6 @@ App.UniversitiesIndexRoute = Ember.Route.extend({
     }
 });
 
-<<<<<<< HEAD
-// Actions are events. 2 types of events. Within-module (select element in list + update list)
-                            // and
-=======
->>>>>>> test
 App.StudentsRoute = Ember.Route.extend({
     model: function () { //
         return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current
@@ -914,13 +904,8 @@ App.StudentsRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-<<<<<<< HEAD
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
                 // needs into explicity because core/layouts/main was rendered within function
-=======
-        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'}); 
-            // needs 'into' explicity because core/layouts/main was rendered in same function
->>>>>>> test
     },
     actions: {
         // TODO This should create an invitation model and add to list

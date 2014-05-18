@@ -10,13 +10,13 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student'),
+    students: DS.hasMany('student', { async: true }),
     reviews: DS.hasMany('review')
 });
 
 App.Student = App.User.extend({
     // properties
-    // relationships
+    // relationships 
     teacher: DS.belongsTo('teacher'),
     essays: DS.hasMany('themeEssay', {async: true}),
     universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there

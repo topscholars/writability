@@ -120,7 +120,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                         .then(  function () { 
                             that.convertEssays(student);
                             //that.transitionToRoute("essays") 
-                        });
+                        })
                         .catch( function (error) { 
                             console.log(error);
                             alert("Sorry! We've encountered an error."); 
