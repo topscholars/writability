@@ -9,6 +9,8 @@ ApplicationEssay is the essay the students write for a specific Application.
 Essays have a series of Drafts that the Student writes.
 
 """
+from sqlalchemy.orm import validates
+
 from .db import db
 from .base import BaseModel, StatefulModel
 from .fields import SerializableStringList
@@ -58,7 +60,7 @@ class ThemeEssay(StatefulModel, Essay):
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     # optional fields
-    proposed_topics = db.Column(SerializableStringList)
+    proposed_topics = db.Column(SerializableStringList, default=["", ""])
 
     # relationships
     theme_id = db.Column(db.Integer, db.ForeignKey("theme.id"))
@@ -76,6 +78,10 @@ class ThemeEssay(StatefulModel, Essay):
         self.context = theme_essay_template.context
         self.theme = theme_essay_template.theme
 
+    @validates('proposed_topics')
+    def validate_proposed_topics(self, key, proposed_topics):
+        assert len(proposed_topics) == 2
+        return proposed_topics
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""

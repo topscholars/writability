@@ -8,7 +8,8 @@ This is the Writability app.
 """
 import os
 from flask import Flask, render_template
-from flask_sslify import SSLify
+# TEMP: reinsert after certificate
+# from flask_sslify import SSLify
 
 import logging
 from logging import Formatter, FileHandler
@@ -23,7 +24,8 @@ from controllers import frontend, api, security
 
 app = Flask(__name__)
 
-sslify = SSLify(app, subdomains=True)
+# TEMP: reinsert after certificate
+# sslify = SSLify(app, subdomains=True)
 
 app.config.from_object('config')
 

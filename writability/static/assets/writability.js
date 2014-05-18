@@ -87,27 +87,107 @@ App.ArrayTransform = DS.Transform.extend({
 });
 
 Ember.Handlebars.helper('dotdotfifty', function(str) {
-  if (str)
-    if (str.length > 50)
-      return str.substring(0,50) + '...';
-  return str;
+    if (str) {
+        if (str.length > 50) {
+            return str.substring(0,50) + '...';
+        }
+    }
+    return str;
 });
+
 Ember.Handlebars.helper("debug", function(optionalValue) {
-  console.log("Current Context");
-  console.log("====================");
-  console.log(this);
- 
-  if (optionalValue) {
-    console.log("Value");
+    console.log("Current Context");
     console.log("====================");
-    console.log(optionalValue);
-  }
+    console.log(this);
+
+    if (optionalValue) {
+        console.log("Value");
+        console.log("====================");
+        console.log(optionalValue);
+    }
 });
 //Handlebars.registerHelper('dotdotfifty', function(str) {
 //  if (str.length > 50)
 //    return str.substring(0,50) + '...';
 //  return str;
 //});
+//
+
+/**
+    A replacement for #each that provides an index value (and other helpful
+    values) for each iteration. Unless using `foo in bar` format, the item
+    at each iteration will be accessible via the `item` variable.
+
+    From: http://mozmonkey.com/2014/03/ember-getting-the-index-in-each-loops/
+ 
+    Simple Example
+    --------------
+    ```
+    {{#eachIndexed bar in foo}}
+      {{index}} - {{bar}}
+    {{/#eachIndexed}}
+    ```
+
+    Helpful iteration values
+    ------------------------
+    * index: The current iteration index (zero indexed)
+    * index_1: The current iteration index (one indexed)
+    * first: True if this is the first item in the list
+    * last: True if this is the last item in the list
+    * even: True if it's an even iteration (0, 2, 4, 6)
+    * odd: True if it's an odd iteration (1, 3, 5)
+*/
+Ember.Handlebars.registerHelper('eachIndexed', function eachHelper(path, options) {
+    var keywordName = 'item',
+        fn;
+
+    // Process arguments (either #earchIndexed bar, or #earchIndexed foo in bar)
+    if (arguments.length === 4) {
+          Ember.assert('If you pass more than one argument to the eachIndexed helper, it must be in the form #eachIndexed foo in bar', arguments[1] === 'in');
+          Ember.assert(arguments[0] +' is a reserved word in #eachIndexed', $.inArray(arguments[0], ['index', 'index+1', 'even', 'odd']));
+          keywordName = arguments[0];
+
+          options = arguments[3];
+          path = arguments[2];
+          options.hash.keyword = keywordName;
+          if (path === '') { path = 'this'; }
+    }
+
+    if (arguments.length === 1) {
+        options = path;
+        path = 'this';
+    }
+
+    // Wrap the callback function in our own that sets the index value
+    fn = options.fn;
+    function eachFn(){
+          var keywords = arguments[1].data.keywords,
+              view = arguments[1].data.view,
+              index = view.contentIndex,
+              list = view._parentView.get('content') || [],
+              len = list.length;
+
+          // Set indexes
+          keywords['index'] = index;
+          keywords['index_1'] = index + 1;
+          keywords['first'] = (index === 0);
+          keywords['last'] = (index + 1 === len);
+          keywords['even'] = (index % 2 === 0);
+          keywords['odd'] = !keywords['even'];
+          arguments[1].data.keywords = keywords;
+
+          return fn.apply(this, arguments);
+    }
+    options.fn = eachFn;
+
+    // Render
+    options.hash.dataSourceBinding = path;
+    if (options.data.insideGroup && !options.hash.groupedRows && !options.hash.itemViewClass) {
+          new Ember.Handlebars.GroupedEach(this, path, options).render();
+    } else {
+          return Ember.Handlebars.helpers.collection.call(this, 'Ember.Handlebars.EachView', options);
+    }
+});
 
 App.DetailsView = Ember.View.extend({
     templateName: 'core/modules/details',
@@ -194,7 +274,7 @@ App.Essay = DS.Model.extend({
 
     // relationships
     student: DS.belongsTo('student'),
-    drafts: DS.hasMany('draft'),
+    drafts: DS.hasMany('draft', {async: true}),
     essay_template: DS.belongsTo('essay_template')
 });
 
@@ -348,6 +428,36 @@ App.DraftController = Ember.ObjectController.extend({
 
 App.DraftView = App.EditorView.extend({
     templateName: 'modules/draft',
+});
+
+/* globals App, Ember */
+App.EssayController = Ember.ObjectController.extend({
+
+    // If we're explicit then Ember binding is simpler.
+    proposed_topic_0: function () {
+        console.log('PROP 0');
+        return this.get('model').get('proposed_topics')[0];
+    }.property('proposed_topics'),
+
+    proposed_topic_1: function () {
+        console.log('PROP 1');
+        return this.get('model').get('proposed_topics')[1];
+    }.property('proposed_topics'),
+
+    /**
+     * Helper method to cause observer to fire only once.
+     */
+    _proposed_topics_merged: function () {
+        return this.get('proposed_topic_0') + this.get('proposed_topic_1');
+    }.property('proposed_topic_0', 'proposed_topic_1'),
+
+    proposedTopicsChanged: function () {
+        var newProposedTopics = [
+            this.get('proposed_topic_0'),
+            this.get('proposed_topic_1')
+        ];
+        this.get('model').set('proposed_topics', newProposedTopics);
+    }.observes('_proposed_topics_merged')
 });
 
 App.EssayView = App.DetailsView.extend({
@@ -1016,7 +1126,7 @@ Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handle
 
 Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div> <div class=\"value\">{{audience}}</div>\n</div>\n");
+Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    {{view App.Button text=\"Write\"}}\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_1\"}}\n    </div>\n{{/if}}\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<div class=\"list-style-group\">{{id}} +7</div>\n<div class=\"main-group\">\n    <div class=\"main-line\">Theme</div>\n    <div class=\"sub-line\">Category</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">Start Topic</div>\n    <div class=\"draft-due\">Draft Due: May 3, 2014</div>\n    <div class=\"essay-due\">Essay Due: {{due_date}}</div>\n</div>\n");
 

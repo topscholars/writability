@@ -1,9 +1,29 @@
 <div class="details-field">
-    <div class="key">Audience:</div> <div class="value">{{audience}}</div>
+    <div class="key">Prompt:</div>
+    <div class="value app-text">{{essay_prompt}}</div>
 </div>
 <div class="details-field">
-    <div class="key">Audience:</div> <div class="value">{{audience}}</div>
+    <div class="key">Audience:</div>
+    <div class="value app-text">{{audience}}</div>
 </div>
 <div class="details-field">
-    <div class="key">Audience:</div> <div class="value">{{audience}}</div>
+    <div class="key">Context:</div>
+    <div class="value app-text">{{context}}</div>
 </div>
+
+{{#if topic }}
+    <div class="details-field">
+        <div class="key">Topic:</div>
+        <div class="value student-text">{{topic}}</div>
+    </div>
+    {{view App.Button text="Write"}}
+{{else}}
+    <div class="details-field">
+        <div class="key">Topic 1:</div>
+        {{textarea class="value student-text" valueBinding="proposed_topic_0"}}
+    </div>
+    <div class="details-field">
+        <div class="key">Topic 2:</div>
+        {{textarea class="value student-text" valueBinding="proposed_topic_1"}}
+    </div>
+{{/if}}
