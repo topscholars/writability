@@ -98,11 +98,11 @@ App.UniversitiesIndexRoute = Ember.Route.extend({
     }
 });
 
-// Actions are events. 2 types of events. Within-module (select element in list + update list)  
-                            // and 
+// Actions are events. 2 types of events. Within-module (select element in list + update list)
+                            // and
 App.StudentsRoute = Ember.Route.extend({
     model: function () { //
-        return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current 
+        return this.store.find('teacher', 0).then(function (teacher) { // 0 is for current
 
             console.log(teacher.get('students'));
                         //concatenate invites and students
@@ -112,17 +112,17 @@ App.StudentsRoute = Ember.Route.extend({
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'}); 
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
                 // needs into explicity because core/layouts/main was rendered within function
     },
     actions: {
         // TODO This should create an invitation model and add to list
         inviteStudent: function (student) {
-            this.store.find('teacher', 0).then(function (teacher) { 
+            this.store.find('teacher', 0).then(function (teacher) {
                 var students = teacher.get('students');
-                students.pushObject(student); 
+                students.pushObject(student);
                 // Set status to server
-                students.save();  // Ember magic   s.model has a save with 
+                students.save();  // Ember magic   s.model has a save with
                 // student.invitation.create
             });
         }
@@ -131,7 +131,10 @@ App.StudentsRoute = Ember.Route.extend({
 
 App.EssaysRoute = Ember.Route.extend({
     model: function () {
-        return this.store.find('themeEssay');
+        return this.store.find('student', 0)
+            .then(function (student) {
+                return student.get('essays');
+        });
     },
 
     renderTemplate: function () {
