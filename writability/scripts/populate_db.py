@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
+import os
 import json
 import requests
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
 ROOT_URL = "http://localhost:5000/api/"
 HEADERS = {'Content-type': 'application/json'}
-
 
 class Populator(object):
 
@@ -16,7 +18,7 @@ class Populator(object):
         self._wins = []
         self._losses = []
 
-        f = open(self._FILE_PATH, "r")
+        f = open(os.path.join(base_dir, self._FILE_PATH), "r")
         file = f.read()
 
         for obj in self._parse_file_into_objects(file):
