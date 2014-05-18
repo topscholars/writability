@@ -430,12 +430,10 @@ button, input[type="checkbox"] {
     }
 
     .left-nav {
-        border-right: @thinBorder @greyDark solid;
         float: left;
     }
 
     .right-nav {
-        border-left: @thinBorder @greyDark solid;
         float: right;
     }
 }
@@ -809,4 +807,20 @@ button, input[type="checkbox"] {
 
 .landing-modal {
 
+}
+
+/***********************************************************
+* LAYOUT: nav buttons
+************************************************************/
+.left-nav-button {
+    border-right: @thinBorder @greyDark solid; 
+    &:hover {
+        border-right: @thinBorder @greyDark solid; 
+    }
+}
+.right-nav-button {
+    border-left: @thinBorder @greyDark solid; 
+    &:hover {
+        border-left: @thinBorder @greyDark solid; 
+    }
 }

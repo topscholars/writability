@@ -102,6 +102,8 @@ class ItemResource(BaseResource):
         item_field = self.resource_manager.item_field
 
         payload = self._get_payload()
+        # print resource_name, id   # TODO KIRK DELETE THESE
+        # print payload
         item = {resource_name: model_class.update(id, payload)}
 
         return marshal(item, item_field)
