@@ -68,7 +68,7 @@ App.UniversitiesRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('NavHeader', {outlet: 'header'}); // pass in backDisabled
+        this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
     },
 

@@ -194,7 +194,7 @@ App.Essay = DS.Model.extend({
 
     // relationships
     drafts: DS.hasMany('draft'),
-    essay: DS.belongsTo('essay')   // *IFFY  // changed to essay_template
+    essay_template: DS.belongsTo('essay_template') 
 });
 
 App.ThemeEssay = App.Essay.extend({
@@ -546,7 +546,6 @@ App.UniversitiesController = Ember.ArrayController.extend({
         that = this;
         var app_essay_templates;    // ManyArray, universities.all.app_essay_templates
                
-        /* Comment for merge
         this.getAllTemplatesForStudent(student)
             .then( function (app_essay_templates) {
                 var all_themes = [];
@@ -591,7 +590,6 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     });
                 });
             });
-        */
     },
     // app_essay_templates are always unique. May 14, 2014
     getAllTemplatesForStudent: function (student) {
@@ -618,6 +616,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     })
                     .catch( function (error) { 
                         console.log('Error in univs.forEach loop.'); 
+                        console.log(error); 
                         deferred.reject(error);
                     });
             });
@@ -857,7 +856,7 @@ App.UniversitiesRoute = Ember.Route.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/main');
-        this.render('NavHeader', {outlet: 'header'}); // pass in backDisabled
+        this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
     },
 
