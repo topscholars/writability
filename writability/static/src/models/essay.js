@@ -18,7 +18,10 @@ App.Essay = DS.Model.extend({
 App.ThemeEssay = App.Essay.extend({
     next_states: DS.attr('array', {readOnly: true}),
     proposed_topics: DS.attr('array'),
-    state: DS.attr('string')
+    state: DS.attr('string'),
+
+    // relationships
+    theme: DS.belongsTo('theme', {async: true})
 });
 
 App.ApplicationEssay = App.Essay.extend({
