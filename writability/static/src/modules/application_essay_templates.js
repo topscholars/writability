@@ -9,8 +9,8 @@ App.ApplicationEssayTemplatesController = Ember.ArrayController.extend({
 });
 
 App.ApplicationEssayTemplatesView = App.ListView.extend({
+    classNames: ['application-essay-templates'],
     title: 'Application Essays',
     listItem: App.ApplicationEssayTemplatesItemView,
     newItem: null
-
 });
