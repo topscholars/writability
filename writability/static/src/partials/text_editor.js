@@ -103,6 +103,5 @@ App.TextEditor = Ember.TextArea.extend({
         //var context = this.get('context');
         //var editor = context.get('editor');
         this.get('editor').destroy(false);
-        this.get('editor').remove();
     }
 });
