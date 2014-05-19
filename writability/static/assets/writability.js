@@ -355,7 +355,8 @@ App.User = DS.Model.extend({
     email: DS.attr('string'),
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
-    roles: DS.hasMany('role', {async: true})
+    roles: DS.hasMany('role', {async: true}),
+    state: DS.attr('string')
 });
 
 App.Teacher = App.User.extend({
@@ -692,14 +693,14 @@ App.UniversitiesController = Ember.ArrayController.extend({
                             themes.forEach( function (theme, index) {                   // This theme variable doesn't contain 
                                 var theme_id = theme.get('id'); 
                                 if ( all_themes.indexOf(theme_id) == -1 ) {             // If themeEssay not yet created 
-                                    console.log('theme: ' + theme + 'theme_id: ' + theme_id);  // Collect data before entering these functions    
-                                    console.log(all_themes);
-                                    console.log('index_of id: ' + all_themes.indexOf(theme_id));
+                                    //console.log('theme: ' + theme + 'theme_id: ' + theme_id);  // Collect data before entering these functions    
+                                    //console.log(all_themes);
+                                    //console.log('index_of id: ' + all_themes.indexOf(theme_id));
                                     all_themes.push(theme_id);
 
                                     theme.get('theme_essay_template')                   // TODO: API call here is horrific
                                         .then(function (theme_essay_template) {         // ERROR: This sometimes gives a NULL error. (theme_id=6)
-                                            console.log('theme essay_template: ' + theme_essay_template);
+                                            //console.log('theme essay_template: ' + theme_essay_template);
                                             var theme_essay = that.store.createRecord('theme_essay', {
                                                 theme: theme,
                                                 application_essays: app_essay_id,    // should be app_essay, not app_essay_template
@@ -780,8 +781,11 @@ App.UniversitiesController = Ember.ArrayController.extend({
                         that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
                             .done( function () {
                                 student.set('state', 'active');             // Set student state to active
-                                student.save();
-                                that.transitionToRoute("essays");           // Redirect to Essays page
+                                student.save().then(function () {
+                                    //debugger;
+                                    that.transitionToRoute("essays");           // Redirect to Essays page
+                                });
+
                             })
                             .fail( function (error) {
                                 console.log(error);

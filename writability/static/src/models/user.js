@@ -4,7 +4,8 @@ App.User = DS.Model.extend({
     email: DS.attr('string'),
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
-    roles: DS.hasMany('role', {async: true})
+    roles: DS.hasMany('role', {async: true}),
+    state: DS.attr('string')
 });
 
 App.Teacher = App.User.extend({
