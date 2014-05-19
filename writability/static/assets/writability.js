@@ -284,7 +284,6 @@ App.ThemeEssay = App.Essay.extend({
     state: DS.attr('string')
 });
 
-<<<<<<< HEAD
 App.ApplicationEssay = App.Essay.extend({
 });
 
@@ -312,12 +311,6 @@ App.Invitation = DS.Model.extend({
     email: DS.attr('string'),
     is_registered: DS.attr('boolean'),
     teacher: DS.belongsTo('teacher')
-=======
-App.Theme = DS.Model.extend({
-    // properties
-    name: DS.attr('string'),
-    category: DS.attr('string')
->>>>>>> Add theme model, link its attributes to essay item.
 });
 
 App.Review = DS.Model.extend({
