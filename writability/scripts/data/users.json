@@ -14,7 +14,8 @@
         "last_name": "James",
         "roles": [2],
         "teacher": 1,
-        "active": true
+        "active": true,
+        "state": "confirmed"
     },
     {
         "email": "student2@writ.co",
@@ -23,6 +24,7 @@
         "last_name": "Parsons",
         "roles": [2],
         "teacher": 1,
-        "active": true
+        "active": true,
+        "state": "confirmed"
     }
 ]
