@@ -23,14 +23,17 @@ class Populator(object):
 
         for obj in self._parse_file_into_objects(file):
             payload = self._construct_payload(obj)
-            title = self._get_title(payload)
+            if payload:
+                title = self._get_title(payload)
 
-            is_success = self._populate_db(payload)
+                is_success = self._populate_db(payload)
 
-            if is_success:
-                self._wins.append(title)
+                if is_success:
+                    self._wins.append(title)
+                else:
+                    self._losses.append(title)
             else:
-                self._losses.append(title)
+                self._losses.append('mystery')
 
         self._print_outcome()
 
@@ -68,6 +71,9 @@ class Populator(object):
             return False
 
         item = resp.json()
+
+        if not item[object_type]:
+            return False
 
         return item[object_type][0][field]
 
@@ -179,7 +185,7 @@ class ThemeEssayTemplatePopulator(Populator):
 class ApplicationEssayTemplatePopulator(Populator):
 
     _PATH = "application-essay-templates"
-    _FILE_PATH = "data/application-essay-templates.csv"
+    _FILE_PATH = "data/aed.csv"
 
     def _construct_payload(self, line):
         columns = line.split(',', 4)
@@ -203,7 +209,10 @@ class ApplicationEssayTemplatePopulator(Populator):
             category = tokens[0].strip()
             name = tokens[1].strip()
             theme_id = self._get_theme_id(name, category)
-            themes.append(theme_id)
+            if theme_id:
+                themes.append(theme_id)
+        if not themes:
+            return False
 
         # essay_prompt
         essay_prompt = columns[4].strip().strip("\"")
