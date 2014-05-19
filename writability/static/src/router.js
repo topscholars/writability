@@ -157,14 +157,18 @@ App.EssaysRoute = Ember.Route.extend({
 
 App.EssayRoute = Ember.Route.extend({
     model: function (params) {
+        console.log('router model EssayRoute. themeEssay.id: ' + params.id);
         return this.store.find('themeEssay', params.id);
     },
 
     renderTemplate: function () {
-        this.render({outlet: 'right-side-outlet'});
 
-        var id = this.controller.get('model').id;
+        console.log('this.currentModel id: ' + this.currentModel.id );
+        //this.modelFor(this.EssayRoute)
+        var id = this.currentModel.id;
+        //var id = this.controller.get('model').id;
         this.controllerFor('essays').findBy('id', id).send('select');
+        this.render({outlet: 'right-side-outlet'});
     }
 });
 
