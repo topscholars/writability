@@ -681,7 +681,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                 console.log('all_themes at start: ' + all_themes);
                 app_essay_templates.forEach(function (app_essay_template, index) {            // For each AppEssay Template
                     if (existing_app_essay_tmp_ids.indexOf(app_essay_template.id) == -1) {    // If related Essay doesn't exist
-                        var item_id = app_essay_template.get('id');  
+                        var item_id = app_essay_template.get('id');
 
                         // Create App Essay. Setting app_essay during theme_essay creation handles both sides of the relationship
                         if ( existing_app_essay_tmp_ids.indexOf(item_id) == -1 ) {
@@ -693,10 +693,10 @@ App.UniversitiesController = Ember.ArrayController.extend({
                         app_essay_template.get('themes').then(function (themes) {       // Each app_ess_tmp hasMany themes
                             var themes_length =  themes.get('length');
 
-                            themes.forEach( function (theme, index) {                   // This theme variable doesn't contain 
-                                var theme_id = theme.get('id'); 
-                                if ( all_themes.indexOf(theme_id) == -1 ) {             // If themeEssay not yet created 
-                                    //console.log('theme: ' + theme + 'theme_id: ' + theme_id);  // Collect data before entering these functions    
+                            themes.forEach( function (theme, index) {                   // This theme variable doesn't contain
+                                var theme_id = theme.get('id');
+                                if ( all_themes.indexOf(theme_id) == -1 ) {             // If themeEssay not yet created
+                                    //console.log('theme: ' + theme + 'theme_id: ' + theme_id);  // Collect data before entering these functions
                                     //console.log(all_themes);
                                     //console.log('index_of id: ' + all_themes.indexOf(theme_id));
                                     all_themes.push(theme_id);
@@ -713,14 +713,14 @@ App.UniversitiesController = Ember.ArrayController.extend({
                                                 proposed_topics: ["",""]                  // Without this attr, it tries False gives a Bool isn't iterable error
                                             });
                                             theme_essay.save();                      // Create theme_essay
-                                        
+
                                             if (index == themes_length - 1) {             // Resolve when complete!
                                                 deferred.resolve();
                                             }
                                         })
                                         .catch( function(error) {
                                             console.log(theme_id + ' <- If this is "6" then this is an ember quirk where a .get fails');
-                                        }); 
+                                        });
                                 }
                             });
                         });
@@ -730,7 +730,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                 });
             });
         return deferred.promise();
-        
+
     },
     createAppEssay: function (student, item) {
         var app_essay = this.store.createRecord('application_essay', {
@@ -746,12 +746,12 @@ App.UniversitiesController = Ember.ArrayController.extend({
         var deferred = jQuery.Deferred();
         var essays_list = [];
         var last_univ = false;
-        student.get('universities').then(function (univs) {    
+        student.get('universities').then(function (univs) {
             var univs_count = univs.get('length');
             console.log('univs count: ' + univs_count );
-            
+
             // Outside all loops
-            univs.forEach(function (item, index, enumerable) {            // For each Univ  
+            univs.forEach(function (item, index, enumerable) {            // For each Univ
                 last_univ = (index == univs_count - 1) ? true : false ;   // end of univ loop?
                 item.get('application_essay_templates')                   // Get app templates
                     .then( function (app_essay_templates) {               // for each template
@@ -764,8 +764,8 @@ App.UniversitiesController = Ember.ArrayController.extend({
                             }
                         });
                     })
-                    .catch( function (error) { 
-                        console.log('Error in univs.forEach loop.'); 
+                    .catch( function (error) {
+                        console.log('Error in univs.forEach loop.');
                         console.log(error);
                         deferred.reject(error);
                     });
@@ -779,25 +779,34 @@ App.UniversitiesController = Ember.ArrayController.extend({
             var that = this;
 
             this.store.find('student', 0).then(function (student) {
-                student.save()
-                    .then( function () { 
-                        that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
-                            .done( function () {
-                                student.set('state', 'active');             // Set student state to active
-                                student.save().then(function () {
-                                    //debugger;
-                                    that.transitionToRoute("essays");           // Redirect to Essays page
-                                });
+                student.get('roles').then(function (oldRoles) {
+                    student.save().then(function () {
+                        //student.get('roles').then(function (newRoles) {
+                        //    console.log(oldRoles.content.length);
+                        //    console.log(newRoles.content.length);
+                        //    alert();
+                                that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
+                                    .done( function () {
+                                        student.set('state', 'active');             // Set student state to active
+                                        student.save().then(function () {
+                                            //debugger;
+                                            that.transitionToRoute("essays");           // Redirect to Essays page
+                                        });
 
-                            })
-                            .fail( function (error) {
-                                console.log(error);
-                            });                
+                                    })
+                                    .fail( function (error) {
+                                        console.log(error);
+                                    });
+                             //   });
+                        //});
+
+
                     })
-                    .catch( function (error) { 
+                    .catch( function (error) {
                         console.log(error);
-                        alert("Sorry! We've encountered an error."); 
+                        alert("Sorry! We've encountered an error.");
                     });
+                });
             });
         }
     }
