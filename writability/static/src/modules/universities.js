@@ -150,15 +150,20 @@ App.UniversitiesController = Ember.ArrayController.extend({
                 student.get('roles').then(function (oldRoles) {
                     student.save().then(function () {
                         //student.get('roles').then(function (newRoles) {
-                        //    console.log(oldRoles.content.length);
+                        //console.log(oldRoles.content.length);
+                        //alert();
                         //    console.log(newRoles.content.length);
                         //    alert();
                                 that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
                                     .done( function () {
                                         student.set('state', 'active');             // Set student state to active
-                                        student.save().then(function () {
-                                            //debugger;
-                                            that.transitionToRoute("essays");           // Redirect to Essays page
+                                        student.get('roles').then(function (newRoles) {
+                                            console.log(newRoles.content.length);
+                                            student.save().then(function () {
+                                                console.log(newRoles.content.length);
+                                                //debugger;
+                                                that.transitionToRoute("essays");           // Redirect to Essays page
+                                            });
                                         });
 
                                     })
