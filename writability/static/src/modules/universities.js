@@ -14,7 +14,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
     // set select for new item
     defaultValueOption: "3",
 
-    universities: function () {
+    universities: function () {                     // This populates all universities
         return this.store.find('university');
     }.property(),
 
@@ -27,57 +27,88 @@ App.UniversitiesController = Ember.ArrayController.extend({
     }.observes("newUniversity"),
 
     convertEssays: function (student) {  //pass in?   scope = this
+        var deferred = $.Deferred();
         console.log('convertEssays() called');
-        that = this;
+        var that = this;
         var app_essay_templates;    // ManyArray, universities.all.app_essay_templates
-               
-        /* Comment for merge
-        this.getAllTemplatesForStudent(student)
-            .then( function (app_essay_templates) {
-                var all_themes = [];
-                console.log(' done! templates: '); 
-                console.log(app_essay_templates);
-                console.log( 'app_essay_templates.toString: ' + app_essay_templates.toString() );
-                app_essay_templates.forEach(function (item, index) {  
-                    var item_id = item.get('id');  
-                    var themes_id_obj_dict = [];
 
-
-                    // Create App Essay  
-                    // Here assumes that setting app_essay during theme_essay creation 
-                    // handles both sides of the relationship
-                    var app_essay = that.store.createRecord('application_essay', {
-                        essay: item_id  // id OR obj  // added via backref above ? //essay_template
-                    });
-                    app_essay.save();
-                    app_essay_id = app_essay.get('id');
-                    // Create Theme Essays for each
-                    item.get('themes').then(function (themes) {         // Each app_ess_tmp hasMany themes
-                        var themes_length =  themes.get('length');
-
-                        themes.forEach( function (theme) {  
-                            var theme_id = theme.get('id');   
-                            //all_themes.addObject(theme);              // Ember, adds if does not exist.                    //
-                            if ( all_themes.indexOf(theme_id) == -1 ) {    // If themeEssay not yet created    
-                                all_themes.push(theme_id);
-                                themes_id_obj_dict.push({
-                                    key:   item_id,
-                                    value: theme
-                                });
-                                var theme_essay = that.store.createRecord('essay', {
-                                    essay_template: theme_id,
-                                    application_essays: app_essay_id,  // should be app_essay, not app_essay_template
-                                    student: student
-                                });
-                                theme_essay.save();
-                                //Create theme_essay from this theme_template with state new.
-                            }
-                        });
-                    });
+        // This checks for existing AppEssays and prevents dupes based on the linked AppEssTemplate ID
+        // Other parts of the application could still create dupes.
+        var existing_app_essay_tmp_ids = [];
+        student.get('application_essays')
+            .then( function (app_essays) {
+                app_essays.forEach( function (app_essay) {
+                    existing_app_essay_tmp_ids.push(app_essay.essay_template.id);
                 });
             });
-        */
+        //console.log(existing_app_essay_tmp_ids);
+
+        this.getAllTemplatesForStudent(student)
+            .done( function (app_essay_templates) {
+                var all_themes = [];
+                console.log('all_themes at start: ' + all_themes);
+                app_essay_templates.forEach(function (app_essay_template, index) {            // For each AppEssay Template
+                    if (existing_app_essay_tmp_ids.indexOf(app_essay_template.id) == -1) {    // If related Essay doesn't exist
+                        var item_id = app_essay_template.get('id');  
+
+                        // Create App Essay. Setting app_essay during theme_essay creation handles both sides of the relationship
+                        if ( existing_app_essay_tmp_ids.indexOf(item_id) == -1 ) {
+                            var app_essay_id = that.createAppEssay(student, app_essay_template);
+                            existing_app_essay_tmp_ids.push(item_id);
+                        }
+
+                        // Create Theme Essays for each app essay template
+                        app_essay_template.get('themes').then(function (themes) {       // Each app_ess_tmp hasMany themes
+                            var themes_length =  themes.get('length');
+
+                            themes.forEach( function (theme, index) {                   // This theme variable doesn't contain 
+                                var theme_id = theme.get('id'); 
+                                if ( all_themes.indexOf(theme_id) == -1 ) {             // If themeEssay not yet created 
+                                    //console.log('theme: ' + theme + 'theme_id: ' + theme_id);  // Collect data before entering these functions    
+                                    //console.log(all_themes);
+                                    //console.log('index_of id: ' + all_themes.indexOf(theme_id));
+                                    all_themes.push(theme_id);
+
+                                    theme.get('theme_essay_template')                   // TODO: API call here is horrific
+                                        .then(function (theme_essay_template) {         // ERROR: This sometimes gives a NULL error. (theme_id=6)
+                                            //console.log('theme essay_template: ' + theme_essay_template);
+                                            var theme_essay = that.store.createRecord('theme_essay', {
+                                                theme: theme,
+                                                application_essays: app_essay_id,    // should be app_essay, not app_essay_template
+                                                essay_template: theme_essay_template,// get theme essay template
+                                                student: student,
+                                                state: "new",                        // AssertionError without
+                                                proposed_topics: ["",""]                  // Without this attr, it tries False gives a Bool isn't iterable error
+                                            });
+                                            theme_essay.save();                      // Create theme_essay
+                                        
+                                            if (index == themes_length - 1) {             // Resolve when complete!
+                                                deferred.resolve();
+                                            }
+                                        })
+                                        .catch( function(error) {
+                                            console.log(theme_id + ' <- If this is "6" then this is an ember quirk where a .get fails');
+                                        }); 
+                                }
+                            });
+                        });
+                    } else {
+                        console.log('Skipping creation of duplicate App Essay.');
+                    }
+                });
+            });
+        return deferred.promise();
+        
     },
+    createAppEssay: function (student, item) {
+        var app_essay = this.store.createRecord('application_essay', {
+                            student: student,
+                            essay_template: item    // Requires object, not ID.  backref creates other other model's relation.
+                        });
+        app_essay.save();
+        return app_essay.get('id');                 // Return ID
+    },
+    // Move to model
     // app_essay_templates are always unique. May 14, 2014
     getAllTemplatesForStudent: function (student) {
         var deferred = jQuery.Deferred();
@@ -103,6 +134,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     })
                     .catch( function (error) { 
                         console.log('Error in univs.forEach loop.'); 
+                        console.log(error);
                         deferred.reject(error);
                     });
             });
@@ -112,20 +144,29 @@ App.UniversitiesController = Ember.ArrayController.extend({
 
     actions: {
         next: function() {
-            that = this;
+            var that = this;
 
-            this.store.find('student', 0)
-                .then(function (student) {
-                    student.save()
-                        .then(  function () { 
-                            that.convertEssays(student);
-                            //that.transitionToRoute("essays") 
-                        })
-                        .catch( function (error) { 
-                            console.log(error);
-                            alert("Sorry! We've encountered an error."); 
-                        });
-                });
+            this.store.find('student', 0).then(function (student) {
+                student.save()
+                    .then( function () { 
+                        that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
+                            .done( function () {
+                                student.set('state', 'active');             // Set student state to active
+                                student.save().then(function () {
+                                    //debugger;
+                                    that.transitionToRoute("essays");           // Redirect to Essays page
+                                });
+
+                            })
+                            .fail( function (error) {
+                                console.log(error);
+                            });                
+                    })
+                    .catch( function (error) { 
+                        console.log(error);
+                        alert("Sorry! We've encountered an error."); 
+                    });
+            });
         }
     }
 });

@@ -34,9 +34,6 @@ class EssayResourceManager(ResourceManager):
             "max_words": fields.Integer,
             "num_of_drafts": fields.Integer,
             "due_date": fields.String,
-            "theme": ResourceField(
-                theme.ThemeResourceManager.item_resource_name,
-                absolute=True),
             "drafts": fields.List(ResourceField(
                 draft.DraftResourceManager.item_resource_name,
                 absolute=True)),
@@ -69,6 +66,9 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
         super(ThemeEssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
             "proposed_topics": fields.List(fields.String),
+            "theme": ResourceField(
+                theme.ThemeResourceManager.item_resource_name,
+                absolute=True),
             "application_essays": fields.List(ResourceField(
                 ApplicationEssayResourceManager.item_resource_name,
                 absolute=True))

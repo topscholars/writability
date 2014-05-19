@@ -64,8 +64,8 @@ class User(StatefulModel, UserMixin):
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {
-            "unconfirmed": ["confirmed"],
-            "confirmed": ["active, inactive"],
+            "unconfirmed": ["confirmed", "active"],
+            "confirmed": ["active", "inactive"],
             "active": ["inactive"],
             "inactive": ["active"]
         }
