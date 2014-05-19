@@ -440,33 +440,70 @@ App.DraftView = App.EditorView.extend({
 
 /* globals App, Ember */
 App.EssayController = Ember.ObjectController.extend({
+    needs: ['essays'],
 
     // If we're explicit then Ember binding is simpler.
     proposed_topic_0: function () {
-        console.log('PROP 0');
-        // var proposed_topics = //TODO bug put an if statement around this
-        return this.get('model').get('proposed_topics')[0];
+        //var deferred = $.Deferred();
+        var correct_id = this.get('controllers.essays.selectedEssay.id');
+        var topics_t = this.get('controllers.essays.selectedEssay.proposed_topics');
+        console.log(topics_t);
+        console.log('PROP 0. model id: ' + correct_id );
+        return topics_t[0];
+        //var correct_essay = this.store.find('themeEssay', correct_id)
+        //    .then(function (essay) {
+        //        console.log('PROP 0. model id: ' + essay.id );
+        //        var topic_o = essay.get('proposed_topics')[0];
+        //        return topic_o;
+        //    });
+        //console.log(correct_essay);
+
+
+        //return deferred.promise();
+        //return this.get('model').get('proposed_topics')[0];
     }.property('proposed_topics'),
 
     proposed_topic_1: function () {
-        console.log('PROP 1');
-        return this.get('model').get('proposed_topics')[1];
+        var correct_id = this.get('controllers.essays.selectedEssay.id');
+        var topics = this.get('controllers.essays.selectedEssay.proposed_topics');
+        console.log('PROP 1. model id: ' + correct_id );
+        return topics[1];
+        
+        //console.log('PROP 1. model id: ' + this.get('model').get('id') );
+        //return this.get('model').get('proposed_topics')[1];
     }.property('proposed_topics'),
 
     /**
      * Helper method to cause observer to fire only once.
      */
-    _proposed_topics_merged: function () {
-        return this.get('proposed_topic_0') + this.get('proposed_topic_1');
-    }.property('proposed_topic_0', 'proposed_topic_1'),
+    //_proposed_topics_merged: function () {
+    //    return this.get('proposed_topic_0') + this.get('proposed_topic_1');
+    //}.property('proposed_topic_0', 'proposed_topic_1'),
 
-    proposedTopicsChanged: function () {
-        var newProposedTopics = [
-            this.get('proposed_topic_0'),
-            this.get('proposed_topic_1')
-        ];
+    //proposedTopicsChanged: function () {
+    //    var newProposedTopics = [
+    //        this.get('proposed_topic_0'),
+    //        this.get('proposed_topic_1')
+    //    ];
+    //    this.get('model').set('proposed_topics', newProposedTopics);
+    //}.observes('_proposed_topics_merged'),
+
+    proposedTopicOneChanged: function () {
+        console.log('proposedTopicOneChanged()');
+        var pt2 = this.get('model').get('proposed_topics')[1];
+        var newProposedTopics = [  this.get('proposed_topic_0'),
+                                   pt2                            ]
         this.get('model').set('proposed_topics', newProposedTopics);
-    }.observes('_proposed_topics_merged'),
+    //}.observes('proposed_topics'),
+    }.observes('proposed_topic_0'),
+
+    proposedTopicTwoChanged: function () {
+        console.log('proposedTopicTwoChanged()');
+        var pt1 = this.get('model').get('proposed_topics')[0];
+        var newProposedTopics = [  pt1,
+                                   this.get('proposed_topic_1')  ]
+        this.get('model').set('proposed_topics', newProposedTopics);
+    }.observes('proposed_topic_1'),
 
     getMostRecentDraft: function () {
         return this.get('model').get('drafts').then(function (drafts) {
@@ -527,6 +564,13 @@ App.EssayArchiveTab = Ember.View.extend({
     templateName: "modules/_essay-details-overview"
 });
 
+App.ProposedTopicOne = Ember.View.extend({
+    tagName: 'textarea',
+    classNames: ['value', 'student-text'],
+    //valueBinding: "App.EssayController.proposed_topic_0"
+
+});
+
 App.EssayTabs = Ember.ContainerView.extend({
     childViews: ['overview'],
     overview: App.EssayOverviewTab.create(),
@@ -546,6 +590,7 @@ App.EssayItemController = Ember.ObjectController.extend({
     actions: {
         select: function () {
             var model = this.get('model');
+            console.log('EssayItemController, essay id: ' + model.id);
             this.get('controllers.essays').send('selectEssay', model);
         }
     },
@@ -566,8 +611,8 @@ App.EssaysController = Ember.ArrayController.extend({
     actions: {
         selectEssay: function (model) {
             if (this.selectedEssay !== model) {
-                this.transitionToRoute("essay", model.id);
                 this.set('selectedEssay', model);
+                this.transitionToRoute("essay", model.id);
             }
         }
     }
@@ -1137,14 +1182,18 @@ App.EssaysRoute = Ember.Route.extend({
 
 App.EssayRoute = Ember.Route.extend({
     model: function (params) {
+        console.log('router model EssayRoute. themeEssay.id: ' + params.id);
         return this.store.find('themeEssay', params.id);
     },
 
     renderTemplate: function () {
-        this.render({outlet: 'right-side-outlet'});
 
-        var id = this.controller.get('model').id;
+        console.log('this.currentModel id: ' + this.currentModel.id );
+        //this.modelFor(this.EssayRoute)
+        var id = this.currentModel.id;
+        //var id = this.controller.get('model').id;
         this.controllerFor('essays').findBy('id', id).send('select');
+        this.render({outlet: 'right-side-outlet'});
     }
 });
 
@@ -1181,7 +1230,7 @@ Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handle
 
 Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_1\"}}\n    </div>\n{{/if}}\n");
+Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_1\"}}\n    </div>\n{{/if}}\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">{{id}} +7</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{theme.name}}</div>\n    <div class=\"sub-line\">{{theme.category}}</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">Start Topic</div>\n    <div class=\"draft-due\">Draft Due: May 3, 2014</div>\n    <div class=\"essay-due\">Essay Due: {{due_date}}</div>\n</div>\n");
 
