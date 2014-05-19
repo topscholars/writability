@@ -518,9 +518,6 @@ App.EssayItemController = Ember.ObjectController.extend({
 
     needs: ['essays'],
 
-    themeNameBinding: 'theme.name',
-    themeCategoryBinding: 'theme.category',
-
     actions: {
         select: function () {
             var model = this.get('model');
