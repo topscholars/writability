@@ -12,7 +12,8 @@ App.Essay = DS.Model.extend({
     // relationships
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
-    essay_template: DS.belongsTo('essay_template')
+    essay_template: DS.belongsTo('essay_template'),
+    theme: DS.belongsTo('theme')
 });
 
 App.ThemeEssay = App.Essay.extend({
