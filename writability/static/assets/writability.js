@@ -287,6 +287,12 @@ App.ThemeEssay = App.Essay.extend({
 App.ApplicationEssay = App.Essay.extend({
 });
 
+App.Theme = DS.Model.extend({
+    // properties
+    name: DS.attr('string'),
+    category: DS.attr('string')
+});
+
 /* globals App, DS */
 App.EssayTemplate = DS.Model.extend({
     // properties
