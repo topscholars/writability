@@ -4,6 +4,7 @@ App.EssayController = Ember.ObjectController.extend({
     // If we're explicit then Ember binding is simpler.
     proposed_topic_0: function () {
         console.log('PROP 0');
+        // var proposed_topics = //TODO bug put an if statement around this
         return this.get('model').get('proposed_topics')[0];
     }.property('proposed_topics'),
 
@@ -25,7 +26,22 @@ App.EssayController = Ember.ObjectController.extend({
             this.get('proposed_topic_1')
         ];
         this.get('model').set('proposed_topics', newProposedTopics);
-    }.observes('_proposed_topics_merged')
+    }.observes('_proposed_topics_merged'),
+
+    getMostRecentDraft: function () {
+        return this.get('model').get('drafts').then(function (drafts) {
+            return drafts.get('lastObject').get('id');
+        });
+    },
+
+    actions: {
+        openDraft: function () {
+            var that = this;
+            this.getMostRecentDraft().then(function (id) {
+                that.transitionToRoute('draft', id);
+            });
+        }
+    }
 });
 
 App.EssayView = App.DetailsView.extend({

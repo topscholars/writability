@@ -80,6 +80,26 @@ class User(StatefulModel, UserMixin):
         """Get the allowed initial states."""
         return ["unconfirmed", "confirmed"]
 
+    @property
+    def theme_essays(self):
+        """Return list of theme essays."""
+        theme_essays = []
+        print self.essays
+        for essay in self.essays:
+            if essay.isTheme():
+                theme_essays.append(essay)
+        return theme_essays
+
+    @property
+    def application_essays(self):
+        """Return list of application essays."""
+        application_essays = []
+        for essay in self.essays:
+            if essay.isApplication():
+                application_essays.append(essay)
+        return application_essays
+
+
 
 class Invitation(BaseModel):
 

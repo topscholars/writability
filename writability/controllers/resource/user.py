@@ -97,6 +97,12 @@ class StudentResourceManager(UserResourceManager):
                 absolute=True)),
             "universities": fields.List(ResourceField(
                 university.UniversityResourceManager.item_resource_name,
+                absolute=True)),
+            "application_essays": fields.List(ResourceField(
+                essay.ApplicationEssayResourceManager.item_resource_name,
+                absolute=True)),
+            "theme_essays": fields.List(ResourceField(
+                essay.ThemeEssayResourceManager.item_resource_name,
                 absolute=True))
         })
 
