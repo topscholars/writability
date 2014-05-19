@@ -4,6 +4,7 @@ App.EssayController = Ember.ObjectController.extend({
     // If we're explicit then Ember binding is simpler.
     proposed_topic_0: function () {
         console.log('PROP 0');
+        // var proposed_topics = //TODO bug put an if statement around this
         return this.get('model').get('proposed_topics')[0];
     }.property('proposed_topics'),
 

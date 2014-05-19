@@ -144,7 +144,7 @@ App.EssaysRoute = Ember.Route.extend({
                 if (student.get('state') !== 'active') {
                     route.transitionTo('universities');
                 }
-                return student.get('essays');
+                return student.get('theme_essays');
         });
     },
 

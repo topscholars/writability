@@ -48,6 +48,12 @@ class Essay(BaseModel):
 
         self.essay_prompt = self.essay_template.essay_prompt
 
+    def isTheme(self):
+        return isinstance(self, ThemeEssay)
+
+    def isApplication(self):
+        return isinstance(self, ApplicationEssay)
+
 
 class ThemeEssay(StatefulModel, Essay):
 

@@ -371,10 +371,14 @@ App.Teacher = App.User.extend({
 
 App.Student = App.User.extend({
     // properties
+    //essays: function() {
+    //    return this.get('themeEssays');     // Later we'll use this method to return all essays.
+    //}.property('themeEssay.@each'),
+
     // relationships 
     teacher: DS.belongsTo('teacher'),
-    essays: DS.hasMany('themeEssay', {async: true}),
-    //theme_essays: DS.hasMany('themeEssay', {async: true}),
+    //essays: DS.hasMany('themeEssay', {async: true}),
+    theme_essays: DS.hasMany('themeEssay', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
     universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there
 });
@@ -440,6 +444,7 @@ App.EssayController = Ember.ObjectController.extend({
     // If we're explicit then Ember binding is simpler.
     proposed_topic_0: function () {
         console.log('PROP 0');
+        // var proposed_topics = //TODO bug put an if statement around this
         return this.get('model').get('proposed_topics')[0];
     }.property('proposed_topics'),
 
@@ -1105,7 +1110,7 @@ App.EssaysRoute = Ember.Route.extend({
                 if (student.get('state') !== 'active') {
                     route.transitionTo('universities');
                 }
-                return student.get('essays');
+                return student.get('theme_essays');
         });
     },
 
