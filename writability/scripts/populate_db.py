@@ -185,7 +185,7 @@ class ThemeEssayTemplatePopulator(Populator):
 class ApplicationEssayTemplatePopulator(Populator):
 
     _PATH = "application-essay-templates"
-    _FILE_PATH = "data/aed.csv"
+    _FILE_PATH = "data/application-essay-templates.csv"
 
     def _construct_payload(self, line):
         columns = line.split(',', 4)
