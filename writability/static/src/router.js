@@ -53,17 +53,18 @@ App.IndexRoute = Ember.Route.extend({
 
 // Similar to this for students
 App.UniversitiesRoute = Ember.Route.extend({
-    setupController: function(controller, model) {
-        controller.set('model', model); //Required boilerplate
-        controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
-    },
 
     model: function () {
         return this.store.find('student', 0)
             .then(function (student) {
                 return student.get('universities');
         });
+    },
+
+    setupController: function(controller, model) {
+        controller.set('model', model); //Required boilerplate
+        controller.set('backDisabled', true);
+        // controller.set('nextDisabled', true); // Use same for next button in other views
     },
 
     renderTemplate: function () {
@@ -134,8 +135,15 @@ App.StudentsRoute = Ember.Route.extend({
 
 App.EssaysRoute = Ember.Route.extend({
     model: function () {
+        var route = this;
         return this.store.find('student', 0)
             .then(function (student) {
+                // if the student isn't actie then transition to universities
+                console.log('here');
+                console.log(student.get('state'));
+                if (student.get('state') !== 'active') {
+                    route.transitionTo('universities');
+                }
                 return student.get('essays');
         });
     },
