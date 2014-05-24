@@ -15,7 +15,8 @@
         "roles": [2],
         "teacher": 1,
         "active": true,
-        "state": "confirmed"
+        "state": "confirmed",
+        "universities": [3]
     },
     {
         "email": "student2@writ.co",
