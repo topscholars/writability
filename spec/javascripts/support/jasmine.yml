@@ -5,7 +5,7 @@
 #
 # src_dir: public
 #
-src_dir: /Users/kirkportas/coderepos/writability/writability
+src_dir: writability #writability #/Users/kirkportas/coderepos/writability/writability
 
 # Spec directory path. Your spec_files must be returned relative to this path. (relative to src_dir)
 # Default: spec/javascripts
