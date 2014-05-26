@@ -15,15 +15,8 @@ window.App = Ember.Application.create({
 
 App.ApplicationController = Ember.ObjectController.extend({
 
-    globalizeUser: function () {
-        var user = this.get('model');
-        Ember.set('App.CurrentUser');
-    }.observes('model'),
-
-    currentUser: function() {
-        return this.get('model');
-    }
-
+    // required for CurrentUserHelper to set properties
+    content: {}
 });
 
 App.ApplicationView = Ember.View.extend({
@@ -33,6 +26,7 @@ App.ApplicationView = Ember.View.extend({
         $('#splash-page').remove();
     }
 });
+
 
 App.ApplicationAdapter = DS.RESTAdapter.extend({
     // Turn Model camel cased class names to dashed urls.

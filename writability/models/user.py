@@ -84,7 +84,6 @@ class User(StatefulModel, UserMixin):
     def theme_essays(self):
         """Return list of theme essays."""
         theme_essays = []
-        print self.essays
         for essay in self.essays:
             if essay.isTheme():
                 theme_essays.append(essay)

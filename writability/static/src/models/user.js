@@ -5,7 +5,16 @@ App.User = DS.Model.extend({
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
     roles: DS.hasMany('role', {async: true}),
-    state: DS.attr('string')
+    state: DS.attr('string'),
+
+    // computed properties
+    isTeacher: function () {
+        return this.get('roles').isAny('name', 'teacher');
+    }.property('roles'),
+
+    isStudent: function () {
+        return this.get('roles').isAny('name', 'student');
+    }.property('roles')
 });
 
 App.Teacher = App.User.extend({
@@ -21,7 +30,7 @@ App.Student = App.User.extend({
     //    return this.get('themeEssays');     // Later we'll use this method to return all essays.
     //}.property('themeEssay.@each'),
 
-    // relationships 
+    // relationships
     teacher: DS.belongsTo('teacher'),
     //essays: DS.hasMany('themeEssay', {async: true}),
     theme_essays: DS.hasMany('themeEssay', {async: true}),
