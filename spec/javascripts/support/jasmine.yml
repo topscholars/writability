@@ -44,7 +44,7 @@ stylesheets:
 # helpers:
 #   - helpers/**/*.js
 helpers: 
-  - helpers/*.js # **/*.js
+  - helpers/spec_helper.js # **/*.js
 
 # Return an array of filepaths relative to spec_dir to include.
 # Default: ["**/*[sS]pec.js"]
