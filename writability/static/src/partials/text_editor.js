@@ -100,8 +100,10 @@ App.TextEditor = Ember.TextArea.extend({
     }.observes("value"),
 
     willDestroyElement: function() {
-        //var context = this.get('context');
-        //var editor = context.get('editor');
-        this.get('editor').destroy(false);
+        // make sure the editor doesn't have any bound events before it's
+        // destroyed.
+        var editor = this.get('editor');
+        editor.removeAllListeners();
+        editor.destroy(false);
     }
 });
