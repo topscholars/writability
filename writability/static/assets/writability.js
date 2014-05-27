@@ -898,26 +898,38 @@ App.Button = Ember.View.extend({
     text: 'Submit'
 });
 
-App.LeftNavButton = App.Button.extend({
-    classNames: ['nav-button', 'left-nav-button'],
-    text: '< Back',
+App.NavButton = App.Button.extend({
+    classNames: ['nav-button'],
     attributeBindings: ['disabled'],
-    disabled: Ember.computed.alias("controller.backDisabled"),
+});
 
+App.LeftNavButton = App.NavButton.extend({
+    classNames: ['left-nav-button'],
+    text: function () {
+        var buttonText = this.get('controller.backText') || 'Back';
+        return '< ' + buttonText;
+    }.property(),
+    disabled: Ember.computed.alias('controller.backDisabled'),
+    click: function (evt) {
+        this.get('controller').send('back');
+    }
     // IDEA: Accept URL for what back & next should be.
     // Note: classNameBindings: ['isEnabled:enabled:disabled'],  if/then/else
 });
 
-App.RightNavButton = App.Button.extend({
-    classNames: ['nav-button', 'right-nav-button'],
-    text: 'Next >',
-    attributeBindings: ['disabled'],
-    disabled: Ember.computed.alias("controller.nextDisabled"),
-    click: function(evt) {
-      this.get('controller').send('next');
+App.RightNavButton = App.NavButton.extend({
+    classNames: ['right-nav-button'],
+    text: function () {
+        var buttonText = this.get('controller.nextText') || 'Next';
+        return buttonText + ' >';
+    }.property(),
+    disabled: Ember.computed.alias('controller.nextDisabled'),
+    click: function (evt) {
+        this.get('controller').send('next');
     }
 
 });
+
 App.TextEditor = Ember.TextArea.extend({
 
     actions: {
@@ -1255,9 +1267,16 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
         return this.store.find('draft', params.id);
     },
 
+    setupController: function(controller, model) {
+        controller.set('model', model); //Required boilerplate
+        // controller.set('backDisabled', true);
+        // controller.set('nextDisabled', true); // Use same for next button in other views
+        controller.set('nextText', 'Send to Teacher');
+    },
+
     renderTemplate: function () {
         this.render('core/layouts/editor');
-        this.render('Header', {outlet: 'header'});
+        this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
     },
 
@@ -1292,7 +1311,7 @@ Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"
 
 Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
-Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.LeftNavButton text=\"< Back\"}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.RightNavButton text=\"Next >\"}}</div>\n");
+Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.LeftNavButton}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.RightNavButton}}</div>\n");
 
 Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <li class=\"list-item\">\n        <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    </li>\n{{/each}}\n");
 

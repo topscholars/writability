@@ -227,9 +227,16 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
         return this.store.find('draft', params.id);
     },
 
+    setupController: function(controller, model) {
+        controller.set('model', model); //Required boilerplate
+        // controller.set('backDisabled', true);
+        // controller.set('nextDisabled', true); // Use same for next button in other views
+        controller.set('nextText', 'Send to Teacher');
+    },
+
     renderTemplate: function () {
         this.render('core/layouts/editor');
-        this.render('Header', {outlet: 'header'});
+        this.render('NavHeader', {outlet: 'header'});
         this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
     },
 
