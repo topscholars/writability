@@ -20,6 +20,11 @@ App.Router.map(function () {
         this.route('/');
     });
     // no university item resource
+
+    this.resource('error', function () {
+        this.route('unauthorized');
+    });
+
 });
 
 
@@ -73,6 +78,14 @@ App.AuthenticatedRoute = Ember.Route.extend({
     currentTeacher: function() {
         return this.controllerFor('application').get('currentTeacher');
     }.property()
+});
+
+
+App.ErrorUnauthorizedRoute = Ember.Route.extend({
+    renderTemplate: function () {
+        // TODO: Build 404 Error Template
+        console.log('render error template');
+    }
 });
 
 
@@ -182,8 +195,9 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
 });
 
 App.EssayRoute = App.AuthenticatedRoute.extend({
+
     model: function (params) {
-        console.log('router model EssayRoute. themeEssay.id: ' + params.id);
+        this._assert_authorized(params.id);
         return this.store.find('themeEssay', params.id);
     },
 
@@ -195,11 +209,21 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
         //var id = this.controller.get('model').id;
         this.controllerFor('essays').findBy('id', id).send('select');
         this.render({outlet: 'right-side-outlet'});
+    },
+
+    _assert_authorized: function (id) {
+        var route = this;
+        this.get('currentStudent').get('theme_essays').then(function (theme_essays) {
+            if (!theme_essays.isAny('id', id)) {
+                route.transitionTo('error.unauthorized');
+            }
+        });
     }
 });
 
-App.DraftRoute = Ember.Route.extend({
+App.DraftRoute = App.AuthenticatedRoute.extend({
     model: function (params) {
+        this._assert_authorized(params.id);
         return this.store.find('draft', params.id);
     },
 
@@ -207,5 +231,21 @@ App.DraftRoute = Ember.Route.extend({
         this.render('core/layouts/editor');
         this.render('Header', {outlet: 'header'});
         this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
+    },
+
+    _assert_authorized: function (id) {
+        var route = this;
+        Ember.RSVP.Promise.all([
+            route.get('currentStudent').get('theme_essays'),
+            route.store.find('draft', id)
+        ]).then(function (values) {
+            var theme_essays = values[0];
+            var draft = values[1];
+            var essay_id = draft._data.essay.id;
+
+            if (!theme_essays.isAny('id', essay_id)) {
+                route.transitionTo('error.unauthorized');
+            }
+        });
     }
 });
