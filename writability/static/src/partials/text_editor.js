@@ -23,7 +23,7 @@ App.TextEditor = Ember.TextArea.extend({
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
 
-        CKEDITOR.on('instanceReady', function (e) {
+        CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             this.set ('editor', editor);
 

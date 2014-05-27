@@ -1,3 +1,4 @@
+/* globals App, Ember */
 App.StudentView = App.DetailsView.extend({
     selectedTab: 'overview',
 
@@ -37,7 +38,14 @@ App.StudentApplicationsTab = Ember.View.extend({
 });
 
 App.StudentTabs = Ember.ContainerView.extend({
-    childViews: ['overview'],
-    overview: App.StudentOverviewTab.create(),
-    application: App.StudentApplicationsTab.create()
+    /**
+     * Create the child views in init so they are recreated on a later
+     * transition.
+     */
+    init: function () {
+        this.set('overview', App.StudentOverviewTab.create());
+        this.set('application', App.StudentApplicationsTab.create());
+        this.set('childViews', ['overview']);
+        this._super();
+    }
 });

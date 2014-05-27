@@ -28,7 +28,7 @@ App.EssayController = Ember.ObjectController.extend({
         var topics = this.get('controllers.essays.selectedEssay.proposed_topics');
         console.log('PROP 1. model id: ' + correct_id );
         return topics[1];
-        
+
         //console.log('PROP 1. model id: ' + this.get('model').get('id') );
         //return this.get('model').get('proposed_topics')[1];
     }.property('proposed_topics'),
@@ -132,8 +132,15 @@ App.ProposedTopicOne = Ember.View.extend({
 });
 
 App.EssayTabs = Ember.ContainerView.extend({
-    childViews: ['overview'],
-    overview: App.EssayOverviewTab.create(),
-    application: App.EssayApplicationsTab.create(),
-    archive: App.EssayArchiveTab.create()
+    /**
+     * Create the child views in init so they are recreated on a later
+     * transition.
+     */
+    init: function () {
+        this.set('overview', App.EssayOverviewTab.create());
+        this.set('application', App.EssayApplicationsTab.create());
+        this.set('archive', App.EssayArchiveTab.create());
+        this.set('childViews', ['overview']);
+        this._super();
+    }
 });

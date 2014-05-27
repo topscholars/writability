@@ -500,7 +500,7 @@ App.EssayController = Ember.ObjectController.extend({
         var topics = this.get('controllers.essays.selectedEssay.proposed_topics');
         console.log('PROP 1. model id: ' + correct_id );
         return topics[1];
-        
+
         //console.log('PROP 1. model id: ' + this.get('model').get('id') );
         //return this.get('model').get('proposed_topics')[1];
     }.property('proposed_topics'),
@@ -604,10 +604,17 @@ App.ProposedTopicOne = Ember.View.extend({
 });
 
 App.EssayTabs = Ember.ContainerView.extend({
-    childViews: ['overview'],
-    overview: App.EssayOverviewTab.create(),
-    application: App.EssayApplicationsTab.create(),
-    archive: App.EssayArchiveTab.create()
+    /**
+     * Create the child views in init so they are recreated on a later
+     * transition.
+     */
+    init: function () {
+        this.set('overview', App.EssayOverviewTab.create());
+        this.set('application', App.EssayApplicationsTab.create());
+        this.set('archive', App.EssayArchiveTab.create());
+        this.set('childViews', ['overview']);
+        this._super();
+    }
 });
 
 /* globals App, Ember */
@@ -656,6 +663,7 @@ App.EssaysView = App.ListView.extend({
     listItem: App.EssayItemView
 });
 
+/* globals App, Ember */
 App.StudentView = App.DetailsView.extend({
     selectedTab: 'overview',
 
@@ -695,9 +703,16 @@ App.StudentApplicationsTab = Ember.View.extend({
 });
 
 App.StudentTabs = Ember.ContainerView.extend({
-    childViews: ['overview'],
-    overview: App.StudentOverviewTab.create(),
-    application: App.StudentApplicationsTab.create()
+    /**
+     * Create the child views in init so they are recreated on a later
+     * transition.
+     */
+    init: function () {
+        this.set('overview', App.StudentOverviewTab.create());
+        this.set('application', App.StudentApplicationsTab.create());
+        this.set('childViews', ['overview']);
+        this._super();
+    }
 });
 
 /* globals App, Ember */
@@ -984,7 +999,7 @@ App.TextEditor = Ember.TextArea.extend({
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
 
-        CKEDITOR.on('instanceReady', function (e) {
+        CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             this.set ('editor', editor);
 
@@ -1332,7 +1347,7 @@ Ember.TEMPLATES["core/layouts/editor"] = Ember.Handlebars.compile("<div id=\"edi
 
 Ember.TEMPLATES["core/layouts/main"] = Ember.Handlebars.compile("<div id=\"main-layout\" class=\"layout\">\n    <section id=\"left-side\" class=\"outlet\">\n        {{outlet left-side-outlet}}\n    </section>\n    <section id=\"right-side\" class=\"outlet\">\n        {{outlet right-side-outlet}}\n    </section>\n</div>\n\n\n<!--\n<div id=\"main-layout\" class=\"layout\">\n    <section id=\"list-module\" class=\"module\">\n        {{outlet list-module}}\n    </section>\n    <section id=\"details-module\" class=\"module\">\n        {{outlet details-module}}\n    </section>\n</div>\n\n-->");
 
-Ember.TEMPLATES["core/modules/details"] = Ember.Handlebars.compile("<nav class=\"details-nav\">\n    {{#each tab in view.tabs}}\n        <div id=\"tab-{{unbound tab.key}}\" {{action \"select\" tab.key\n        target=\"view\"}} class=\"tab-header\">\n            {{tab.title}}\n        </div>\n    {{/each}}\n</nav>\n<div class=\"tab-content\">\n    {{view App.EssayTabs}}\n</div>\n");
+Ember.TEMPLATES["core/modules/details"] = Ember.Handlebars.compile("<nav class=\"details-nav\">\n    {{#each tab in view.tabs}}\n        <div id=\"tab-{{unbound tab.key}}\" {{action \"select\" tab.key\n        target=\"view\"}} class=\"tab-header\">\n            {{tab.title}}\n        </div>\n    {{/each}}\n</nav>\n\n<div class=\"tab-content\">\n    {{view App.EssayTabs}}\n</div>\n");
 
 Ember.TEMPLATES["core/modules/editor"] = Ember.Handlebars.compile("\n");
 
