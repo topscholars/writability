@@ -30,6 +30,7 @@ class Review(StatefulModel):
     teacher = db.relationship("User")
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     draft = db.relationship("Draft", uselist=False, backref="review")
+    annotations = db.relationship("Annotation", backref="review")
 
     @validates('review_type')
     def validate_review_type(self, key, review_type):

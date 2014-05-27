@@ -137,6 +137,33 @@ class ThemePopulator(Populator):
     def _get_title(self, payload):
         return payload["theme"]["name"]
 
+class TagPopulator(Populator):
+
+    _PATH = "tags"
+    _FILE_PATH = "data/tags.csv"
+
+    def _construct_payload(self, line):
+        tokens = line.split('\t')
+        name = tokens[0].strip()
+        tag_type = tokens[1].strip()
+        category = tokens[2].strip()
+        description = tokens[3].strip()
+        example = tokens[4].strip()
+
+        payload = {
+            "tag": {
+                "name" : name,
+                "tag_type" : tag_type,
+                "category" : category,
+                "description" : description,
+                "example" : example
+            }
+        }
+
+        return payload
+
+    def _get_title(self, payload):
+        return payload["tag"]["name"]
 
 class ThemeEssayTemplatePopulator(Populator):
 
@@ -304,6 +331,7 @@ def populate_db():
     ThemePopulator()
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
+    TagPopulator()
     # custom data
     UserPopulator()
     ThemeEssayPopulator()
@@ -311,3 +339,4 @@ def populate_db():
 
 
 populate_db()
+# TagPopulator()

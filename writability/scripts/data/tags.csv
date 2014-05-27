@@ -1,0 +1,12 @@
+accurate	POSITIVE	accuracy of statement		
+inaccurate	NEGATIVE	accuracy of statement	text is factually incorrect	“blah, blablah bl blahbl's blah.”
+incomplete	NEGATIVE	accuracy of statement	text inadequately reflects the whole situation	“blah, blablah bl blahbl's blah.”
+missing or unclear	NEGATIVE	antecedent	the reference (a pronoun or other) is unclear because it lacks a clear antecedent	“blah, blablah bl blahbl's blah.”
+relation clearly stated	POSITIVE	cause–effect		
+untrue	NEGATIVE	cause–effect	a cause–effect relation does not apply in this case; your text must be revised accordingly	“blah, blablah bl blahbl's blah.”
+partially so	NEUTRAL	cause–effect	the cause–effect relation cited here is only partially true; the real extent of this relationship must be specified	“blah, blablah bl blahbl's blah.”
+reasoning flawed	NEGATIVE	cause–effect	your reasoning in this case is faulty or invalid; your text must be revised accordingly	“blah, blablah bl blahbl's blah.”
+out of sequence	NEGATIVE	chronology	text does not reflect the actual sequence of events and must be revised accordingly	“blah, blablah bl blahbl's blah.”
+inconsistent development of case history	NEGATIVE	chronology	text does not reflect elements of historical case in proper proportion	“blah, blablah bl blahbl's blah.”
+examples well chosen	POSITIVE	comparison/contrast		
+lacks agreement between terms	NEGATIVE	comparison/contrast	you are using terms that are not grammatically or conceptually consistent; revise your	“blah, blablah bl blahbl's blah.”

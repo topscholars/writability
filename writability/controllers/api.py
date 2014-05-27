@@ -25,6 +25,7 @@ from resource.user import TeacherListResource, TeacherResource
 from resource.user import StudentListResource, StudentResource
 from resource.user import InvitationListResource, InvitationResource
 from resource.role import RoleListResource, RoleResource
+from resource.annotation import AnnotationResource, AnnotationListResource, TagResource, TagListResource
 
 
 def add_resource_with_endpoint(api, resource_class, path):
@@ -71,6 +72,14 @@ def initialize(app, api_prefix):
     # review
     add_resource_with_endpoint(api, ReviewListResource, "/reviews")
     add_resource_with_endpoint(api, ReviewResource, "/reviews/<int:id>")
+
+    # annotation
+    add_resource_with_endpoint(api, AnnotationListResource, "/reviews/<int:review_id>/annotations")
+    add_resource_with_endpoint(api, AnnotationResource, "/annotations/<int:id>")
+
+    # tags
+    add_resource_with_endpoint(api, TagListResource, "/tags")
+    add_resource_with_endpoint(api, TagResource, "/tags/<int:id>")
 
     # university
     add_resource_with_endpoint(api, UniversityListResource, "/universities")
