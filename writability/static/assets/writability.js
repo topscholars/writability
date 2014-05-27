@@ -403,6 +403,7 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
     newItem: null
 });
 
+/* globals Ember, App */
 App.DraftController = Ember.ObjectController.extend({
 
     formattedTextObserver: function () {
@@ -429,10 +430,38 @@ App.DraftController = Ember.ObjectController.extend({
             draft.reload().then(cb, this.onFailure);
         },
         /*
-         * Clicking the Details / Review button toggles the current displayed item.
+         * Clicking the Details / Review button toggles the current displayed
+         * item.
          */
         editorToggle: function () {
             alert("Hello");
+        },
+
+        /**
+         * Respond to next action from header by confirming with student and
+         * sending draft to the teacher.
+         */
+        next: function () {
+            // TODO XXX: Add modal confirmation dialog with callbacks.
+            // Change draft state to "submitted"
+            var draft = this.get('model');
+            draft.set('state', 'submitted');
+            // Save draft
+            draft.save().then(function (draft) {
+                var essay_id = draft._data.essay.id;
+                // Transition to essays page
+                this.transitionToRoute('essay', essay_id);
+            }.bind(this));
+        },
+
+        back: function () {
+            // make sure the draft is saved.
+            var draft = this.get('model');
+            draft.save().then(function (draft) {
+                var essay_id = draft._data.essay.id;
+                // Transition to essays page
+                this.transitionToRoute('essay', essay_id);
+            }.bind(this));
         }
     },
 });
