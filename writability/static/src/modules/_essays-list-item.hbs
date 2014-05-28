@@ -6,6 +6,14 @@
 <div class="arrow-icon">&gt;</div>
 <div class="details-group">
     <div class="next-action">Start Topic</div>
-    <div class="draft-due">Draft Due: May 3, 2014</div>
-    <div class="essay-due">Essay Due: {{due_date}}</div>
+    <div class="draft-due">
+        Draft Due: &nbsp;
+                  {{#if draft_due_date}}
+                    {{formatDate draft_due_date}}
+                  {{else}}N/A{{/if}}
+    </div>
+    <div class="essay-due">
+      Essay Due:  {{#if due_date}} {{formatDate due_date}}
+                  {{else}}         N/A             {{/if}}
+    </div>
 </div>

@@ -37,7 +37,7 @@ class Essay(BaseModel):
 
     # relationships
     student_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    drafts = db.relationship("Draft", backref="essay")
+    drafts = db.relationship("Draft", backref="essay", order_by="Draft.id")
     essay_template_id = db.Column(db.Integer, db.ForeignKey("essay_template.id"))
 
     def process_before_create(self):
@@ -53,6 +53,15 @@ class Essay(BaseModel):
 
     def isApplication(self):
         return isinstance(self, ApplicationEssay)
+
+    @property
+    def draft_due_date(self):
+        """Return due date of current draft."""
+        if self.drafts:
+            curr_draft_list = self.drafts[-1:]  #List. ordered by ID
+            return curr_draft_list[0].due_date  
+        else:
+            return None
 
 
 class ThemeEssay(StatefulModel, Essay):

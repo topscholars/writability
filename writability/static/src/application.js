@@ -89,6 +89,13 @@ Ember.Handlebars.helper('dotdotfifty', function(str) {
     return str;
 });
 
+Ember.Handlebars.helper('formatDate', function(date) {
+    if (date) {
+        return moment(date).format("MMM Do, 'YY");//format('LL');
+    }
+    return date;
+});
+
 Ember.Handlebars.helper("debug", function(optionalValue) {
     console.log("Current Context");
     console.log("====================");
