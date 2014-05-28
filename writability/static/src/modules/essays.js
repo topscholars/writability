@@ -25,7 +25,9 @@ App.EssayItemView = App.ThickListItem.extend({
 
 App.EssaysController = Ember.ArrayController.extend({
     itemController: 'essay.item',
-
+    // Ember won't accept an array for sorting by state..
+    sortProperties: ['next_action'], 
+    sortAscending: false,
     selectedEssay: null,
 
     actions: {

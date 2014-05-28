@@ -83,8 +83,6 @@ class Essay(BaseModel):
         if not self.topic:              # no topic selected
             action = "Add Topics"
         elif self.proposed_topics[0] or self.proposed_topics[1]:
-            import pdb; pdb.set_trace()
-            return "Two"
             action = "Approve Topic"
         elif existing_drafts != 0 and existing_drafts < num_of_drafts:
             if (s == "new") or (s == "in_progress"):
