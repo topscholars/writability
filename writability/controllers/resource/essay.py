@@ -35,6 +35,7 @@ class EssayResourceManager(ResourceManager):
             "num_of_drafts": fields.Integer,
             "due_date": fields.String,
             "draft_due_date": fields.String,
+            "next_action": fields.String,
             "drafts": fields.List(ResourceField(
                 draft.DraftResourceManager.item_resource_name,
                 absolute=True)),

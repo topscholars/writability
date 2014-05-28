@@ -9,6 +9,7 @@ App.Essay = DS.Model.extend({
     topic: DS.attr('string'),
     max_words: DS.attr('number'),
     draft_due_date: DS.attr('date'),
+    next_action: DS.attr('string'),
 
     // relationships
     student: DS.belongsTo('student'),
