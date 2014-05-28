@@ -1,4 +1,5 @@
 /* globals Ember, App */
+
 App.DraftController = Ember.ObjectController.extend({
 
     formattedTextObserver: function () {
@@ -30,11 +31,18 @@ App.DraftController = Ember.ObjectController.extend({
          */
         editorToggle: function () {
             alert("Hello");
-        },
+        }
+    }
+});
 
+
+App.StudentDraftController = App.DraftController.extend({
+
+    reviewMode: false,
+
+    actions: {
         /**
-         * Respond to next action from header by confirming with student and
-         * sending draft to the teacher.
+         * Respond to next by submitting draft.
          */
         next: function () {
             // TODO XXX: Add modal confirmation dialog with callbacks.
@@ -58,9 +66,27 @@ App.DraftController = Ember.ObjectController.extend({
                 this.transitionToRoute('essay', essay_id);
             }.bind(this));
         }
-    },
+    }
 });
 
+
+App.TeacherDraftController = App.DraftController.extend({
+
+    reviewMode: true,
+
+    actions: {
+
+        next: function () {
+            console.log('todo teacher next');
+        },
+
+        back: function () {
+            console.log('todo teacher back');
+        },
+    }
+});
+
+
 App.DraftView = App.EditorView.extend({
-    templateName: 'modules/draft',
+    templateName: 'modules/draft'
 });

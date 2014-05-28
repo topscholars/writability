@@ -377,8 +377,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student', { async: true }),
-    reviews: DS.hasMany('review')
+    students: DS.hasMany('student', {async: true}),
+    reviews: DS.hasMany('review', {async: true})
 });
 
 App.Student = App.User.extend({
@@ -413,6 +413,7 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
 });
 
 /* globals Ember, App */
+
 App.DraftController = Ember.ObjectController.extend({
 
     formattedTextObserver: function () {
@@ -444,11 +445,18 @@ App.DraftController = Ember.ObjectController.extend({
          */
         editorToggle: function () {
             alert("Hello");
-        },
+        }
+    }
+});
 
+
+App.StudentDraftController = App.DraftController.extend({
+
+    reviewMode: false,
+
+    actions: {
         /**
-         * Respond to next action from header by confirming with student and
-         * sending draft to the teacher.
+         * Respond to next by submitting draft.
          */
         next: function () {
             // TODO XXX: Add modal confirmation dialog with callbacks.
@@ -472,11 +480,29 @@ App.DraftController = Ember.ObjectController.extend({
                 this.transitionToRoute('essay', essay_id);
             }.bind(this));
         }
-    },
+    }
 });
 
+
+App.TeacherDraftController = App.DraftController.extend({
+
+    reviewMode: true,
+
+    actions: {
+
+        next: function () {
+            console.log('todo teacher next');
+        },
+
+        back: function () {
+            console.log('todo teacher back');
+        },
+    }
+});
+
+
 App.DraftView = App.EditorView.extend({
-    templateName: 'modules/draft',
+    templateName: 'modules/draft'
 });
 
 /* globals App, Ember */
@@ -985,6 +1011,7 @@ App.RightNavButton = App.NavButton.extend({
 
 });
 
+/* globals App, Ember, CKEDITOR */
 App.TextEditor = Ember.TextArea.extend({
 
     actions: {
@@ -996,6 +1023,7 @@ App.TextEditor = Ember.TextArea.extend({
     attributeBindings: ['contenteditable'],
     contenteditable: 'true',
     editor: null,
+    isReadOnly: false,
     _suspendValueChange: false,
     _minimumChangeMilliseconds: 1000,
 
@@ -1013,6 +1041,8 @@ App.TextEditor = Ember.TextArea.extend({
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             this.set ('editor', editor);
+
+            editor.setReadOnly(this.get('isReadOnly'));
 
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);
@@ -1319,6 +1349,16 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
 });
 
 App.DraftRoute = App.AuthenticatedRoute.extend({
+
+    activate: function () {
+        this._super();
+        if (this.get('currentUser').get('isStudent')) {
+            this.controllerName = 'studentDraft';
+        } else {
+            this.controllerName = 'teacherDraft';
+        }
+    },
+
     model: function (params) {
         this._assert_authorized(params.id);
         return this.store.find('draft', params.id);
@@ -1334,10 +1374,22 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
         this.render('core/layouts/editor');
         this.render('NavHeader', {outlet: 'header'});
-        this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
+        this.render({
+            controller: this.controllerName,
+            into: 'core/layouts/editor',
+            outlet: 'editor-module'
+        });
     },
 
     _assert_authorized: function (id) {
+        if (this.get('currentUser').get('isStudent')) {
+            this._assert_students_draft(id);
+        } else {
+            this._assert_teachers_review(id);
+        }
+    },
+
+    _assert_students_draft: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
             route.get('currentStudent').get('theme_essays'),
@@ -1348,6 +1400,22 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
             var essay_id = draft._data.essay.id;
 
             if (!theme_essays.isAny('id', essay_id)) {
+                route.transitionTo('error.unauthorized');
+            }
+        });
+    },
+
+    _assert_teachers_review: function (id) {
+        var route = this;
+        Ember.RSVP.Promise.all([
+            route.get('currentTeacher').get('reviews'),
+            route.store.find('draft', id)
+        ]).then(function (values) {
+            var reviews = values[0];
+            var draft = values[1];
+            var review_id = draft._data.review.id;
+
+            if (!reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
             }
         });
@@ -1386,6 +1454,6 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");

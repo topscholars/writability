@@ -10,7 +10,19 @@
     <div class="toolbar-container">
         <div id="editor-toolbar" class="editor-toolbar"></div>
     </div>
-    {{view App.TextEditor action="startedWriting" valueBinding="formatted_text"}}
+
+    {{#if reviewMode}}
+        {{view App.TextEditor
+            action="startedWriting"
+            valueBinding="formatted_text"
+            isReadOnly=true
+        }}
+    {{else}}
+        {{view App.TextEditor
+            action="startedWriting"
+            valueBinding="formatted_text"
+        }}
+    {{/if}}
 </div>
 
 <div class="editor-column annotations-column">
