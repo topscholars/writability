@@ -39,12 +39,17 @@ class BaseModel(db.Model):
         """Process model to prepare it for adding it db."""
         pass
 
+    def change_related_objects(self):
+        """Change any related objects before commit."""
+        pass
+
     @classmethod
     def create(class_, object_dict):
         prepared_dict = class_._replace_resource_ids_with_models(object_dict)
         model = class_(**prepared_dict)
         model.process_before_create()
         db.session.add(model)
+        model.change_related_objects()
         db.session.commit()
         return model
 
@@ -76,6 +81,7 @@ class BaseModel(db.Model):
             except AttributeError:
                 setattr(model, k, v)
 
+        model.change_related_objects()
         db.session.commit()
         return model
 
