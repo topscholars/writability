@@ -122,8 +122,12 @@
     box-shadow: @hShadow @vShadow @blur @spread @alpha;
 }
 
-.vertical-section-shadow() {
+.left-section-shadow() {
     box-shadow: -1px 0px 5px 0px rgba(0, 0, 0, .3);
+}
+
+.right-section-shadow() {
+    box-shadow: 1px 0px 5px 0px rgba(0, 0, 0, .3);
 }
 
 .horizontal-section-shadow() {
@@ -544,7 +548,7 @@ button, input[type="checkbox"] {
 * CORE MODULE: DETAILS
 ************************************************************/
 .details-module {
-    .vertical-section-shadow();
+    .left-section-shadow();
 
     background-color: @white;
     height: 100%;
@@ -657,12 +661,46 @@ button, input[type="checkbox"] {
         top: 0px;
         width: 28%;
         padding-top: @editor-top-margin;
-        padding-left: @bigMargin;
+        z-index: 15;
 
-        .essay-prompt {
-            clear: both;
-            padding-top: @innerPadding;
-            padding-bottom: @innerPadding;
+        .summary-header {
+            padding-left: @bigMargin;
+            padding-right: @bigMargin;
+
+            .essay-prompt {
+                clear: both;
+                padding-top: @innerPadding;
+                padding-bottom: @innerPadding;
+            }
+
+        }
+
+        .summary-panel {
+            .right-section-shadow();
+
+            border-top: @thinBorder @grey solid;
+            border-right: @thinBorder @grey solid;
+            box-sizing: content-box;
+            visibility: hidden;
+            position: fixed;
+            top: 180px;
+            bottom: 0px;
+            width: 28%;
+            overflow-y: scroll;
+
+            .panel-liner {
+                margin: @smallMargin @bigMargin;
+            }
+
+            .panel-title {
+                margin-bottom: @innerPadding;
+            }
+
+            .details-field {
+                font-size: @smallBodyFontSize;
+                margin-bottom: @smallPadding;
+            }
+
         }
     }
 
@@ -738,14 +776,14 @@ button, input[type="checkbox"] {
     }
 }
 
-.editor-toggles {
+.panel-toggle-container {
     .horizontal-section-shadow();
 
     border: @thinBorder @grey solid;
     position: relative;
     float: left;
 
-    .editor-toggle {
+    .panel-toggle {
         .smallText();
 
         background-color: @white;
@@ -763,6 +801,10 @@ button, input[type="checkbox"] {
 
         &:last-child {
             border: 0px;
+        }
+
+        &.active {
+            background-color: @greyLight;
         }
     }
 }

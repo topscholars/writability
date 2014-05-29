@@ -25,13 +25,6 @@ App.DraftController = Ember.ObjectController.extend({
             var draft = this.get('model');
             draft.reload().then(cb, this.onFailure);
         },
-        /*
-         * Clicking the Details / Review button toggles the current displayed
-         * item.
-         */
-        editorToggle: function () {
-            alert("Hello");
-        }
     }
 });
 
@@ -88,5 +81,42 @@ App.TeacherDraftController = App.DraftController.extend({
 
 
 App.DraftView = App.EditorView.extend({
-    templateName: 'modules/draft'
+    templateName: 'modules/draft',
+
+    panelSelector: '.summary-panel',
+
+    toggleSelector: '.panel-toggle',
+
+    panels: ["details", "review"],
+
+    activePanel: null,
+
+    actions: {
+        /*
+         * Clicking the Details / Review button toggles the current displayed
+         * item.
+         */
+        togglePanel: function (panelKey) {
+            if (panelKey === this.activePanel) {
+                this._hidePanel(panelKey);
+            } else {
+                if (this.activePanel) {
+                    this._hidePanel(this.activePanel);
+                }
+                this._showPanel(panelKey);
+            }
+        }
+    },
+
+    _hidePanel: function (panelKey) {
+        this.activePanel = null;
+        Ember.$(this.panelSelector).css('visibility', 'hidden');
+        Ember.$('.' + panelKey + this.toggleSelector).removeClass('active');
+    },
+
+    _showPanel: function (panelKey) {
+        this.activePanel = panelKey;
+        Ember.$(this.panelSelector).css('visibility', 'visible');
+        Ember.$('.' + panelKey + this.toggleSelector).addClass('active');
+    }
 });
