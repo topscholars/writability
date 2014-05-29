@@ -675,7 +675,7 @@ button, input[type="checkbox"] {
 
         }
 
-        .summary-panel {
+        .summary-panel-container {
             .right-section-shadow();
 
             border-top: @thinBorder @grey solid;
@@ -688,18 +688,19 @@ button, input[type="checkbox"] {
             width: 28%;
             overflow-y: scroll;
 
-            .panel-liner {
+            .summary-panel {
                 margin: @smallMargin @bigMargin;
+
+                .panel-title {
+                    margin-bottom: @innerPadding;
+                }
+
+                .details-field {
+                    font-size: @smallBodyFontSize;
+                    margin-bottom: @smallPadding;
+                }
             }
 
-            .panel-title {
-                margin-bottom: @innerPadding;
-            }
-
-            .details-field {
-                font-size: @smallBodyFontSize;
-                margin-bottom: @smallPadding;
-            }
 
         }
     }

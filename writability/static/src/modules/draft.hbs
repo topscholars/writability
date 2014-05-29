@@ -10,12 +10,8 @@
         </div>
         <div class="essay-prompt strong">{{essay.essay_prompt}}</div>
     </section>
-    <section class="summary-panel">
-        <div class="panel-liner">
-            {{#with essay}}
-                {{partial "modules/_draft-details-panel"}}
-            {{/with}}
-        </div>
+    <section class="summary-panel-container">
+        {{view App.SummaryPanel viewName="summaryPanel"}}
     </section>
 </div>
 

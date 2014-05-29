@@ -83,13 +83,7 @@ App.TeacherDraftController = App.DraftController.extend({
 App.DraftView = App.EditorView.extend({
     templateName: 'modules/draft',
 
-    panelSelector: '.summary-panel',
-
     toggleSelector: '.panel-toggle',
-
-    panels: ["details", "review"],
-
-    activePanel: null,
 
     actions: {
         /*
@@ -97,26 +91,49 @@ App.DraftView = App.EditorView.extend({
          * item.
          */
         togglePanel: function (panelKey) {
-            if (panelKey === this.activePanel) {
-                this._hidePanel(panelKey);
+            var summaryPanel = this.get('summaryPanel');
+            var activePanel = summaryPanel.get('activePanel');
+
+            if (panelKey === activePanel) {
+                Ember.$('.' + panelKey + this.toggleSelector).removeClass('active');
+                summaryPanel.hide();
             } else {
-                if (this.activePanel) {
-                    this._hidePanel(this.activePanel);
+                if (activePanel) {
+                    Ember.$('.' + activePanel + this.toggleSelector).removeClass('active');
+                    summaryPanel.hide();
                 }
-                this._showPanel(panelKey);
+                Ember.$('.' + panelKey + this.toggleSelector).addClass('active');
+                summaryPanel.show(panelKey);
             }
         }
+    }
+});
+
+App.SummaryPanel = Ember.ContainerView.extend({
+    classNames: ['summary-panel'],
+
+    activePanel: null,
+
+    init: function () {
+        this.set('details', Ember.View.create({
+            templateName: "modules/_draft-details-panel"
+        }));
+        this.set('review', Ember.View.create({
+            templateName: "modules/_draft-review-panel"
+        }));
+        this.set('childViews', []);
+        this._super();
     },
 
-    _hidePanel: function (panelKey) {
-        this.activePanel = null;
-        Ember.$(this.panelSelector).css('visibility', 'hidden');
-        Ember.$('.' + panelKey + this.toggleSelector).removeClass('active');
-    },
-
-    _showPanel: function (panelKey) {
+    show: function (panelKey) {
         this.activePanel = panelKey;
-        Ember.$(this.panelSelector).css('visibility', 'visible');
-        Ember.$('.' + panelKey + this.toggleSelector).addClass('active');
+        this.pushObject(this.get(panelKey));
+        this.$().parent().css('visibility', 'visible');
+    },
+
+    hide: function () {
+        this.activePanel = null;
+        this.$().parent().css('visibility', 'hidden');
+        this.popObject();
     }
 });

@@ -1,5 +1,6 @@
 <div class="panel-title">Details</div>
 
+{{#with essay}}
 <div class="details-field">
     <span class="key">Audience:</span>
     <span class="value app-text">{{audience}}</span>
@@ -16,3 +17,4 @@
     <span class="key">Theme:</span>
     <span class="value app-text">{{theme.name}} ({{theme.category}})</span>
 </div>
+{{/with}}

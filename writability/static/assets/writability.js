@@ -497,13 +497,7 @@ App.TeacherDraftController = App.DraftController.extend({
 App.DraftView = App.EditorView.extend({
     templateName: 'modules/draft',
 
-    panelSelector: '.summary-panel',
-
     toggleSelector: '.panel-toggle',
-
-    panels: ["details", "review"],
-
-    activePanel: null,
 
     actions: {
         /*
@@ -511,27 +505,50 @@ App.DraftView = App.EditorView.extend({
          * item.
          */
         togglePanel: function (panelKey) {
-            if (panelKey === this.activePanel) {
-                this._hidePanel(panelKey);
+            var summaryPanel = this.get('summaryPanel');
+            var activePanel = summaryPanel.get('activePanel');
+
+            if (panelKey === activePanel) {
+                Ember.$('.' + panelKey + this.toggleSelector).removeClass('active');
+                summaryPanel.hide();
             } else {
-                if (this.activePanel) {
-                    this._hidePanel(this.activePanel);
+                if (activePanel) {
+                    Ember.$('.' + activePanel + this.toggleSelector).removeClass('active');
+                    summaryPanel.hide();
                 }
-                this._showPanel(panelKey);
+                Ember.$('.' + panelKey + this.toggleSelector).addClass('active');
+                summaryPanel.show(panelKey);
             }
         }
+    }
+});
+
+App.SummaryPanel = Ember.ContainerView.extend({
+    classNames: ['summary-panel'],
+
+    activePanel: null,
+
+    init: function () {
+        this.set('details', Ember.View.create({
+            templateName: "modules/_draft-details-panel"
+        }));
+        this.set('review', Ember.View.create({
+            templateName: "modules/_draft-review-panel"
+        }));
+        this.set('childViews', []);
+        this._super();
     },
 
-    _hidePanel: function (panelKey) {
-        this.activePanel = null;
-        Ember.$(this.panelSelector).css('visibility', 'hidden');
-        Ember.$('.' + panelKey + this.toggleSelector).removeClass('active');
-    },
-
-    _showPanel: function (panelKey) {
+    show: function (panelKey) {
         this.activePanel = panelKey;
-        Ember.$(this.panelSelector).css('visibility', 'visible');
-        Ember.$('.' + panelKey + this.toggleSelector).addClass('active');
+        this.pushObject(this.get(panelKey));
+        this.$().parent().css('visibility', 'visible');
+    },
+
+    hide: function () {
+        this.activePanel = null;
+        this.$().parent().css('visibility', 'hidden');
+        this.popObject();
     }
 });
 
@@ -1470,7 +1487,9 @@ Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div clas
 
 Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <li class=\"list-item\">\n        <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    </li>\n{{/each}}\n");
 
-Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Details</div>\n\n<div class=\"details-field\">\n    <span class=\"key\">Audience:</span>\n    <span class=\"value app-text\">{{audience}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Context:</span >\n    <span class=\"value app-text\">{{context}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Topic:</span>\n    <span class=\"value app-text\">{{topic}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Theme:</span>\n    <span class=\"value app-text\">{{theme.name}} ({{theme.category}})</span>\n</div>\n");
+Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Details</div>\n\n{{#with essay}}\n<div class=\"details-field\">\n    <span class=\"key\">Audience:</span>\n    <span class=\"value app-text\">{{audience}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Context:</span >\n    <span class=\"value app-text\">{{context}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Topic:</span>\n    <span class=\"value app-text\">{{topic}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Theme:</span>\n    <span class=\"value app-text\">{{theme.name}} ({{theme.category}})</span>\n</div>\n{{/with}}\n");
+
+Ember.TEMPLATES["modules/_draft-review-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Review</div>\n\n<p>\n{{review.text}}\n</p>\n");
 
 Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_1\"}}\n    </div>\n{{/if}}\n");
 
@@ -1484,6 +1503,6 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel\">\n        <div class=\"panel-liner\">\n            {{#with essay}}\n                {{partial \"modules/_draft-details-panel\"}}\n            {{/with}}\n        </div>\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
