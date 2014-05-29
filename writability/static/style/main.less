@@ -655,7 +655,7 @@ button, input[type="checkbox"] {
         height: 100%;
         position: fixed;
         top: 0px;
-        width: 25%;
+        width: 28%;
         padding-top: @editor-top-margin;
         padding-left: @bigMargin;
 
@@ -670,32 +670,33 @@ button, input[type="checkbox"] {
         border-left: @thinBorder @greyLight solid;
         border-right: @thinBorder @greyLight solid;
         height: 100%;
-        left: 25%;
-        position: fixed;
-        top: 0px;
-        width: 45%;
+        left: 28%;
+        position: relative;
         text-align: center;
+        width: 44%;
+        z-index: 12;
 
         .toolbar-container {
-            position: absolute;
+            position: fixed;
             top: @editor-top-margin;
-            width: 100%;
+            visibility: hidden;
+            width: 44%;
+            z-index: 15;
 
             .editor-toolbar {
-                position: relative;
+                .horizontal-section-shadow();
+
                 cursor: pointer;
                 display: inline-block;
-                // display: block !important;
-                z-index: 15;
-
-                .cke_detached {
-                }
+                visibility: visible;
             }
         }
     }
 
-    .annotations-coumn {
-        width: 35%;
+    .annotations-column {
+        height: 100%;
+        position: relative;
+        width: 25%;
     }
 }
 
@@ -712,7 +713,6 @@ button, input[type="checkbox"] {
     padding: (@headerHeight + 55px + @smallPadding) @smallMargin @smallMargin @smallMargin;
     resize: none;
     position: relative;
-    z-index: 12;
     text-align: left;
 
     ul {
