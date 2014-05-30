@@ -74,56 +74,38 @@
             format('svg'); // old ios
 }
 
-@font-face {
-    font-family: 'Helvetica Neue';
-    .font-src('helvetica-neue-webfont');
-    font-weight: normal;
-    font-style: normal;
-}
-
-// Leage Gothic is a temporary replacement for Trade Gothic
-@font-face {
-    font-family: 'League Gothic';
-    .font-src('leaguegothic-regular-webfont');
-    font-weight: normal;
-    font-style: normal;
-}
-
-// Kameron is a temporary replacement for Rockwell
-@import url('http://fonts.googleapis.com/css?family=Kameron:400,700');
-
 .headerText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @smallHeaderFontSize;
 }
 
 .bodyText() {
-    font-family: 'Kameron', sans-serif;
+    font-family: 'Trade Gothic W01', sans-serif;
     font-size: @bodyFontSize;
 }
 
 .highlightedText() {
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Trade Gothic W01', sans-serif;
     font-size: @bigBodyFontSize;
 }
 
 .moduleHeaderText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @bigHeaderFontSize;
 }
 
 .sectionHeaderText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @smallestHeaderFontSize;
 }
 
 .itemHeaderText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @headerFontSize;
 }
 
 .smallText() {
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Trade Gothic W01', sans-serif;
     font-size: @smallBodyFontSize;
 }
 
@@ -245,18 +227,20 @@ a {
 /***********************************************************
 * CORE COMPONENTS
 ************************************************************/
-input, button, label, select, textarea {
+input, label, select, textarea {
     .bodyText();
+}
 
+input, button, label, select, textarea {
+    line-height: normal;
     -moz-outline: none;
     outline: none;
     background-color: @white;
     border-radius: 0px;
+    margin: 0px;
 }
 
 textarea {
-    .bodyText();
-
     border-radius: @round;
     border: @thinBorder @grey dashed;
     padding: @innerPadding;
@@ -268,6 +252,8 @@ textarea {
 }
 
 button, input[type="checkbox"] {
+    .sectionHeaderText();
+
     border-color: @black;
     border: @wideBorder solid;
     color: @black;
@@ -409,6 +395,8 @@ button, input[type="checkbox"] {
         }
 
         input, button, label {
+            .sectionHeaderText();
+
             background-color: @black;
             color: @white;
             border: 0px;
@@ -427,7 +415,7 @@ button, input[type="checkbox"] {
 ************************************************************/
 #header {
     .horizontal-section-shadow();
-    .headerText();
+    .sectionHeaderText();
 
     background-color: @black;
     color: @white;
@@ -441,6 +429,10 @@ button, input[type="checkbox"] {
     .header-title {
         display: table-cell;
         vertical-align: middle;
+    }
+
+    button {
+        .sectionHeaderText();
     }
 }
 
@@ -847,7 +839,11 @@ button, input[type="checkbox"] {
 }
 
 .landing-modal {
-
+    input[type="checkbox"] {
+        margin-left: 10px;
+        position: relative;
+        top: -3px;
+    }
 }
 
 /***********************************************************
