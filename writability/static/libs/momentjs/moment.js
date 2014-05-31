@@ -2,7 +2,7 @@
 //! version : 2.6.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
-//! momentjs.com
+//! momentjs.com 
 
 (function (undefined) {
 

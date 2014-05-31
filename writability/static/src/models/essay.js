@@ -3,11 +3,13 @@ App.Essay = DS.Model.extend({
     // properties
     audience: DS.attr('string'),
     context: DS.attr('string'),
-    due_date: DS.attr('string'),
+    due_date: DS.attr('date'),
     essay_prompt: DS.attr('string'),
     num_of_drafts: DS.attr('number'),
     topic: DS.attr('string'),
     max_words: DS.attr('number'),
+    draft_due_date: DS.attr('date'),
+    next_action: DS.attr('string'),
 
     // relationships
     student: DS.belongsTo('student'),
