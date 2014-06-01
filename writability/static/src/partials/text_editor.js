@@ -23,7 +23,7 @@ App.TextEditor = Ember.TextArea.extend({
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
 
-        CKEDITOR.on('instanceReady', function (e) {
+        CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             this.set ('editor', editor);
 
@@ -100,8 +100,10 @@ App.TextEditor = Ember.TextArea.extend({
     }.observes("value"),
 
     willDestroyElement: function() {
-        //var context = this.get('context');
-        //var editor = context.get('editor');
-        this.get('editor').destroy(false);
+        // make sure the editor doesn't have any bound events before it's
+        // destroyed.
+        var editor = this.get('editor');
+        editor.removeAllListeners();
+        editor.destroy(false);
     }
 });

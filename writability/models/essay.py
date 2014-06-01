@@ -37,7 +37,7 @@ class Essay(BaseModel):
 
     # relationships
     student_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    drafts = db.relationship("Draft", backref="essay")
+    drafts = db.relationship("Draft", backref="essay", order_by="Draft.id")
     essay_template_id = db.Column(db.Integer, db.ForeignKey("essay_template.id"))
 
     def process_before_create(self):
@@ -54,6 +54,49 @@ class Essay(BaseModel):
     def isApplication(self):
         return isinstance(self, ApplicationEssay)
 
+    @property
+    def current_draft(self):
+        if self.drafts:
+            curr_draft_list = self.drafts[-1:]  #List. ordered by ID
+            return curr_draft_list[0]  
+        else:
+            return None
+
+    @property
+    def draft_due_date(self):
+        """Return due date of current draft."""
+        #import pdb; pdb.set_trace()
+        return self.current_draft.due_date
+
+
+    @property
+    def next_action(self):
+        """Return next action to be taken on essay."""
+        drafts = self.drafts
+        existing_drafts = len(drafts) 
+        num_of_drafts = self.num_of_drafts
+        curr_draft = self.current_draft
+        s = curr_draft.state if curr_draft else None
+                    #chokes when no curr_draft
+        action = "ERROR"
+
+        if not self.topic:              # no topic selected
+            action = "Add Topics"
+        elif self.proposed_topics[0] or self.proposed_topics[1]:
+            action = "Approve Topic"
+        elif existing_drafts != 0 and existing_drafts < num_of_drafts:
+            if (s == "new") or (s == "in_progress"):
+                action = "Write"
+            elif s == "submitted":
+                action = "Review"
+            return "%s Draft %d / %d" % (action, existing_drafts, num_of_drafts)
+        else:
+            return "else"
+            if curr_draft.is_final_draft and s == "reviewed":
+                action = "Complete"
+            else:
+                action = "Error"
+        return action
 
 class ThemeEssay(StatefulModel, Essay):
 
