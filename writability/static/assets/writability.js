@@ -247,6 +247,11 @@ App.ThickListItem = App.ListItem.extend({
     classNames: ["thick-list-item"]
 });
 
+App.SectionListView = App.ListView.extend({
+    templateName: 'core/modules/sectionlist',
+    sections: []
+});
+
 App.Draft = DS.Model.extend({
     // properties
     plain_text: DS.attr('string'),
@@ -365,6 +370,10 @@ App.User = DS.Model.extend({
     state: DS.attr('string'),
 
     // computed properties
+    name: function () {
+        return this.get('first_name') + ' ' + this.get('last_name');
+    }.property('first_name', 'last_name'),
+
     isTeacher: function () {
         return this.get('roles').isAny('name', 'teacher');
     }.property('roles'),
@@ -377,7 +386,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student', { async: true }),
+    students: DS.hasMany('student'),
+    invites: DS.hasMany('invitation'),
     reviews: DS.hasMany('review')
 });
 
@@ -727,6 +737,7 @@ App.StudentTabs = Ember.ContainerView.extend({
 });
 
 /* globals App, Ember */
+
 App.StudentItemView = App.ThinListItem.extend({
     templateName: "modules/_students-list-item",
 });
@@ -738,19 +749,27 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 App.StudentsController = Ember.ArrayController.extend({
     invitedStudentEmail: null,
 
-    actions: { 
+    actions: {
         inviteStudentCont: function () {
-            // This should create invitation model
-            // Should also push the new invitation object to the /students list
-            // this.send('invitedStudent', this.get('newStudent'));
-        }.observes("newStudent")
+            this.send('inviteStudent', this.get('invitedStudentEmail'));
+        }
     }
 });
 
-App.StudentsView = App.ListView.extend({
+App.StudentsView = App.SectionListView.extend({
     title: 'Students',
     listItem: App.StudentItemView,
-    newItem: App.StudentNewItemView
+    newItem: App.StudentNewItemView,
+    sections: [
+        {
+            title: 'Students',
+            items: this.get('controller.model').get('students')
+        },
+        {
+            title: 'Invites',
+            items: this.get('controller.model').get('invites')
+        }
+    ]
 });
 
 /* globals App, Ember */
@@ -1250,8 +1269,11 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-       // TODO: concatenate invites and students
-        return this.get('currentTeacher').get('students');
+        return this.get('currentTeacher');
+    },
+
+    setupController: function (controller, model) {
+        controller.set('model', model);
     },
 
     renderTemplate: function () {
@@ -1263,14 +1285,17 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
     },
 
     actions: {
-        // TODO This should create an invitation model and add to list
-        inviteStudent: function (student) {
-            console.log('invite');
-            var students = this.get('currentTeacher').get('students');
-            students.pushObject(student);
-            // Set status to server
-            students.save();  // Ember magic   s.model has a save with
-            // student.invitation.create
+        inviteStudent: function (studentEmail) {
+            var invite = this.store.createRecord('student', {
+                first_name: 'Invited',
+                last_name: 'User',
+                email: studentEmail
+            });
+            var teacher = this.get('currentTeacher');
+            console.log(teacher.serialize());
+            var students = this.get('students');
+            students.pushObject(invite);
+            students.save();
         }
     }
 });
@@ -1369,6 +1394,8 @@ Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"
 Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.LeftNavButton}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.RightNavButton}}</div>\n");
+
+Ember.TEMPLATES["core/modules/sectionlist"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each section in sections}}\n    <div class=\"list-section-title\">{{section.title}}</div>\n    {{#each item in section.items}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <li class=\"list-item\">\n        <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    </li>\n{{/each}}\n");
 

@@ -153,8 +153,11 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-       // TODO: concatenate invites and students
-        return this.get('currentTeacher').get('students');
+        return this.get('currentTeacher');
+    },
+
+    setupController: function (controller, model) {
+        controller.set('model', model);
     },
 
     renderTemplate: function () {
@@ -166,14 +169,17 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
     },
 
     actions: {
-        // TODO This should create an invitation model and add to list
-        inviteStudent: function (student) {
-            console.log('invite');
-            var students = this.get('currentTeacher').get('students');
-            students.pushObject(student);
-            // Set status to server
-            students.save();  // Ember magic   s.model has a save with
-            // student.invitation.create
+        inviteStudent: function (studentEmail) {
+            var invite = this.store.createRecord('student', {
+                first_name: 'Invited',
+                last_name: 'User',
+                email: studentEmail
+            });
+            var teacher = this.get('currentTeacher');
+            console.log(teacher.serialize());
+            var students = this.get('students');
+            students.pushObject(invite);
+            students.save();
         }
     }
 });

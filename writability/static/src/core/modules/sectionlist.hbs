@@ -1,0 +1,13 @@
+<div class="module-title">{{view.title}}</div>
+<ol class="list">
+{{#each section in sections}}
+    <div class="list-section-title">{{section.title}}</div>
+    {{#each item in section.items}}
+        {{view view.listItem classNameBindings="isSelected" }}
+    {{/each}}
+{{/each}}
+
+{{#if view.newItem}}
+    {{view view.newItem}}
+{{/if}}
+</ol>

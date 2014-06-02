@@ -8,6 +8,10 @@ App.User = DS.Model.extend({
     state: DS.attr('string'),
 
     // computed properties
+    name: function () {
+        return this.get('first_name') + ' ' + this.get('last_name');
+    }.property('first_name', 'last_name'),
+
     isTeacher: function () {
         return this.get('roles').isAny('name', 'teacher');
     }.property('roles'),
@@ -20,7 +24,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student', { async: true }),
+    students: DS.hasMany('student'),
+    invites: DS.hasMany('invitation'),
     reviews: DS.hasMany('review')
 });
 
