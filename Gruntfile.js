@@ -11,7 +11,10 @@ module.exports = function(grunt) {
             },
             concat: {
                 files: 'writability/static/src/**/*.js',
-                tasks: ['concat']
+                tasks: ['concat'],
+                options: {
+                    livereload: true
+                }
             },
             styles: {
                 files: ['writability/static/style/**/*.less'],
