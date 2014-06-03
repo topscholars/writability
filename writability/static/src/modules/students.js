@@ -18,18 +18,18 @@ App.StudentsController = Ember.ArrayController.extend({
     }
 });
 
-App.StudentsView = App.SectionListView.extend({
+App.StudentsView = App.ListView.extend({
     title: 'Students',
     listItem: App.StudentItemView,
     newItem: App.StudentNewItemView,
-    sections: [
+    /*sections: [
         {
             title: 'Students',
             items: this.get('controller.model').get('students')
         },
         {
             title: 'Invites',
-            items: this.get('controller.model').get('invites')
+            items: this.get('controller.model').get('invitations')
         }
-    ]
+    ]*/
 });

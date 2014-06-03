@@ -386,9 +386,9 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student'),
-    invites: DS.hasMany('invitation'),
-    reviews: DS.hasMany('review')
+    students: DS.hasMany('student', { async: true }),
+    invitations: DS.hasMany('invitation', { async: true }),
+    reviews: DS.hasMany('review', { async: true })
 });
 
 App.Student = App.User.extend({
@@ -756,20 +756,20 @@ App.StudentsController = Ember.ArrayController.extend({
     }
 });
 
-App.StudentsView = App.SectionListView.extend({
+App.StudentsView = App.ListView.extend({
     title: 'Students',
     listItem: App.StudentItemView,
     newItem: App.StudentNewItemView,
-    sections: [
+    /*sections: [
         {
             title: 'Students',
             items: this.get('controller.model').get('students')
         },
         {
             title: 'Invites',
-            items: this.get('controller.model').get('invites')
+            items: this.get('controller.model').get('invitations')
         }
-    ]
+    ]*/
 });
 
 /* globals App, Ember */
@@ -1269,7 +1269,7 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        return this.get('currentTeacher');
+        return this.get('currentTeacher').get('students');
     },
 
     setupController: function (controller, model) {
@@ -1286,16 +1286,15 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         inviteStudent: function (studentEmail) {
-            var invite = this.store.createRecord('student', {
-                first_name: 'Invited',
-                last_name: 'User',
-                email: studentEmail
+            var invitation = this.store.createRecord('invitation', {
+                email: studentEmail,
+                is_registered: false,
+                teacher: this.get('currentTeacher')
             });
-            var teacher = this.get('currentTeacher');
-            console.log(teacher.serialize());
-            var students = this.get('students');
-            students.pushObject(invite);
-            students.save();
+            this.get('currentTeacher').get('invitations').then(function(invitations) {
+                invitations.pushObject(invitation);
+                invitations.save();
+            });
         }
     }
 });

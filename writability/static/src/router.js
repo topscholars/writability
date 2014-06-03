@@ -153,7 +153,7 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        return this.get('currentTeacher');
+        return this.get('currentTeacher').get('students');
     },
 
     setupController: function (controller, model) {
@@ -170,16 +170,15 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         inviteStudent: function (studentEmail) {
-            var invite = this.store.createRecord('student', {
-                first_name: 'Invited',
-                last_name: 'User',
-                email: studentEmail
+            var invitation = this.store.createRecord('invitation', {
+                email: studentEmail,
+                is_registered: false,
+                teacher: this.get('currentTeacher')
             });
-            var teacher = this.get('currentTeacher');
-            console.log(teacher.serialize());
-            var students = this.get('students');
-            students.pushObject(invite);
-            students.save();
+            this.get('currentTeacher').get('invitations').then(function(invitations) {
+                invitations.pushObject(invitation);
+                invitations.save();
+            });
         }
     }
 });
