@@ -259,7 +259,7 @@ App.Draft = DS.Model.extend({
 
     // relationships
     essay: DS.belongsTo('themeEssay'), // TODO: need this for essay.theme
-    review: DS.belongsTo('review')
+    review: DS.belongsTo('review', {async: true})
 });
 
 /* globals App, DS */
@@ -278,7 +278,7 @@ App.Essay = DS.Model.extend({
     // relationships
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
-    essay_template: DS.belongsTo('essay_template')
+    essay_template: DS.belongsTo('essay_template'),
 });
 
 App.ThemeEssay = App.Essay.extend({
@@ -319,6 +319,7 @@ App.Invitation = DS.Model.extend({
     teacher: DS.belongsTo('teacher')
 });
 
+/* globals App, DS */
 App.Review = DS.Model.extend({
     // properties
     text: DS.attr('string'),
@@ -333,6 +334,7 @@ App.Review = DS.Model.extend({
     draft: DS.belongsTo('draft'),
     teacher: DS.belongsTo('teacher')
 });
+
 /* globals App, DS */
 App.Role = DS.Model.extend({
     // properties
@@ -445,7 +447,15 @@ App.DraftController = Ember.ObjectController.extend({
 
 App.StudentDraftController = App.DraftController.extend({
 
+    needs: ['essay', 'themeEssay'],
+
     reviewMode: false,
+
+    currentReview: function () {
+        var essay = this.get('essay');
+        var essayController = this.get('controllers.themeEssay').set('model', essay);
+        return essayController.currentReviewWithState('completed');
+    }.property('essay'),
 
     actions: {
         /**
@@ -480,6 +490,10 @@ App.StudentDraftController = App.DraftController.extend({
 App.TeacherDraftController = App.DraftController.extend({
 
     reviewMode: true,
+
+    currentReview: function () {
+        return this.get('review');
+    }.property('review'),
 
     actions: {
 
@@ -555,6 +569,46 @@ App.SummaryPanel = Ember.ContainerView.extend({
 /* globals App, Ember */
 App.EssayController = Ember.ObjectController.extend({
     needs: ['essays'],
+
+    currentDraft: function () {
+        return this.draftByMostCurrent(0);
+    }.property('drafts'),
+
+    currentReviewWithState: function (state) {
+        return this.get('drafts')
+            .then(function (drafts) {
+                var reviewPromises = [];
+                drafts.forEach(function (item, index) {
+                    var reviewPromise = item.get('review');
+                    if (reviewPromise) {
+                        reviewPromises.push(reviewPromise);
+                    }
+                });
+                return Ember.RSVP.all(reviewPromises);
+            })
+            .then(function (reviews) {
+                var reviewsWithGoodState = reviews.filterBy('state', state);
+                var numOfGoodReviews = reviewsWithGoodState.length;
+                if (numOfGoodReviews > 0) {
+                    return reviewsWithGoodState[numOfGoodReviews - 1];
+                } else {
+                    return null;
+                }
+            });
+    },
+
+    draftByMostCurrent: function (version) {
+        var drafts = this.get('drafts');
+        if (!drafts) {
+            return null;
+        }
+
+        if (version >= drafts.length) {
+            return null;
+        }
+
+        return drafts[drafts.length - 1 - version];
+    },
 
     // If we're explicit then Ember binding is simpler.
     proposed_topic_0: function () {
@@ -698,6 +752,8 @@ App.EssayTabs = Ember.ContainerView.extend({
         this._super();
     }
 });
+
+App.ThemeEssayController = App.EssayController.extend({});
 
 /* globals App, Ember */
 App.EssayItemController = Ember.ObjectController.extend({
@@ -1489,7 +1545,7 @@ Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handle
 
 Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Details</div>\n\n{{#with essay}}\n<div class=\"details-field\">\n    <span class=\"key\">Audience:</span>\n    <span class=\"value app-text\">{{audience}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Context:</span >\n    <span class=\"value app-text\">{{context}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Topic:</span>\n    <span class=\"value app-text\">{{topic}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Theme:</span>\n    <span class=\"value app-text\">{{theme.name}} ({{theme.category}})</span>\n</div>\n{{/with}}\n");
 
-Ember.TEMPLATES["modules/_draft-review-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Review</div>\n\n<p>\n{{review.text}}\n</p>\n");
+Ember.TEMPLATES["modules/_draft-review-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Review</div>\n\n{{#if reviewMode}}\n    {{textarea class=\"review-editor\" value=review.text}}\n{{else}}\n    <p>{{currentReview.text}}</p>\n{{/if}}\n");
 
 Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_1\"}}\n    </div>\n{{/if}}\n");
 

@@ -1,5 +1,7 @@
 <div class="panel-title">Review</div>
 
-<p>
-{{review.text}}
-</p>
+{{#if reviewMode}}
+    {{textarea class="review-editor" value=review.text}}
+{{else}}
+    <p>{{currentReview.text}}</p>
+{{/if}}

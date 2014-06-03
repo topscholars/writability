@@ -2,6 +2,46 @@
 App.EssayController = Ember.ObjectController.extend({
     needs: ['essays'],
 
+    currentDraft: function () {
+        return this.draftByMostCurrent(0);
+    }.property('drafts'),
+
+    currentReviewWithState: function (state) {
+        return this.get('drafts')
+            .then(function (drafts) {
+                var reviewPromises = [];
+                drafts.forEach(function (item, index) {
+                    var reviewPromise = item.get('review');
+                    if (reviewPromise) {
+                        reviewPromises.push(reviewPromise);
+                    }
+                });
+                return Ember.RSVP.all(reviewPromises);
+            })
+            .then(function (reviews) {
+                var reviewsWithGoodState = reviews.filterBy('state', state);
+                var numOfGoodReviews = reviewsWithGoodState.length;
+                if (numOfGoodReviews > 0) {
+                    return reviewsWithGoodState[numOfGoodReviews - 1];
+                } else {
+                    return null;
+                }
+            });
+    },
+
+    draftByMostCurrent: function (version) {
+        var drafts = this.get('drafts');
+        if (!drafts) {
+            return null;
+        }
+
+        if (version >= drafts.length) {
+            return null;
+        }
+
+        return drafts[drafts.length - 1 - version];
+    },
+
     // If we're explicit then Ember binding is simpler.
     proposed_topic_0: function () {
         //var deferred = $.Deferred();
@@ -144,3 +184,5 @@ App.EssayTabs = Ember.ContainerView.extend({
         this._super();
     }
 });
+
+App.ThemeEssayController = App.EssayController.extend({});

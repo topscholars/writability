@@ -31,7 +31,15 @@ App.DraftController = Ember.ObjectController.extend({
 
 App.StudentDraftController = App.DraftController.extend({
 
+    needs: ['essay', 'themeEssay'],
+
     reviewMode: false,
+
+    currentReview: function () {
+        var essay = this.get('essay');
+        var essayController = this.get('controllers.themeEssay').set('model', essay);
+        return essayController.currentReviewWithState('completed');
+    }.property('essay'),
 
     actions: {
         /**
@@ -66,6 +74,10 @@ App.StudentDraftController = App.DraftController.extend({
 App.TeacherDraftController = App.DraftController.extend({
 
     reviewMode: true,
+
+    currentReview: function () {
+        return this.get('review');
+    }.property('review'),
 
     actions: {
 

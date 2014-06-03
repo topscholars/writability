@@ -363,13 +363,13 @@ def populate_db():
     # predefined
     RolePopulator()
     UniversityPopulator()
-#   ThemePopulator()
-#   ThemeEssayTemplatePopulator()
-#   ApplicationEssayTemplatePopulator()
-#   # custom data
+    ThemePopulator()
+    ThemeEssayTemplatePopulator()
+    ApplicationEssayTemplatePopulator()
+    # custom data
     UserPopulator()
-#   ThemeEssayPopulator()
-#   DraftPopulator()
+    ThemeEssayPopulator()
+    DraftPopulator()
 
 
 populate_db()
