@@ -491,19 +491,46 @@ App.TeacherDraftController = App.DraftController.extend({
 
     reviewMode: true,
 
-    currentReview: function () {
-        return this.get('review');
-    }.property('review'),
+    _onReviewChange: function () {
+        if (this.get('review.isDirty')) {
+            this.get('review').then(function (review) {
+                review.save();
+            });
+        }
+    }.observes('review.text'),
 
     actions: {
 
         next: function () {
-            console.log('todo teacher next');
+            var draft = this.get('model');
+            draft.get('review')
+                .then(function (review) {
+                    review.set('state', 'completed');
+                    // Save draft
+                    return review.save();
+                })
+                .then(function (savedReview) {
+                    var essay_id = draft._data.essay.id;
+                    // Transition to essays page
+                    // TODO: convert this to essays once it's complete
+                    this.transitionToRoute('students');
+                }.bind(this));
         },
 
         back: function () {
-            console.log('todo teacher back');
-        },
+            // make sure the review is saved.
+            var draft = this.get('model');
+            draft.get('review')
+                .then(function (review) {
+                    return review.save();
+                })
+                .then(function (savedReview) {
+                    var essay_id = draft._data.essay.id;
+                    // Transition to essays page
+                    // TODO: convert this to essays once it's complete
+                    this.transitionToRoute('students');
+                }.bind(this));
+        }
     }
 });
 
@@ -1471,7 +1498,11 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
         controller.set('model', model); //Required boilerplate
         // controller.set('backDisabled', true);
         // controller.set('nextDisabled', true); // Use same for next button in other views
-        controller.set('nextText', 'Send to Teacher');
+        if (this.get('currentUser.isStudent')) {
+            controller.set('nextText', 'Send to Teacher');
+        } else {
+            controller.set('nextText', 'Submit Review');
+        }
     },
 
     renderTemplate: function () {

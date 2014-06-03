@@ -241,7 +241,11 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
         controller.set('model', model); //Required boilerplate
         // controller.set('backDisabled', true);
         // controller.set('nextDisabled', true); // Use same for next button in other views
-        controller.set('nextText', 'Send to Teacher');
+        if (this.get('currentUser.isStudent')) {
+            controller.set('nextText', 'Send to Teacher');
+        } else {
+            controller.set('nextText', 'Submit Review');
+        }
     },
 
     renderTemplate: function () {
