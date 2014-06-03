@@ -47,6 +47,7 @@ class User(StatefulModel, UserMixin):
     invitations = db.relationship(
         "Invitation",
         backref="teacher")
+    reviews = db.relationship("Review", backref="teacher")
     # student relationships
     teacher = db.relationship(
         "User",

@@ -1,16 +1,37 @@
 <div class="editor-column summary-column">
-    <div class="editor-toggles">
-        <button {{action editorToggle}} class="editor-toggle">Details</button>
-        <button {{action editorToggle}} class="editor-toggle">Review</button>
-    </div>
-    <div class="essay-prompt strong">{{essay.essay_prompt}}</div>
+    <section class="summary-header">
+        <div class="panel-toggle-container">
+            <button {{action togglePanel "details" target=view}} class="details panel-toggle">
+                Details
+            </button>
+            <button {{action togglePanel "review" target=view}} class="review panel-toggle">
+                Review
+            </button>
+        </div>
+        <div class="essay-prompt strong">{{essay.essay_prompt}}</div>
+    </section>
+    <section class="summary-panel-container">
+        {{view App.SummaryPanel viewName="summaryPanel"}}
+    </section>
 </div>
 
 <div class="editor-column text-column">
     <div class="toolbar-container">
         <div id="editor-toolbar" class="editor-toolbar"></div>
     </div>
-    {{view App.TextEditor action="startedWriting" valueBinding="formatted_text"}}
+
+    {{#if reviewMode}}
+        {{view App.TextEditor
+            action="startedWriting"
+            valueBinding="formatted_text"
+            isReadOnly=true
+        }}
+    {{else}}
+        {{view App.TextEditor
+            action="startedWriting"
+            valueBinding="formatted_text"
+        }}
+    {{/if}}
 </div>
 
 <div class="editor-column annotations-column">
