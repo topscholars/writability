@@ -3,10 +3,12 @@
 import os
 import json
 import requests
+from BeautifulSoup import BeautifulSoup
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-ROOT_URL = "http://localhost:5000/api/"
+HOST = "http://localhost:5000/"
+ROOT_URL = HOST + "api/"
 HEADERS = {'Content-type': 'application/json'}
 
 class Populator(object):
@@ -251,11 +253,71 @@ class UserPopulator(JsonPopulator):
     _PATH = "users"
     _FILE_PATH = "data/users.json"
     _OBJECT_NAME = "user"
+    _REGISTER_FORM_PATH = "register"
+
+    def _construct_payload(self, obj):
+        # Flask-Security requires us to create a user using a form request
+        # get the CSRF and session cookies
+        register_url = HOST + self._REGISTER_FORM_PATH
+        resp = requests.get(register_url)
+        obj["session_cookie"] = resp.cookies["session"]
+        soup = BeautifulSoup(resp.text)
+        obj[u"csrf_token"] = soup.find(id="csrf_token")["value"]
+
+        # create the other necessary parts of the form
+        obj[u"password_confirm"] = obj["password"]
+        obj[u"submit"] = "Register"
+
+        # don't call super because you don't want a nested obj
+        return obj
+
+
+    def _populate_db(self, payload):
+        # setup the session cookie
+        cookies_dict = {"session": payload["session_cookie"]}
+        del payload["session_cookie"]
+
+        # allow_redirect=False gives you the first status_code
+        resp = requests.post(
+            HOST + self._REGISTER_FORM_PATH,
+            data=payload,
+            cookies=cookies_dict,
+            allow_redirects=False)
+
+        # if success then do a PUT to add the properties /register doesn't
+        # accept
+        if resp.status_code != 302:
+            return False
+        else:
+            new_cookie_dict = {"session": resp.cookies["session"]}
+            # get the newly created id
+            id_resp = requests.get(
+                self._get_url() + "/0",
+                cookies=new_cookie_dict)
+            id = id_resp.json()["user"]["id"]
+            # setup the dict for the PUT request
+            if "password" in payload:
+                del payload["password"]
+            if "password_confirm" in payload:
+                del payload["password_confirm"]
+            user_payload = {"user": payload}
+            # add the missing parameters here through an API put request
+            put_url = "{}/{}".format(self._get_url(), id)
+            put_resp = requests.put(
+                put_url,
+                cookies=new_cookie_dict,
+                data=json.dumps(user_payload),
+                headers=HEADERS)
+
+            if put_resp.status_code != 200:
+                return False
+
+        return True
 
     def _get_title(self, payload):
         return "{} {}".format(
-            payload["user"]["first_name"],
-            payload["user"]["last_name"])
+            payload["first_name"],
+            payload["last_name"])
 
 
 class ThemeEssayPopulator(JsonPopulator):

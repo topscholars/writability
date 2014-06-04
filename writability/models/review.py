@@ -27,7 +27,6 @@ class Review(StatefulModel):
     review_type = db.Column(db.String)
 
     # relationships
-    teacher = db.relationship("User")
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     draft = db.relationship("Draft", uselist=False, backref="review")
 

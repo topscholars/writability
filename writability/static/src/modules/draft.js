@@ -1,4 +1,5 @@
 /* globals Ember, App */
+
 App.DraftController = Ember.ObjectController.extend({
 
     formattedTextObserver: function () {
@@ -24,17 +25,25 @@ App.DraftController = Ember.ObjectController.extend({
             var draft = this.get('model');
             draft.reload().then(cb, this.onFailure);
         },
-        /*
-         * Clicking the Details / Review button toggles the current displayed
-         * item.
-         */
-        editorToggle: function () {
-            alert("Hello");
-        },
+    }
+});
 
+
+App.StudentDraftController = App.DraftController.extend({
+
+    needs: ['essay', 'themeEssay'],
+
+    reviewMode: false,
+
+    currentReview: function () {
+        var essay = this.get('essay');
+        var essayController = this.get('controllers.themeEssay').set('model', essay);
+        return essayController.currentReviewWithState('completed');
+    }.property('essay'),
+
+    actions: {
         /**
-         * Respond to next action from header by confirming with student and
-         * sending draft to the teacher.
+         * Respond to next by submitting draft.
          */
         next: function () {
             // TODO XXX: Add modal confirmation dialog with callbacks.
@@ -58,9 +67,112 @@ App.DraftController = Ember.ObjectController.extend({
                 this.transitionToRoute('essay', essay_id);
             }.bind(this));
         }
-    },
+    }
 });
+
+
+App.TeacherDraftController = App.DraftController.extend({
+
+    reviewMode: true,
+
+    _onReviewChange: function () {
+        if (this.get('review.isDirty')) {
+            this.get('review').then(function (review) {
+                review.save();
+            });
+        }
+    }.observes('review.text'),
+
+    actions: {
+
+        next: function () {
+            var draft = this.get('model');
+            draft.get('review')
+                .then(function (review) {
+                    review.set('state', 'completed');
+                    // Save draft
+                    return review.save();
+                })
+                .then(function (savedReview) {
+                    var essay_id = draft._data.essay.id;
+                    // Transition to essays page
+                    // TODO: convert this to essays once it's complete
+                    this.transitionToRoute('students');
+                }.bind(this));
+        },
+
+        back: function () {
+            // make sure the review is saved.
+            var draft = this.get('model');
+            draft.get('review')
+                .then(function (review) {
+                    return review.save();
+                })
+                .then(function (savedReview) {
+                    var essay_id = draft._data.essay.id;
+                    // Transition to essays page
+                    // TODO: convert this to essays once it's complete
+                    this.transitionToRoute('students');
+                }.bind(this));
+        }
+    }
+});
+
 
 App.DraftView = App.EditorView.extend({
     templateName: 'modules/draft',
+
+    toggleSelector: '.panel-toggle',
+
+    actions: {
+        /*
+         * Clicking the Details / Review button toggles the current displayed
+         * item.
+         */
+        togglePanel: function (panelKey) {
+            var summaryPanel = this.get('summaryPanel');
+            var activePanel = summaryPanel.get('activePanel');
+
+            if (panelKey === activePanel) {
+                Ember.$('.' + panelKey + this.toggleSelector).removeClass('active');
+                summaryPanel.hide();
+            } else {
+                if (activePanel) {
+                    Ember.$('.' + activePanel + this.toggleSelector).removeClass('active');
+                    summaryPanel.hide();
+                }
+                Ember.$('.' + panelKey + this.toggleSelector).addClass('active');
+                summaryPanel.show(panelKey);
+            }
+        }
+    }
+});
+
+App.SummaryPanel = Ember.ContainerView.extend({
+    classNames: ['summary-panel'],
+
+    activePanel: null,
+
+    init: function () {
+        this.set('details', Ember.View.create({
+            templateName: "modules/_draft-details-panel"
+        }));
+        this.set('review', Ember.View.create({
+            templateName: "modules/_draft-review-panel"
+        }));
+        this.set('childViews', []);
+        this._super();
+    },
+
+    show: function (panelKey) {
+        this.activePanel = panelKey;
+        this.pushObject(this.get(panelKey));
+        this.$().parent().css('visibility', 'visible');
+    },
+
+    hide: function () {
+        this.activePanel = null;
+        this.$().parent().css('visibility', 'hidden');
+        this.popObject();
+    }
 });

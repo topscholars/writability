@@ -247,6 +247,21 @@ App.ThickListItem = App.ListItem.extend({
     classNames: ["thick-list-item"]
 });
 
+App.computed = {};
+
+App.computed.aliasArrayObject = function (dependentKey, index) {
+	return Ember.computed(dependentKey, function(key, value) {
+	  if (arguments.length > 1) {
+	  	var tempArray = this.get(dependentKey);
+	  	tempArray[index] = value;
+	    this.set(dependentKey, tempArray);
+	    return value;
+	  } else {
+	    return this.get(dependentKey)[index];
+	  }
+	});
+}
+
 App.Draft = DS.Model.extend({
     // properties
     plain_text: DS.attr('string'),
@@ -258,8 +273,8 @@ App.Draft = DS.Model.extend({
     state: DS.attr('string'),
 
     // relationships
-    essay: DS.belongsTo('essay'),
-    review: DS.belongsTo('review')
+    essay: DS.belongsTo('themeEssay'), // TODO: need this for essay.theme
+    review: DS.belongsTo('review', {async: true})
 });
 
 /* globals App, DS */
@@ -278,16 +293,20 @@ App.Essay = DS.Model.extend({
     // relationships
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
-    essay_template: DS.belongsTo('essay_template')
+    essay_template: DS.belongsTo('essay_template'),
 });
 
 App.ThemeEssay = App.Essay.extend({
     next_states: DS.attr('array', {readOnly: true}),
     proposed_topics: DS.attr('array'),
+    // proposed_topics: ['test', 'stop'],
     state: DS.attr('string'),
 
     // relationships
-    theme: DS.belongsTo('theme', {async: true})
+    theme: DS.belongsTo('theme', {async: true}),
+
+    proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
+    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1)
 });
 
 App.ApplicationEssay = App.Essay.extend({
@@ -319,6 +338,7 @@ App.Invitation = DS.Model.extend({
     teacher: DS.belongsTo('teacher')
 });
 
+/* globals App, DS */
 App.Review = DS.Model.extend({
     // properties
     text: DS.attr('string'),
@@ -333,6 +353,7 @@ App.Review = DS.Model.extend({
     draft: DS.belongsTo('draft'),
     teacher: DS.belongsTo('teacher')
 });
+
 /* globals App, DS */
 App.Role = DS.Model.extend({
     // properties
@@ -377,8 +398,8 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student', { async: true }),
-    reviews: DS.hasMany('review')
+    students: DS.hasMany('student', {async: true}),
+    reviews: DS.hasMany('review', {async: true})
 });
 
 App.Student = App.User.extend({
@@ -413,6 +434,7 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
 });
 
 /* globals Ember, App */
+
 App.DraftController = Ember.ObjectController.extend({
 
     formattedTextObserver: function () {
@@ -438,17 +460,25 @@ App.DraftController = Ember.ObjectController.extend({
             var draft = this.get('model');
             draft.reload().then(cb, this.onFailure);
         },
-        /*
-         * Clicking the Details / Review button toggles the current displayed
-         * item.
-         */
-        editorToggle: function () {
-            alert("Hello");
-        },
+    }
+});
 
+
+App.StudentDraftController = App.DraftController.extend({
+
+    needs: ['essay', 'themeEssay'],
+
+    reviewMode: false,
+
+    currentReview: function () {
+        var essay = this.get('essay');
+        var essayController = this.get('controllers.themeEssay').set('model', essay);
+        return essayController.currentReviewWithState('completed');
+    }.property('essay'),
+
+    actions: {
         /**
-         * Respond to next action from header by confirming with student and
-         * sending draft to the teacher.
+         * Respond to next by submitting draft.
          */
         next: function () {
             // TODO XXX: Add modal confirmation dialog with callbacks.
@@ -472,47 +502,159 @@ App.DraftController = Ember.ObjectController.extend({
                 this.transitionToRoute('essay', essay_id);
             }.bind(this));
         }
-    },
+    }
 });
+
+
+App.TeacherDraftController = App.DraftController.extend({
+
+    reviewMode: true,
+
+    _onReviewChange: function () {
+        if (this.get('review.isDirty')) {
+            this.get('review').then(function (review) {
+                review.save();
+            });
+        }
+    }.observes('review.text'),
+
+    actions: {
+
+        next: function () {
+            var draft = this.get('model');
+            draft.get('review')
+                .then(function (review) {
+                    review.set('state', 'completed');
+                    // Save draft
+                    return review.save();
+                })
+                .then(function (savedReview) {
+                    var essay_id = draft._data.essay.id;
+                    // Transition to essays page
+                    // TODO: convert this to essays once it's complete
+                    this.transitionToRoute('students');
+                }.bind(this));
+        },
+
+        back: function () {
+            // make sure the review is saved.
+            var draft = this.get('model');
+            draft.get('review')
+                .then(function (review) {
+                    return review.save();
+                })
+                .then(function (savedReview) {
+                    var essay_id = draft._data.essay.id;
+                    // Transition to essays page
+                    // TODO: convert this to essays once it's complete
+                    this.transitionToRoute('students');
+                }.bind(this));
+        }
+    }
+});
+
 
 App.DraftView = App.EditorView.extend({
     templateName: 'modules/draft',
+
+    toggleSelector: '.panel-toggle',
+
+    actions: {
+        /*
+         * Clicking the Details / Review button toggles the current displayed
+         * item.
+         */
+        togglePanel: function (panelKey) {
+            var summaryPanel = this.get('summaryPanel');
+            var activePanel = summaryPanel.get('activePanel');
+
+            if (panelKey === activePanel) {
+                Ember.$('.' + panelKey + this.toggleSelector).removeClass('active');
+                summaryPanel.hide();
+            } else {
+                if (activePanel) {
+                    Ember.$('.' + activePanel + this.toggleSelector).removeClass('active');
+                    summaryPanel.hide();
+                }
+                Ember.$('.' + panelKey + this.toggleSelector).addClass('active');
+                summaryPanel.show(panelKey);
+            }
+        }
+    }
+});
+
+App.SummaryPanel = Ember.ContainerView.extend({
+    classNames: ['summary-panel'],
+
+    activePanel: null,
+
+    init: function () {
+        this.set('details', Ember.View.create({
+            templateName: "modules/_draft-details-panel"
+        }));
+        this.set('review', Ember.View.create({
+            templateName: "modules/_draft-review-panel"
+        }));
+        this.set('childViews', []);
+        this._super();
+    },
+
+    show: function (panelKey) {
+        this.activePanel = panelKey;
+        this.pushObject(this.get(panelKey));
+        this.$().parent().css('visibility', 'visible');
+    },
+
+    hide: function () {
+        this.activePanel = null;
+        this.$().parent().css('visibility', 'hidden');
+        this.popObject();
+    }
 });
 
 /* globals App, Ember */
 App.EssayController = Ember.ObjectController.extend({
     needs: ['essays'],
 
-    // If we're explicit then Ember binding is simpler.
-    proposed_topic_0: function () {
-        //var deferred = $.Deferred();
-        var correct_id = this.get('controllers.essays.selectedEssay.id');
-        var topics_t = this.get('controllers.essays.selectedEssay.proposed_topics');
-        console.log(topics_t);
-        console.log('PROP 0. model id: ' + correct_id );
-        return topics_t[0];
-        //var correct_essay = this.store.find('themeEssay', correct_id)
-        //    .then(function (essay) {
-        //        console.log('PROP 0. model id: ' + essay.id );
-        //        var topic_o = essay.get('proposed_topics')[0];
-        //        return topic_o;
-        //    });
-        //console.log(correct_essay);
+    currentDraft: function () {
+        return this.draftByMostCurrent(0);
+    }.property('drafts'),
 
+    currentReviewWithState: function (state) {
+        return this.get('drafts')
+            .then(function (drafts) {
+                var reviewPromises = [];
+                drafts.forEach(function (item, index) {
+                    var reviewPromise = item.get('review');
+                    if (reviewPromise) {
+                        reviewPromises.push(reviewPromise);
+                    }
+                });
+                return Ember.RSVP.all(reviewPromises);
+            })
+            .then(function (reviews) {
+                var reviewsWithGoodState = reviews.filterBy('state', state);
+                var numOfGoodReviews = reviewsWithGoodState.length;
+                if (numOfGoodReviews > 0) {
+                    return reviewsWithGoodState[numOfGoodReviews - 1];
+                } else {
+                    return null;
+                }
+            });
+    },
 
-        //return deferred.promise();
-        //return this.get('model').get('proposed_topics')[0];
-    }.property('proposed_topics'),
+    draftByMostCurrent: function (version) {
+        var drafts = this.get('drafts');
+        if (!drafts) {
+            return null;
+        }
 
-    proposed_topic_1: function () {
-        var correct_id = this.get('controllers.essays.selectedEssay.id');
-        var topics = this.get('controllers.essays.selectedEssay.proposed_topics');
-        console.log('PROP 1. model id: ' + correct_id );
-        return topics[1];
+        if (version >= drafts.length) {
+            return null;
+        }
 
-        //console.log('PROP 1. model id: ' + this.get('model').get('id') );
-        //return this.get('model').get('proposed_topics')[1];
-    }.property('proposed_topics'),
+        return drafts[drafts.length - 1 - version];
+    },
 
     /**
      * Helper method to cause observer to fire only once.
@@ -529,22 +671,22 @@ App.EssayController = Ember.ObjectController.extend({
     //    this.get('model').set('proposed_topics', newProposedTopics);
     //}.observes('_proposed_topics_merged'),
 
-    proposedTopicOneChanged: function () {
-        console.log('proposedTopicOneChanged()');
-        var pt2 = this.get('model').get('proposed_topics')[1];
-        var newProposedTopics = [  this.get('proposed_topic_0'),
-                                   pt2                            ]
-        this.get('model').set('proposed_topics', newProposedTopics);
-    //}.observes('proposed_topics'),
-    }.observes('proposed_topic_0'),
+    // proposedTopicOneChanged: function () {
+    //     console.log('proposedTopicOneChanged()');
+    //     var pt2 = this.get('model').get('proposed_topics')[1];
+    //     var newProposedTopics = [  this.get('proposed_topic_0'),
+    //                                pt2                            ]
+    //     this.get('model').set('proposed_topics', newProposedTopics);
+    // //}.observes('proposed_topics'),
+    // }.observes('proposed_topic_0'),
 
-    proposedTopicTwoChanged: function () {
-        console.log('proposedTopicTwoChanged()');
-        var pt1 = this.get('model').get('proposed_topics')[0];
-        var newProposedTopics = [  pt1,
-                                   this.get('proposed_topic_1')  ]
-        this.get('model').set('proposed_topics', newProposedTopics);
-    }.observes('proposed_topic_1'),
+    // proposedTopicTwoChanged: function () {
+    //     console.log('proposedTopicTwoChanged()');
+    //     var pt1 = this.get('model').get('proposed_topics')[0];
+    //     var newProposedTopics = [  pt1,
+    //                                this.get('proposed_topic_1')  ]
+    //     this.get('model').set('proposed_topics', newProposedTopics);
+    // }.observes('proposed_topic_1'),
 
     getMostRecentDraft: function () {
         return this.get('model').get('drafts').then(function (drafts) {
@@ -625,6 +767,8 @@ App.EssayTabs = Ember.ContainerView.extend({
         this._super();
     }
 });
+
+App.ThemeEssayController = App.EssayController.extend({});
 
 /* globals App, Ember */
 App.EssayItemController = Ember.ObjectController.extend({
@@ -985,6 +1129,7 @@ App.RightNavButton = App.NavButton.extend({
 
 });
 
+/* globals App, Ember, CKEDITOR */
 App.TextEditor = Ember.TextArea.extend({
 
     actions: {
@@ -996,6 +1141,7 @@ App.TextEditor = Ember.TextArea.extend({
     attributeBindings: ['contenteditable'],
     contenteditable: 'true',
     editor: null,
+    isReadOnly: false,
     _suspendValueChange: false,
     _minimumChangeMilliseconds: 1000,
 
@@ -1013,6 +1159,8 @@ App.TextEditor = Ember.TextArea.extend({
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             this.set ('editor', editor);
+
+            editor.setReadOnly(this.get('isReadOnly'));
 
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);
@@ -1319,6 +1467,16 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
 });
 
 App.DraftRoute = App.AuthenticatedRoute.extend({
+
+    activate: function () {
+        this._super();
+        if (this.get('currentUser').get('isStudent')) {
+            this.controllerName = 'studentDraft';
+        } else {
+            this.controllerName = 'teacherDraft';
+        }
+    },
+
     model: function (params) {
         this._assert_authorized(params.id);
         return this.store.find('draft', params.id);
@@ -1328,16 +1486,32 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
         controller.set('model', model); //Required boilerplate
         // controller.set('backDisabled', true);
         // controller.set('nextDisabled', true); // Use same for next button in other views
-        controller.set('nextText', 'Send to Teacher');
+        if (this.get('currentUser.isStudent')) {
+            controller.set('nextText', 'Send to Teacher');
+        } else {
+            controller.set('nextText', 'Submit Review');
+        }
     },
 
     renderTemplate: function () {
         this.render('core/layouts/editor');
         this.render('NavHeader', {outlet: 'header'});
-        this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
+        this.render({
+            controller: this.controllerName,
+            into: 'core/layouts/editor',
+            outlet: 'editor-module'
+        });
     },
 
     _assert_authorized: function (id) {
+        if (this.get('currentUser').get('isStudent')) {
+            this._assert_students_draft(id);
+        } else {
+            this._assert_teachers_review(id);
+        }
+    },
+
+    _assert_students_draft: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
             route.get('currentStudent').get('theme_essays'),
@@ -1348,6 +1522,22 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
             var essay_id = draft._data.essay.id;
 
             if (!theme_essays.isAny('id', essay_id)) {
+                route.transitionTo('error.unauthorized');
+            }
+        });
+    },
+
+    _assert_teachers_review: function (id) {
+        var route = this;
+        Ember.RSVP.Promise.all([
+            route.get('currentTeacher').get('reviews'),
+            route.store.find('draft', id)
+        ]).then(function (values) {
+            var reviews = values[0];
+            var draft = values[1];
+            var review_id = draft._data.review.id;
+
+            if (!reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
             }
         });
@@ -1372,9 +1562,11 @@ Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div clas
 
 Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <li class=\"list-item\">\n        <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    </li>\n{{/each}}\n");
 
-Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">foo:</div> <div class=\"value\">bar</div>\n</div>\n");
+Ember.TEMPLATES["modules/_draft-details-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Details</div>\n\n{{#with essay}}\n<div class=\"details-field\">\n    <span class=\"key\">Audience:</span>\n    <span class=\"value app-text\">{{audience}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Context:</span >\n    <span class=\"value app-text\">{{context}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Topic:</span>\n    <span class=\"value app-text\">{{topic}}</span>\n</div>\n<div class=\"details-field\">\n    <span class=\"key\">Theme:</span>\n    <span class=\"value app-text\">{{theme.name}} ({{theme.category}})</span>\n</div>\n{{/with}}\n");
 
-Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"proposed_topic_1\"}}\n    </div>\n{{/if}}\n");
+Ember.TEMPLATES["modules/_draft-review-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Review</div>\n\n{{#if reviewMode}}\n    {{textarea class=\"review-editor\" value=review.text}}\n{{else}}\n    <p>{{currentReview.text}}</p>\n{{/if}}\n");
+
+Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n{{/if}}\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">{{id}} +7</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{theme.name}}</div>\n    <div class=\"sub-line\">{{theme.category}}</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">{{next_action}}</div>\n    <div class=\"draft-due\">\n        Draft Due: &nbsp;\n                  {{#if draft_due_date}}\n                    {{formatDate draft_due_date}}\n                  {{else}}N/A{{/if}}\n    </div>\n    <div class=\"essay-due\">\n      Essay Due:  {{#if due_date}} {{formatDate due_date}}\n                  {{else}}         N/A             {{/if}}\n    </div>\n</div>\n");
 
@@ -1386,6 +1578,6 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");

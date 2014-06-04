@@ -2,36 +2,45 @@
 App.EssayController = Ember.ObjectController.extend({
     needs: ['essays'],
 
-    // If we're explicit then Ember binding is simpler.
-    proposed_topic_0: function () {
-        //var deferred = $.Deferred();
-        var correct_id = this.get('controllers.essays.selectedEssay.id');
-        var topics_t = this.get('controllers.essays.selectedEssay.proposed_topics');
-        console.log(topics_t);
-        console.log('PROP 0. model id: ' + correct_id );
-        return topics_t[0];
-        //var correct_essay = this.store.find('themeEssay', correct_id)
-        //    .then(function (essay) {
-        //        console.log('PROP 0. model id: ' + essay.id );
-        //        var topic_o = essay.get('proposed_topics')[0];
-        //        return topic_o;
-        //    });
-        //console.log(correct_essay);
+    currentDraft: function () {
+        return this.draftByMostCurrent(0);
+    }.property('drafts'),
 
+    currentReviewWithState: function (state) {
+        return this.get('drafts')
+            .then(function (drafts) {
+                var reviewPromises = [];
+                drafts.forEach(function (item, index) {
+                    var reviewPromise = item.get('review');
+                    if (reviewPromise) {
+                        reviewPromises.push(reviewPromise);
+                    }
+                });
+                return Ember.RSVP.all(reviewPromises);
+            })
+            .then(function (reviews) {
+                var reviewsWithGoodState = reviews.filterBy('state', state);
+                var numOfGoodReviews = reviewsWithGoodState.length;
+                if (numOfGoodReviews > 0) {
+                    return reviewsWithGoodState[numOfGoodReviews - 1];
+                } else {
+                    return null;
+                }
+            });
+    },
 
-        //return deferred.promise();
-        //return this.get('model').get('proposed_topics')[0];
-    }.property('proposed_topics'),
+    draftByMostCurrent: function (version) {
+        var drafts = this.get('drafts');
+        if (!drafts) {
+            return null;
+        }
 
-    proposed_topic_1: function () {
-        var correct_id = this.get('controllers.essays.selectedEssay.id');
-        var topics = this.get('controllers.essays.selectedEssay.proposed_topics');
-        console.log('PROP 1. model id: ' + correct_id );
-        return topics[1];
+        if (version >= drafts.length) {
+            return null;
+        }
 
-        //console.log('PROP 1. model id: ' + this.get('model').get('id') );
-        //return this.get('model').get('proposed_topics')[1];
-    }.property('proposed_topics'),
+        return drafts[drafts.length - 1 - version];
+    },
 
     /**
      * Helper method to cause observer to fire only once.
@@ -48,22 +57,22 @@ App.EssayController = Ember.ObjectController.extend({
     //    this.get('model').set('proposed_topics', newProposedTopics);
     //}.observes('_proposed_topics_merged'),
 
-    proposedTopicOneChanged: function () {
-        console.log('proposedTopicOneChanged()');
-        var pt2 = this.get('model').get('proposed_topics')[1];
-        var newProposedTopics = [  this.get('proposed_topic_0'),
-                                   pt2                            ]
-        this.get('model').set('proposed_topics', newProposedTopics);
-    //}.observes('proposed_topics'),
-    }.observes('proposed_topic_0'),
+    // proposedTopicOneChanged: function () {
+    //     console.log('proposedTopicOneChanged()');
+    //     var pt2 = this.get('model').get('proposed_topics')[1];
+    //     var newProposedTopics = [  this.get('proposed_topic_0'),
+    //                                pt2                            ]
+    //     this.get('model').set('proposed_topics', newProposedTopics);
+    // //}.observes('proposed_topics'),
+    // }.observes('proposed_topic_0'),
 
-    proposedTopicTwoChanged: function () {
-        console.log('proposedTopicTwoChanged()');
-        var pt1 = this.get('model').get('proposed_topics')[0];
-        var newProposedTopics = [  pt1,
-                                   this.get('proposed_topic_1')  ]
-        this.get('model').set('proposed_topics', newProposedTopics);
-    }.observes('proposed_topic_1'),
+    // proposedTopicTwoChanged: function () {
+    //     console.log('proposedTopicTwoChanged()');
+    //     var pt1 = this.get('model').get('proposed_topics')[0];
+    //     var newProposedTopics = [  pt1,
+    //                                this.get('proposed_topic_1')  ]
+    //     this.get('model').set('proposed_topics', newProposedTopics);
+    // }.observes('proposed_topic_1'),
 
     getMostRecentDraft: function () {
         return this.get('model').get('drafts').then(function (drafts) {
@@ -144,3 +153,5 @@ App.EssayTabs = Ember.ContainerView.extend({
         this._super();
     }
 });
+
+App.ThemeEssayController = App.EssayController.extend({});
