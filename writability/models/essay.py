@@ -69,34 +69,7 @@ class Essay(BaseModel):
         return self.current_draft.due_date
 
 
-    @property
-    def next_action(self):
-        """Return next action to be taken on essay."""
-        drafts = self.drafts
-        existing_drafts = len(drafts) 
-        num_of_drafts = self.num_of_drafts
-        curr_draft = self.current_draft
-        s = curr_draft.state if curr_draft else None
-                    #chokes when no curr_draft
-        action = "ERROR"
 
-        if not self.topic:              # no topic selected
-            action = "Add Topics"
-        elif self.proposed_topics[0] or self.proposed_topics[1]:
-            action = "Approve Topic"
-        elif existing_drafts != 0 and existing_drafts < num_of_drafts:
-            if (s == "new") or (s == "in_progress"):
-                action = "Write"
-            elif s == "submitted":
-                action = "Review"
-            return "%s Draft %d / %d" % (action, existing_drafts, num_of_drafts)
-        else:
-            return "else"
-            if curr_draft.is_final_draft and s == "reviewed":
-                action = "Complete"
-            else:
-                action = "Error"
-        return action
 
 class ThemeEssay(StatefulModel, Essay):
 
@@ -151,6 +124,35 @@ class ThemeEssay(StatefulModel, Essay):
         """Get the allowed initial states."""
         return ["new"]
 
+    @property
+    def next_action(self):
+        """Return next action to be taken on essay."""
+        drafts = self.drafts
+        existing_drafts = len(drafts) 
+        num_of_drafts = self.num_of_drafts
+        curr_draft = self.current_draft
+        s = curr_draft.state if curr_draft else None
+                    #chokes when no curr_draft
+        action = "ERROR"
+
+        #if self.proposed_topics[0] or self.proposed_topics[1]:
+
+        if self.state == "new":
+            action = "Add Topics"
+        elif self.state == "added_topics": #State change may need added
+            action = "Approve Topic"
+        elif self.state == "in_progress":
+            if existing_drafts != 0 and existing_drafts < num_of_drafts:
+                if (s == "new") or (s == "in_progress"):
+                    action = "Write"
+                elif s == "submitted":
+                    action = "Review"
+                return "%s Draft %d / %d" % (action, existing_drafts, num_of_drafts)
+        elif curr_draft.is_final_draft and s == "reviewed":
+            action = "Complete"
+        else:
+            action = "Error"
+        return action
 
 class ApplicationEssay(Essay):
 
