@@ -2,7 +2,7 @@ writability
 ===========
 Install Chrome plugin 'Ember Inspector'
 
-== Setup
+## Setup
     Install Ubuntu
     sudo apt-get install git ruby nodejs npm nodejs-legacy postgresql libpq-dev python-dev python-virtualenv
     git clone <repo uri>
@@ -25,7 +25,7 @@ Install Chrome plugin 'Ember Inspector'
     # The site is available at http://localhost:5000
 
 
-== Grunt
+## Grunt
     sudo npm install -g grunt-cli
     cd writability
     npm install grunt grunt-ember-templates grunt-contrib-concat grunt-contrib-wah grunt-contrib-less
