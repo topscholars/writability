@@ -14,7 +14,7 @@ Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"mo
 
 Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.LeftNavButton}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.RightNavButton}}</div>\n");
 
-Ember.TEMPLATES["core/modules/sectionlist"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each section in sections}}\n    <div class=\"list-section-title\">{{section.title}}</div>\n    {{#each item in section.items}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
+Ember.TEMPLATES["core/modules/sectionlist"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n    <div class=\"list-section-title\">Students</div>\n    {{#each item in students}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n    <div class=\"list-section-title\">Invitations</div>\n    {{#each item in invitations}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <li class=\"list-item\">\n        <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    </li>\n{{/each}}\n");
 
@@ -33,5 +33,7 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
+
+Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("<h2>Students</h2>\n{{#with students}}\n    {{view App.StudentsListView}}\n{{/with}}\n\n<h2>Invitations</h2>\n{{#with invitations}}\n    {{view App.StudentsListView}}\n    {{#each}}\n    <div>{{name}}</div>\n    {{/each}}\n{{/with}}\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");

@@ -153,11 +153,11 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        return this.get('currentTeacher').get('students');
+        return this.get('currentTeacher');
     },
 
     setupController: function (controller, model) {
-        controller.set('model', model);
+        controller.set('model', this.model);
     },
 
     renderTemplate: function () {
@@ -165,7 +165,7 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
         this.render('Header', {outlet: 'header'});
         // needs into explicity because core/layouts/main was rendered
         // within function
-        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
+        this.render('modules/students', {into: 'core/layouts/main', outlet: 'left-side-outlet'});
     },
 
     actions: {

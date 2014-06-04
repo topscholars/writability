@@ -8,7 +8,7 @@ App.StudentNewItemView = App.ThinNewItem.extend({
     templateName: "modules/_students-new-item"
 });
 
-App.StudentsController = Ember.ArrayController.extend({
+App.StudentsController = Ember.ObjectController.extend({
     invitedStudentEmail: null,
 
     actions: {
@@ -18,18 +18,8 @@ App.StudentsController = Ember.ArrayController.extend({
     }
 });
 
-App.StudentsView = App.ListView.extend({
+App.StudentsListView = App.ListView.extend({
     title: 'Students',
     listItem: App.StudentItemView,
     newItem: App.StudentNewItemView,
-    /*sections: [
-        {
-            title: 'Students',
-            items: this.get('controller.model').get('students')
-        },
-        {
-            title: 'Invites',
-            items: this.get('controller.model').get('invitations')
-        }
-    ]*/
 });

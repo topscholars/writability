@@ -1,11 +1,13 @@
 <div class="module-title">{{view.title}}</div>
 <ol class="list">
-{{#each section in sections}}
-    <div class="list-section-title">{{section.title}}</div>
-    {{#each item in section.items}}
+    <div class="list-section-title">Students</div>
+    {{#each item in students}}
         {{view view.listItem classNameBindings="isSelected" }}
     {{/each}}
-{{/each}}
+    <div class="list-section-title">Invitations</div>
+    {{#each item in invitations}}
+        {{view view.listItem classNameBindings="isSelected" }}
+    {{/each}}
 
 {{#if view.newItem}}
     {{view view.newItem}}

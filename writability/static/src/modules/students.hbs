@@ -1,0 +1,12 @@
+<h2>Students</h2>
+{{#with students}}
+    {{view App.StudentsListView}}
+{{/with}}
+
+<h2>Invitations</h2>
+{{#with invitations}}
+    {{view App.StudentsListView}}
+    {{#each}}
+    <div>{{name}}</div>
+    {{/each}}
+{{/with}}
