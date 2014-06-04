@@ -13,9 +13,9 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 });
 
 App.StudentsController = Ember.ObjectController.extend({
-    invitedStudentEmail: null,
     students: null,
     invitations: null,
+    invitedStudentEmail: null,
 
     actions: {
         inviteStudentCont: function () {
@@ -27,10 +27,12 @@ App.StudentsController = Ember.ObjectController.extend({
 App.StudentsListView = App.ListView.extend({
     title: 'Students',
     listItem: App.StudentItemView,
+    classNames: ["module", "list-module", 'auto-height']
 });
 
 App.InvitationsListView = App.ListView.extend({
     title: 'Invitations',
     listItem: App.InvitationItemView,
     newItem: App.StudentNewItemView,
+    classNames: ["module", "list-module", 'auto-height'],
 });

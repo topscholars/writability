@@ -162,8 +162,6 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
     },
 
     setupController: function (controller, model) {
-        //console.log(model.invitations);
-        console.log(model);
         controller.set('students', model.students);
         controller.set('invitations', model.invitations);
     },
@@ -178,6 +176,8 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         inviteStudent: function (studentEmail) {
+            console.log('Action: ');
+            console.log(studentEmail);
             var invitation = this.store.createRecord('invitation', {
                 email: studentEmail,
                 is_registered: false,

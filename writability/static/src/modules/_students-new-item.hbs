@@ -1,6 +1,12 @@
 <div class="main-group">
     <div class="main-line">
-        {{view Ember.TextField placeholder="Student's Email" valueBinding="invitedStudentEmail"}}
+
+        <!-- http://stackoverflow.com/questions/13230463/binding-ember-textfield-value-to-another-controllers-property -->
+
+        <!--
+        {{view Ember.TextField placeholder="Student's Email" valueBinding="App.studentsController.invitedStudentEmail"}}
+        -->
+        {{input type="text" placeholder="Student's Email" value=App.studentsController.invitedStudentEmail}}
 
         <span {{action "inviteStudentCont"}} class="inviteStudent">+</span>
 
