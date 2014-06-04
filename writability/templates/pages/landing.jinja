@@ -10,7 +10,7 @@
 <header id="header" class="landing-header">
   <div class="header-left-group header-title"><div class="icon"></div></div>
   <div class="header-right-group header-title">
-    <a class="header-link" href="/login">Login</a>
+    <a class="header-link login-modal-toggle" >Login</a>
   </div>
 </header>
 
@@ -22,13 +22,14 @@
         <p>Need help with you're writing? We'll work with you on your writing
         technique and also help you craft a great college application essay.
         </p>
-        <button class="button modal-toggle">Sign Up</button>
+        <button class="button sign-up-modal-toggle">Sign Up</button>
       </div>
     </section>
   </div>
 </div>
-<div id="modal-container">
-  <section id="modal-module" class="landing-modal module">
+
+<div id="register-modal" class="modal-container">
+  <section id="register-modal-module" class="landing-modal module">
     <div class="modal-content">
       <div class="modal-title">Sign Up</div>
       <button class="close-button">X</button>
@@ -52,6 +53,29 @@
               Are you a teacher?<input type="checkbox" name="roles" />
             </label>
             <button name="submit" type="submit" value="Register" class="double-column">Create Account &gt;</button>
+          </li>
+        </ol>
+      </form>
+    </div>
+  </section>
+</div>
+
+<div id="login-modal" class="modal-container">
+  <section id="login-modal-module" class="landing-modal module">
+    <div class="modal-content">
+      <div class="modal-title">Log In</div>
+      <button class="close-button">X</button>
+      <form action="/login" method="POST" name="login_form">
+        {{ form.hidden_tag() }}
+        <ol>
+          <li>
+            <input name="email" type="email" class="single-column" placeholder="Email" />
+          </li>
+          <li>
+            <input name="password" type="password" class="single-column" placeholder="Password" />
+          </li>
+          <li>
+            <button name="submit" type="submit" value="Login" class="single-column">Login &gt;</button>
           </li>
         </ol>
       </form>

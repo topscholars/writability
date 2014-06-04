@@ -5,16 +5,21 @@
  */
 window.Landing = (function ($) {
     $(function () {
-        $('#modal-container').hide().css('visibility', 'visible');
+        var $reg_modal = $('#register-modal');
+        var $login_modal = $('#login-modal');
+        $reg_modal.hide().css('visibility', 'visible');
+        $login_modal.hide().css('visibility', 'visible');
 
-        $('.modal-toggle').click(function (ev) {
-            $('#modal-container').fadeIn();
-
-            //$('#modal-container').animate({'visibility': 'visible'});
+        $('.sign-up-modal-toggle').click(function (ev) {
+            $reg_modal.fadeIn();
+            //$('#modal-container').animate({'visibility': 'visible'}); // or 'hidden'
+        });
+        $('.login-modal-toggle').click(function (ev) {
+            $login_modal.fadeIn();
         });
         $('.close-button').click(function (ev) {
-            $('#modal-container').fadeOut(300);
-            //$('#modal-container').animate({'visibility': 'hidden'});
+            $reg_modal.fadeOut(300);
+            $login_modal.fadeOut(300);
         });
     });
 })($);
