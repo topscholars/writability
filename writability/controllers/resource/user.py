@@ -66,6 +66,9 @@ class TeacherResourceManager(UserResourceManager):
         self._item_fields.update({
             "students": fields.List(ResourceField(
                 StudentResourceManager.item_resource_name,
+                absolute=True)),
+            "invitations": fields.List(ResourceField(
+                InvitationResourceManager.item_resource_name,
                 absolute=True))
         })
 

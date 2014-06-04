@@ -10,6 +10,8 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 
 App.StudentsController = Ember.ObjectController.extend({
     invitedStudentEmail: null,
+    students: null,
+    invitations: null,
 
     actions: {
         inviteStudentCont: function () {

@@ -748,6 +748,8 @@ App.StudentNewItemView = App.ThinNewItem.extend({
 
 App.StudentsController = Ember.ObjectController.extend({
     invitedStudentEmail: null,
+    students: null,
+    invitations: null,
 
     actions: {
         inviteStudentCont: function () {
@@ -1259,11 +1261,19 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        return this.get('currentTeacher');
+        return Ember.RSVP.Promise.all([
+            this.get('currentTeacher').get('students'),
+            this.get('currentTeacher').get('invitations')
+        ]).then(function(values) {
+            return {students: values[0], invitations: values[1]};
+        });
     },
 
     setupController: function (controller, model) {
-        controller.set('model', this.model);
+        //console.log(model.invitations);
+        console.log(model);
+        controller.set('students', model.students);
+        controller.set('invitations', model.invitations);
     },
 
     renderTemplate: function () {
@@ -1404,6 +1414,6 @@ Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<d
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <div class=\"editor-toggles\">\n        <button {{action editorToggle}} class=\"editor-toggle\">Details</button>\n        <button {{action editorToggle}} class=\"editor-toggle\">Review</button>\n    </div>\n    <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n    {{view App.TextEditor action=\"startedWriting\" valueBinding=\"formatted_text\"}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
-Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("<h2>Students</h2>\n{{#with students}}\n    {{view App.StudentsListView}}\n{{/with}}\n\n<h2>Invitations</h2>\n{{#with invitations}}\n    {{view App.StudentsListView}}\n    {{#each}}\n    <div>{{name}}</div>\n    {{/each}}\n{{/with}}\n");
+Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("<h2>Invites</h2>\n{{#each x in invitations}}\n<div>{{invitation.email}}</div>\n{{/each}}\n<h2>Students</h2>\n{{#with students}}\n    {{view App.StudentsListView}}\n{{/with}}\n\n<h2>Invitations</h2>\n{{#with invitations}}\n    {{view App.StudentsListView}}\n    {{#each}}\n    <div>{{name}}</div>\n    {{/each}}\n{{/with}}\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");

@@ -153,11 +153,19 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        return this.get('currentTeacher');
+        return Ember.RSVP.Promise.all([
+            this.get('currentTeacher').get('students'),
+            this.get('currentTeacher').get('invitations')
+        ]).then(function(values) {
+            return {students: values[0], invitations: values[1]};
+        });
     },
 
     setupController: function (controller, model) {
-        controller.set('model', this.model);
+        //console.log(model.invitations);
+        console.log(model);
+        controller.set('students', model.students);
+        controller.set('invitations', model.invitations);
     },
 
     renderTemplate: function () {

@@ -1,3 +1,7 @@
+<h2>Invites</h2>
+{{#each x in invitations}}
+<div>{{invitation.email}}</div>
+{{/each}}
 <h2>Students</h2>
 {{#with students}}
     {{view App.StudentsListView}}
