@@ -176,8 +176,6 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         inviteStudent: function (studentEmail) {
-            console.log('Action: ');
-            console.log(studentEmail);
             var invitation = this.store.createRecord('invitation', {
                 email: studentEmail,
                 is_registered: false,

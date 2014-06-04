@@ -1290,8 +1290,6 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         inviteStudent: function (studentEmail) {
-            console.log('Action: ');
-            console.log(studentEmail);
             var invitation = this.store.createRecord('invitation', {
                 email: studentEmail,
                 is_registered: false,
@@ -1412,7 +1410,7 @@ Ember.TEMPLATES["modules/_invitation-list-item"] = Ember.Handlebars.compile("<!-
 
 Ember.TEMPLATES["modules/_students-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n\n        <!-- http://stackoverflow.com/questions/13230463/binding-ember-textfield-value-to-another-controllers-property -->\n\n        <!--\n        {{view Ember.TextField placeholder=\"Student's Email\" valueBinding=\"App.studentsController.invitedStudentEmail\"}}\n        -->\n        {{input type=\"text\" placeholder=\"Student's Email\" value=App.studentsController.invitedStudentEmail}}\n\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n\n        <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>\n");
+Ember.TEMPLATES["modules/_students-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{!-- it is necessary to use \"controller.\" because this is inside a \"with\" block in the template,\n              which changes the context. The default context is controller, but now it is set to the\n              parameter of the \"with\" statement  --}}\n        {{input type=\"text\" placeholder=\"Student's Email\" value=controller.invitedStudentEmail}}\n        <span {{action \"inviteStudentCont\"}} class=\"inviteStudent\">+</span>\n        <!-- onclick=\"alert('Hit the invitation endpoint!'); return false;\"  -->\n    </div>\n</div>\n");
 
 Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{name}}</div>\n</div>\n");
 
