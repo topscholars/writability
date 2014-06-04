@@ -35,4 +35,6 @@ For any npm issues, run 'sudo npm install' from the project root.
 
 == Grunt
     sudo npm install -g grunt-cli
-    Use 'grunt watch' to keep Ember app updated.
+    cd writability
+    npm install grunt grunt-ember-templates grunt-contrib-concat grunt-contrib-wah grunt-contrib-less
+    grunt watch     # to keep Ember app updated (recompile assets/writability.js when src files change)
