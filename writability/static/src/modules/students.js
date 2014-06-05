@@ -1,26 +1,38 @@
 /* globals App, Ember */
+
 App.StudentItemView = App.ThinListItem.extend({
     templateName: "modules/_students-list-item",
+});
+
+App.InvitationItemView = App.ThinListItem.extend({
+    templateName: "modules/_invitation-list-item",
 });
 
 App.StudentNewItemView = App.ThinNewItem.extend({
     templateName: "modules/_students-new-item"
 });
 
-App.StudentsController = Ember.ArrayController.extend({
+App.StudentsController = Ember.ObjectController.extend({
+    students: null,
+    invitations: null,
     invitedStudentEmail: null,
 
-    actions: { 
+    actions: {
         inviteStudentCont: function () {
-            // This should create invitation model
-            // Should also push the new invitation object to the /students list
-            // this.send('invitedStudent', this.get('newStudent'));
-        }.observes("newStudent")
+            this.send('inviteStudent', this.get('invitedStudentEmail'));
+        }
     }
 });
 
-App.StudentsView = App.ListView.extend({
+App.StudentsListView = App.ListView.extend({
     title: 'Students',
     listItem: App.StudentItemView,
-    newItem: App.StudentNewItemView
+    classNames: ["module", "list-module", 'auto-height']
+});
+
+App.InvitationsListView = App.ListView.extend({
+    title: 'Invitations',
+    listItem: App.InvitationItemView,
+    newItem: App.StudentNewItemView,
+    classNames: ["module", "list-module", 'auto-height'],
 });
