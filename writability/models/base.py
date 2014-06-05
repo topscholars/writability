@@ -39,6 +39,10 @@ class BaseModel(db.Model):
         """Process model to prepare it for adding it db."""
         pass
 
+    def process_before_update(self):
+        """Process model upon update / save."""
+        pass
+
     @classmethod
     def create(class_, object_dict):
         prepared_dict = class_._replace_resource_ids_with_models(object_dict)
@@ -68,6 +72,7 @@ class BaseModel(db.Model):
         db.session.add(model)
 
         prepared_dict = class_._replace_resource_ids_with_models(updated_dict)
+        model.process_before_update()
         for k, v in prepared_dict.items():
             # only update attributes that have changed
             try:
