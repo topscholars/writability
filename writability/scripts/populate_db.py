@@ -377,7 +377,7 @@ class UserPopulator(JsonPopulator):
             app_essay_template = app_essay_template_resp.json()["application_essay_template"]
             app_essay_id = app_essay["id"]
             for theme_id in app_essay_template["themes"]:
-                if "theme" in app_essay_ids_by_theme_id:
+                if theme_id in app_essay_ids_by_theme_id:
                     app_essay_ids_by_theme_id[theme_id].append(app_essay_id)
                 else:
                     app_essay_ids_by_theme_id[theme_id] = [app_essay_id]
@@ -480,5 +480,3 @@ def populate_db():
 
 
 populate_db()
-
-

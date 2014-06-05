@@ -14,7 +14,7 @@ App.Essay = DS.Model.extend({
     // relationships
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
-    essay_template: DS.belongsTo('essay_template'),
+    essay_template: DS.belongsTo('essayTemplate', {async: true}),
 });
 
 App.ThemeEssay = App.Essay.extend({
@@ -25,6 +25,7 @@ App.ThemeEssay = App.Essay.extend({
     // relationships
     theme: DS.belongsTo('theme', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
+    essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1)
@@ -34,5 +35,6 @@ App.ApplicationEssay = App.Essay.extend({
     // properties
 
     // relationships
-    theme_essays: DS.hasMany('themeEssay', {async: true})
+    theme_essays: DS.hasMany('themeEssay', {async: true}),
+    essay_template: DS.belongsTo('applicationEssayTemplate', {async: true})
 });
