@@ -1,0 +1,56 @@
+LOG:  database system was interrupted; last known up at 2014-05-06 13:08:15 EDT
+LOG:  database system was not properly shut down; automatic recovery in progress
+LOG:  record with zero length at 0/1965310
+LOG:  redo is not required
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+FATAL:  database "kirkportas" does not exist
+FATAL:  database "writability" does not exist
+ERROR:  duplicate key value violates unique constraint "university_name_key"
+DETAIL:  Key (name)=(U Central Florida) already exists.
+STATEMENT:  INSERT INTO university (created_ts, updated_ts, deleted_ts, name, logo_url) VALUES ('2014-05-12T22:12:00.134895'::timestamp, '2014-05-12T22:12:00.134895'::timestamp, NULL, 'U Central Florida', NULL) RETURNING university.id
+FATAL:  role "pieuser" does not exist
+FATAL:  role "pieuser" does not exist
+FATAL:  role "pieuser" does not exist
+FATAL:  role "pieuser" does not exist
+ERROR:  role "kirkportas" already exists
+STATEMENT:  CREATE ROLE kirkportas PASSWORD 'md5059ae029c06d169d08bc4b5a19fc398f' NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN;
+	
+LOG:  database system was interrupted; last known up at 2014-05-14 11:54:04 EDT
+LOG:  database system was not properly shut down; automatic recovery in progress
+LOG:  record with zero length at 0/1CC1BE0
+LOG:  redo is not required
+LOG:  autovacuum launcher started
+LOG:  database system is ready to accept connections
+LOG:  unexpected EOF on client connection with an open transaction
+LOG:  unexpected EOF on client connection with an open transaction
+ERROR:  permission denied for relation user
+STATEMENT:  SELECT count(*) AS rows FROM ONLY "user"
+LOG:  unexpected EOF on client connection with an open transaction
+ERROR:  syntax error at or near "writability" at character 6
+STATEMENT:  drop writability
+	;
+ERROR:  syntax error at or near "writability" at character 6
+STATEMENT:  DROP writability;
+ERROR:  database "writability" is being accessed by other users
+DETAIL:  There are 2 other sessions using the database.
+STATEMENT:  DROP DATABASE writability;
+	
+ERROR:  database "writability" is being accessed by other users
+DETAIL:  There is 1 other session using the database.
+STATEMENT:  DROP DATABASE writability;
+	
+ERROR:  database "writability" already exists
+STATEMENT:  CREATE DATABASE writability;
+	
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  received fast shutdown request
+LOG:  aborting any active transactions
+FATAL:  terminating connection due to administrator command
+FATAL:  terminating connection due to administrator command
+FATAL:  terminating connection due to administrator command
+FATAL:  terminating connection due to administrator command
+FATAL:  terminating connection due to administrator command
+LOG:  shutting down
+LOG:  database system is shut down

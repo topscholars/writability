@@ -180,11 +180,16 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
 App.EssaysRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        if (this.get('currentStudent').get('state') !== 'active') {
-            this.transitionTo('universities');
+        if (this.get('currentUser').get('isStudent')) {
+            if (this.get('currentStudent').get('state') !== 'active') {
+                this.transitionTo('universities');
+            }
+            return this.get('currentStudent').get('theme_essays');
+        } else {
+            console.log('in teacher side of essaysroute');
+            return this.get('currentTeacher').get('students').get('theme_essays');
         }
-
-        return this.get('currentStudent').get('theme_essays');
+        
     },
 
     renderTemplate: function () {
@@ -222,6 +227,16 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
 });
 
 App.DraftRoute = App.AuthenticatedRoute.extend({
+
+    activate: function () {
+        this._super();
+        if (this.get('currentUser').get('isStudent')) {
+            this.controllerName = 'studentDraft';
+        } else {
+            this.controllerName = 'teacherDraft';
+        }
+    },
+
     model: function (params) {
         this._assert_authorized(params.id);
         return this.store.find('draft', params.id);
@@ -231,16 +246,32 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
         controller.set('model', model); //Required boilerplate
         // controller.set('backDisabled', true);
         // controller.set('nextDisabled', true); // Use same for next button in other views
-        controller.set('nextText', 'Send to Teacher');
+        if (this.get('currentUser.isStudent')) {
+            controller.set('nextText', 'Send to Teacher');
+        } else {
+            controller.set('nextText', 'Submit Review');
+        }
     },
 
     renderTemplate: function () {
         this.render('core/layouts/editor');
         this.render('NavHeader', {outlet: 'header'});
-        this.render({into: 'core/layouts/editor', outlet: 'editor-module'});
+        this.render({
+            controller: this.controllerName,
+            into: 'core/layouts/editor',
+            outlet: 'editor-module'
+        });
     },
 
     _assert_authorized: function (id) {
+        if (this.get('currentUser').get('isStudent')) {
+            this._assert_students_draft(id);
+        } else {
+            this._assert_teachers_review(id);
+        }
+    },
+
+    _assert_students_draft: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
             route.get('currentStudent').get('theme_essays'),
@@ -251,6 +282,22 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
             var essay_id = draft._data.essay.id;
 
             if (!theme_essays.isAny('id', essay_id)) {
+                route.transitionTo('error.unauthorized');
+            }
+        });
+    },
+
+    _assert_teachers_review: function (id) {
+        var route = this;
+        Ember.RSVP.Promise.all([
+            route.get('currentTeacher').get('reviews'),
+            route.store.find('draft', id)
+        ]).then(function (values) {
+            var reviews = values[0];
+            var draft = values[1];
+            var review_id = draft._data.review.id;
+
+            if (!reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
             }
         });

@@ -6,6 +6,7 @@ This module contains a Draft of an Essay. Essays have a series of Drafts that
 the Student writes.
 
 """
+import review
 from .db import db
 from .base import StatefulModel
 
@@ -27,6 +28,20 @@ class Draft(StatefulModel):
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
+
+    def change_related_objects(self):
+        """Change any related objects before commit."""
+        super(Draft, self).change_related_objects()
+
+        if self.state == "submitted" and self.review is None:
+            new_review_params = {
+                "teacher": self.essay.student.teacher,
+                "draft": self,
+                "review_type": "TEXT_REVIEW"
+            }
+
+            self.review = review.Review(**new_review_params)
+
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""

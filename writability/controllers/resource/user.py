@@ -18,6 +18,7 @@ from .fields import ResourceField
 import essay
 import university
 import role
+import review
 
 
 class UserResourceManager(StatefulResourceManager):
@@ -66,6 +67,12 @@ class TeacherResourceManager(UserResourceManager):
         self._item_fields.update({
             "students": fields.List(ResourceField(
                 StudentResourceManager.item_resource_name,
+                absolute=True)),
+            "reviews": fields.List(ResourceField(
+                review.ReviewResourceManager.item_resource_name,
+                absolute=True)),
+            "teacher_essays": fields.List(ResourceField(
+                essay.ThemeEssayResourceManager.item_resource_name,
                 absolute=True))
         })
 

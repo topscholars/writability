@@ -41,6 +41,9 @@ class BaseModel(db.Model):
 
     def process_before_update(self):
         """Process model upon update / save."""
+
+    def change_related_objects(self):
+        """Change any related objects before commit."""
         pass
 
     @classmethod
@@ -49,6 +52,7 @@ class BaseModel(db.Model):
         model = class_(**prepared_dict)
         model.process_before_create()
         db.session.add(model)
+        model.change_related_objects()
         db.session.commit()
         return model
 
@@ -81,6 +85,7 @@ class BaseModel(db.Model):
             except AttributeError:
                 setattr(model, k, v)
 
+        model.change_related_objects()
         db.session.commit()
         return model
 
