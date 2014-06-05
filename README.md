@@ -25,6 +25,14 @@ Install Chrome plugin 'Ember Inspector'
     # The site is available at http://localhost:5000
 
 
+## Postgres Note
+    *To stop postgres and drop connections then recreate database
+    pg_ctl -D /Development/pg -l logfile start # set -D to your postgres location 
+    createdb -O youruser writability # create a db, will be owned by your user
+
+For any npm issues, run 'sudo npm install' from the project root.
+
+
 ## Grunt
     sudo npm install -g grunt-cli
     cd writability

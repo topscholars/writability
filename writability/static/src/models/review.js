@@ -1,3 +1,4 @@
+/* globals App, DS */
 App.Review = DS.Model.extend({
     // properties
     text: DS.attr('string'),
