@@ -894,6 +894,10 @@ App.StudentsController = Ember.ObjectController.extend({
     invitations: null,
     invitedStudentEmail: null,
 
+    pendingInvitations: function() {
+        return this.get('invitations').filterBy('is_registered', false);
+    }.property('invitations.@each'),
+
     actions: {
         inviteStudentCont: function () {
             this.send('inviteStudent', this.get('invitedStudentEmail'));
@@ -1610,6 +1614,6 @@ Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<d
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
-Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("{{#with students}}\n    {{view App.StudentsListView}}\n{{/with}}\n\n{{#with invitations}}\n    {{view App.InvitationsListView}}\n{{/with}}\n");
+Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("{{#with students}}\n    {{view App.StudentsListView}}\n{{/with}}\n\n{{#with pendingInvitations}}\n    {{view App.InvitationsListView}}\n{{/with}}\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
