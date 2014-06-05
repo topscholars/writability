@@ -86,7 +86,7 @@ App.EssayController = Ember.ObjectController.extend({
     },
 
     submitTopic: function(model) {
-        model.set('state', 'completed');
+        model.set('state', 'added_topics');
         model.save().then(
             function() {
                 console.log('saved');
