@@ -85,6 +85,17 @@ App.EssayController = Ember.ObjectController.extend({
         });
     },
 
+    submitTopic: function(model) {
+        model.set('state', 'completed');
+        model.save().then(
+            function() {
+                console.log('saved');
+            },
+            function() {
+                console.log('error');
+            });
+    },
+
     actions: {
         openDraft: function () {
             var that = this;
@@ -102,7 +113,7 @@ App.EssayController = Ember.ObjectController.extend({
                 alert('You must supply two proposed topics');
             } else {
                 if (confirm('Are you sure you want to submit these topics?')) {
-                    console.log('submitting');
+                    this.submitTopic(model);
                 }
             }
         }
