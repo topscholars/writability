@@ -70,6 +70,9 @@ class TeacherResourceManager(UserResourceManager):
                 absolute=True)),
             "reviews": fields.List(ResourceField(
                 review.ReviewResourceManager.item_resource_name,
+                absolute=True)),
+            "teacher_essays": fields.List(ResourceField(
+                essay.ThemeEssayResourceManager.item_resource_name,
                 absolute=True))
         })
 
