@@ -9,8 +9,9 @@ psycopg2==2.5.2
 # pyOpenSSL==0.14
 
 # dev
-requests==2.2.1
+BeautifulSoup==3.2.1
 nose
+requests==2.2.1
 
 # indirect
 Flask-Login==0.2.10
