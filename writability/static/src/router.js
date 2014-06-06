@@ -11,8 +11,9 @@ App.Router.map(function () {
 
     this.resource('students', function () {
         this.resource('student', {path: '/:id'}, function() {
-            this.route("essays");
-            this.route("essay", { path: "/essays/:essay_id" });
+            this.resource("student.essays", { path: "/essays" }, function() {
+                this.route("essay", { path: "/:essay_id" });
+            });
         });
     });
 
