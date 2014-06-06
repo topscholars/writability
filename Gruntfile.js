@@ -11,7 +11,10 @@ module.exports = function(grunt) {
             },
             concat: {
                 files: 'writability/static/src/**/*.js',
-                tasks: ['concat']
+                tasks: ['concat'],
+                options: {
+                    livereload: true
+                }
             },
             styles: {
                 files: ['writability/static/style/**/*.less'],
@@ -50,7 +53,8 @@ module.exports = function(grunt) {
                     "writability/static/libs/ember/ember.js",
                     "writability/static/libs/ember-data/ember-data.js",
                     "writability/static/libs/bootstrap/dist/js/bootstrap.js",
-                    "writability/static/libs/momentjs/moment.js"
+                    "writability/static/libs/momentjs/moment.js",
+                    "writability/static/libs/validatorjs/dist/validator.min.js"
                     // "writability/static/libs/ckeditor/ckeditor.js"
                 ],
                 // the location of the resulting JS file

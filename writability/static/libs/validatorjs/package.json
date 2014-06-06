@@ -1,0 +1,33 @@
+{
+  "name": "validatorjs",
+  "buildname": "validator",
+  "title": "Validator constructor function for easy data validation on both the client and server side.",
+  "description": "A constructor function for data validation on both the server and client, inspired by the Laravel PHP framework's Validator class.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/skaterdav85/validatorjs",
+  "author": "David <dtang85@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skaterdav85/validatorjs"
+  },
+  "bugs": {
+    "url": ""
+  },
+  "keywords": [
+    "validatorjs, validator.js, data validation, validator, validate, validation, data, laravel, laravel-validator-for-js"
+  ],
+  "devDependencies": {
+    "grunt": "0.4.1",
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-uglify": "~0.1.1"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "gitHead": "301ebbe9afe949a4233606d3a5f16e14be5c820e",
+  "readmeFilename": "README.md",
+  "main": "dist/validator.js",
+  "scripts": {
+    "test": "jasmine-node spec/ --verbose --color"
+  }
+}
