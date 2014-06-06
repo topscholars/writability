@@ -189,6 +189,18 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
     }
 });
 
+App.StudentRoute = App.AuthenticatedRoute.extend({
+    model: function (params) {
+        return this.get('currentTeacher').get('students').then(function(students) {
+            return students.findBy('id', params.id);
+        });
+    },
+
+    renderTemplate: function() {
+        this.render({outlet: 'right-side-outlet'});
+    },
+});
+
 App.EssaysRoute = App.AuthenticatedRoute.extend({
     model: function () {
         if (this.get('currentStudent').get('state') !== 'active') {
