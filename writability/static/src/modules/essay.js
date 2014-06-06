@@ -1,4 +1,38 @@
 /* globals App, Ember */
+App.EssayOverviewTab = Ember.View.extend({
+    name: "Overview",
+    templateName: "modules/_essay-details-overview"
+});
+
+App.EssayApplicationsTab = App.DetailsListView.extend({
+    name: "Applications",
+    summaryText: "Click on an application question to exclusively associate it with this essay. Each question must be associated with a single essay.",
+    listItemPartial: "modules/_essay-app-tab-list-item"
+});
+
+App.ProposedTopicOne = Ember.View.extend({
+    tagName: 'textarea',
+    classNames: ['value', 'student-text'],
+});
+
+App.EssayTabs = Ember.ContainerView.extend({
+    /**
+     * Create the child views in init so they are recreated on a later
+     * transition.
+     */
+    init: function () {
+        this.set('overview', App.EssayOverviewTab.create());
+        this.set('application', App.EssayApplicationsTab.create());
+        this.set('childViews', ['overview']);
+        this._super();
+    },
+
+    showTab: function (tabKey) {
+        this.popObject();
+        this.pushObject(this.get(tabKey));
+    }
+});
+
 App.EssayController = Ember.ObjectController.extend({
     needs: ['essays'],
 
@@ -120,50 +154,15 @@ App.EssayController = Ember.ObjectController.extend({
     }
 });
 
-App.EssayOverviewTab = Ember.View.extend({
-    name: "Overview",
-    templateName: "modules/_essay-details-overview"
-});
-
-App.EssayApplicationsTab = Ember.View.extend({
-    name: "Applications",
-    templateName: "modules/_essay-details-overview"
-});
-
-App.EssayArchiveTab = Ember.View.extend({
-    name: "Archive",
-    templateName: "modules/_essay-details-overview"
-});
-
-App.ProposedTopicOne = Ember.View.extend({
-    tagName: 'textarea',
-    classNames: ['value', 'student-text'],
-    //valueBinding: "App.EssayController.proposed_topic_0"
-
-});
-
-App.EssayTabs = Ember.ContainerView.extend({
-    /**
-     * Create the child views in init so they are recreated on a later
-     * transition.
-     */
-    init: function () {
-        this.set('overview', App.EssayOverviewTab.create());
-        this.set('application', App.EssayApplicationsTab.create());
-        this.set('archive', App.EssayArchiveTab.create());
-        this.set('childViews', ['overview']);
-        this._super();
-    }
-});
-
 App.EssayView = App.DetailsView.extend({
+
+    tabsViewClass: App.EssayTabs,
+
     selectedTab: 'overview',
-    tabView: App.EssayTabs,
 
     tabs: [
         {key: 'overview', title: 'Overview'},
         {key: 'application', title: 'Applications'},
-        {key: 'archive', title: 'Archive'},
     ],
 
     didInsertElement: function () {
@@ -171,7 +170,7 @@ App.EssayView = App.DetailsView.extend({
     },
 
     actions: {
-        select: function (tabKey) {
+        selectTab: function (tabKey) {
             //TODO: make this cleaner
             Ember.$('.tab-header').each(function (index, el) {
                 var elID = Ember.$(el).attr('id');
@@ -181,8 +180,10 @@ App.EssayView = App.DetailsView.extend({
                     Ember.$(el).removeClass("is-selected");
                 }
             });
+            this.get('tabsView').showTab(tabKey);
         }
     }
 });
+
 
 App.ThemeEssayController = App.EssayController.extend({});

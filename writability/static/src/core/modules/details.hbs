@@ -1,6 +1,6 @@
 <nav class="details-nav">
     {{#each tab in view.tabs}}
-        <div id="tab-{{unbound tab.key}}" {{action "select" tab.key
+        <div id="tab-{{unbound tab.key}}" {{action "selectTab" tab.key
         target="view"}} class="tab-header">
             {{tab.title}}
         </div>
@@ -8,5 +8,5 @@
 </nav>
 
 <div class="tab-content">
-    {{view view.tabView}}
+    {{view view.tabsViewClass viewName="tabsView"}}
 </div>

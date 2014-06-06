@@ -96,6 +96,9 @@ class ApplicationEssayResourceManager(EssayResourceManager):
     def _add_item_fields(self):
         super(ApplicationEssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "theme_essays": fields.List(ResourceField(
+                ThemeEssayResourceManager.item_resource_name,
+                absolute=True))
             # 'proposed_topics': fields.List(fields.String)
         })
 
