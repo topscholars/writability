@@ -1303,7 +1303,7 @@ App.Router.map(function () {
     this.resource('students', function () {
         this.resource('student', {path: '/:id'}, function() {
             this.resource("student.essays", { path: "/essays" }, function() {
-                this.route("essay", { path: "/:essay_id" });
+                this.route("show", { path: "/:essay_id" });
             });
         });
     });
