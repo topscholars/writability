@@ -118,6 +118,12 @@ class ThemeEssay(StatefulModel, Essay):
             assert val in ALLOWED_APP_ESSAY_STATES
         return _application_essay_states
 
+    @classmethod
+    def create(class_, object_dict):
+        if 'application_essays' in object_dict:
+            object_dict['_application_essays'] = object_dict.pop('application_essays')
+        super(ThemeEssay, class_).create(object_dict)
+
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
         super(ThemeEssay, self).process_before_create()
@@ -125,8 +131,9 @@ class ThemeEssay(StatefulModel, Essay):
         self.audience = theme_essay_template.audience
         self.context = theme_essay_template.context
         self.theme = theme_essay_template.theme
+        self._application_essay_states = {}
         for ae in self._application_essays:
-            _application_essay_states[ae] = "pending"
+            self._application_essay_states[ae.id] = "pending"
 
     def change_related_objects(self):
         """
@@ -137,15 +144,18 @@ class ThemeEssay(StatefulModel, Essay):
         super(ThemeEssay, self).change_related_objects()
         # just in case new application essays get in
         for ae in self._application_essays:
-            if ae not in self._application_essay_states.keys():
-                self._application_essay_states[ae] = "pending"
+            if ae.id not in self._application_essay_states.keys():
+                self._application_essay_states[ae.id] = "pending"
         # now mark others not selected
         if self._application_essay_states:
-            selected_ae = [ae for item in self._application_essay_states if item[ae]=="selected"]
-            for ae in selected_ae:
+            selected_ae_ids = [id for id in self._application_essay_states if self._application_essay_states[id]=="selected"]
+            for ae_id in selected_ae_ids:
+                import pdb; pdb.set_trace();
+                # how do I get the ApplicationEssay objects that correspond to these ids??
+                # ae = somefunctionof(ae_id) 
                 for te in ae.theme_essays:
                     if te != self:
-                        te._application_essay_states[ae] = "not_selected"
+                        te._application_essay_states[ae.id] = "not_selected"
 
 
     @validates('proposed_topics')
@@ -225,7 +235,7 @@ class ApplicationEssay(Essay):
         """
         Gets the ThemeEssay for which this ApplicationEssay is selected.
         """
-        ste = [te for te in self.theme_essays if te._application_essay_states[self] == "selected"]
+        ste = [te for te in self.theme_essays if te._application_essay_states[self.id] == "selected"]
         assert len(ste) <= 1
         return ste[0] if ste[0] else None
 
