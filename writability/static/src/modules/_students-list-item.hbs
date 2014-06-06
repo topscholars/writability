@@ -1,4 +1,8 @@
 <!-- <div class="list-style-group">@{{index}}</div> -->
 <div class="main-group">
-    <div class="main-line">{{name}}</div>
+    <div class="main-line">
+        {{#link-to "student" this}}
+            {{name}}
+        {{/link-to}}
+    </div>
 </div>

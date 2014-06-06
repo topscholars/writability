@@ -2,7 +2,7 @@ writability
 ===========
 Install Chrome plugin 'Ember Inspector'
 
-== Setup
+## Setup
     Install Ubuntu
     sudo apt-get install git ruby nodejs npm nodejs-legacy postgresql libpq-dev python-dev python-virtualenv
     git clone <repo uri>
@@ -25,15 +25,15 @@ Install Chrome plugin 'Ember Inspector'
     # The site is available at http://localhost:5000
 
 
-== PG Note
-    *To stop pg and drop connections then recreate DB
+## Postgres Note
+    *To stop postgres and drop connections then recreate database
     pg_ctl -D /Development/pg -l logfile start # set -D to your postgres location 
     createdb -O youruser writability # create a db, will be owned by your user
 
 For any npm issues, run 'sudo npm install' from the project root.
 
 
-== Grunt
+## Grunt
     sudo npm install -g grunt-cli
     cd writability
     npm install grunt grunt-ember-templates grunt-contrib-concat grunt-contrib-wah grunt-contrib-less
