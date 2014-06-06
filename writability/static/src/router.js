@@ -224,7 +224,9 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
 /*  Here we use StudentEssay(s) to match student.essay(s) route */
 App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        return this.get('selectedStudent').get('theme_essays');
+        var student = this.controllerFor('student').get('model');
+
+        return student.get('theme_essays');
     },
 
     renderTemplate: function () {
