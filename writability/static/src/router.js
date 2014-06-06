@@ -10,7 +10,10 @@ App.Router.map(function () {
     });
 
     this.resource('students', function () {
-        this.resource('student', {path: '/:id'});
+        this.resource('student', {path: '/:id'}, function() {
+            this.route("essays");
+            this.route("essay", { path: "/essays/:essay_id" });
+        });
     });
 
     // no drafts list resource
@@ -217,8 +220,34 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-App.EssayRoute = App.AuthenticatedRoute.extend({
+/*  Here we use StudentEssay(s) to match student.essay(s) route */
+App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
+    model: function () {
+        return this.get('selectedStudent').get('theme_essays');
+    },
 
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('Header', {outlet: 'header'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
+    }
+});
+App.StudentEssayRoute = App.AuthenticatedRoute.extend({
+    model: function (params) {
+        return this.store.find('themeEssay', params.id);
+    },
+
+    renderTemplate: function () {
+        console.log('this.currentModel id: ' + this.currentModel.id );
+        //this.modelFor(this.EssayRoute)
+        var id = this.currentModel.id;
+        //var id = this.controller.get('model').id;
+        this.controllerFor('essays').findBy('id', id).send('select');
+        this.render({outlet: 'right-side-outlet'});
+    }
+});
+
+App.EssayRoute = App.AuthenticatedRoute.extend({
     model: function (params) {
         this._assert_authorized(params.id);
         return this.store.find('themeEssay', params.id);
@@ -245,7 +274,6 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
 });
 
 App.DraftRoute = App.AuthenticatedRoute.extend({
-
     activate: function () {
         this._super();
         if (this.get('currentUser').get('isStudent')) {
