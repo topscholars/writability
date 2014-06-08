@@ -191,7 +191,7 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
 App.StudentRoute = App.AuthenticatedRoute.extend({
     model: function (params) {
-        return this.get('currentTeacher').get('students').then(function(students) {
+        return this.get('currentTeacher.students').then(function(students) {
             return students.findBy('id', params.id);
         });
     },
