@@ -415,8 +415,9 @@ App.Teacher = App.User.extend({
     // properties
     // relationships
     students: DS.hasMany('student', {async: true}),
+    reviews: DS.hasMany('review', {async: true}),
     invitations: DS.hasMany('invitation', {async: true}),
-    reviews: DS.hasMany('review', {async: true})
+    teacher_essays: DS.hasMany('themeEssay', {async: true})
 });
 
 App.Student = App.User.extend({
@@ -1519,11 +1520,16 @@ App.StudentRoute = App.AuthenticatedRoute.extend({
 
 App.EssaysRoute = App.AuthenticatedRoute.extend({
     model: function () {
-        if (this.get('currentStudent').get('state') !== 'active') {
-            this.transitionTo('universities');
+        if (this.get('currentUser').get('isStudent')) {
+            if (this.get('currentStudent').get('state') !== 'active') {
+                this.transitionTo('universities');
+            }
+            return this.get('currentStudent').get('theme_essays');
+        } else {
+            console.log('in teacher side of essaysroute');
+            return this.get('currentTeacher').get('students').get('theme_essays');
         }
-
-        return this.get('currentStudent').get('theme_essays');
+        
     },
 
     renderTemplate: function () {
