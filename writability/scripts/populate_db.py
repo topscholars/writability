@@ -491,6 +491,27 @@ class DraftPopulator(JsonPopulator):
         return payload["draft"]["formatted_text"][0:40]
 
 
+class ReviewPopulator(JsonPopulator):
+
+    _PATH = "reviews"
+    _FILE_PATH = "data/reviews.json"
+    _OBJECT_NAME = "review"
+
+    def _get_title(self, payload):
+        return payload["review"]["text"][0:40]
+
+
+class AnnotationPopulator(JsonPopulator):
+
+    # Note: this only works for loading annotations for review with id=0
+    _PATH = "reviews/0/annotations"
+    _FILE_PATH = "data/annotations.json"
+    _OBJECT_NAME = "annotation"
+
+    def _get_title(self, payload):
+        return payload["annotation"]["comment"][0:40]
+
+
 def delete_users():
     users_url = "{}users".format(ROOT_URL)
     users = requests.get(users_url)
@@ -511,6 +532,8 @@ def populate_db():
     # delete_users()
     UserPopulator()
     DraftPopulator()
+    ReviewPopulator()
+    AnnotationPopulator()
 
 
 populate_db()

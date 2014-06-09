@@ -5,7 +5,7 @@ controllers.resource.annotation
 This module contains the resources Annotation and Tag.
 
 """
-from flask.ext.restful import fields
+from flask.ext.restful import fields, marshal
 
 from models.annotation import Annotation, Tag
 
@@ -63,6 +63,9 @@ class AnnotationListResource(ListResource):
 
         items = {resource_name: models}
         return marshal(items, list_field)
+
+    def post(self, review_id):
+        return super(AnnotationListResource, self).post()
 
 
 class TagResourceManager(StatefulResourceManager):
