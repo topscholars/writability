@@ -42,7 +42,6 @@ class Draft(StatefulModel):
 
             self.review = review.Review(**new_review_params)
 
-
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {

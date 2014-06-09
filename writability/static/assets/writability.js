@@ -268,6 +268,7 @@ App.computed.aliasArrayObject = function (dependentKey, index) {
 	});
 }
 
+/* globals App, DS */
 App.Draft = DS.Model.extend({
     // properties
     plain_text: DS.attr('string'),
@@ -313,7 +314,10 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
-    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1)
+    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
+    is_in_progress: function () {
+        return this.get('state') === 'in_progress';
+    }.property('state')
 });
 
 App.ApplicationEssay = App.Essay.extend({
@@ -497,6 +501,14 @@ App.StudentDraftController = App.DraftController.extend({
                 this.set('currentReview', review);
             }.bind(this));
     }.observes('essay'),
+
+    onNewDraftOpened: function () {
+        var draft = this.get('model');
+        if (draft.get('state') === 'new') {
+            draft.set('state', 'in_progress');
+            draft.save();
+        }
+    }.observes('model'),
 
     actions: {
         /**
@@ -1662,7 +1674,7 @@ Ember.TEMPLATES["modules/_draft-review-panel"] = Ember.Handlebars.compile("<div 
 
 Ember.TEMPLATES["modules/_essay-app-tab-list-item"] = Ember.Handlebars.compile("<li class=\"tab-list-item\">\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 
-Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n\n    <button {{action 'submitProposedTopics' model}}>Submit Proposed Topics</button>\n{{/if}}\n");
+Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if is_in_progress}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n\n    {{#if review}}\n        <button {{action openDraft}}>Read Draft</button>\n    {{else}}\n        <button {{action openDraft}}>Write Draft</button>\n    {{/if}}\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n\n    <button {{action 'submitProposedTopics' model}}>Submit Proposed Topics</button>\n{{/if}}\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">{{id}} +7</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{theme.name}}</div>\n    <div class=\"sub-line\">{{theme.category}}</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">{{next_action}}</div>\n    <div class=\"draft-due\">\n        Draft Due: &nbsp;\n                  {{#if draft_due_date}}\n                    {{formatDate draft_due_date}}\n                  {{else}}N/A{{/if}}\n    </div>\n    <div class=\"essay-due\">\n      Essay Due:  {{#if due_date}} {{formatDate due_date}}\n                  {{else}}         N/A             {{/if}}\n    </div>\n</div>\n");
 
