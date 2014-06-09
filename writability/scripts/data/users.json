@@ -13,10 +13,9 @@
         "first_name": "Yupp",
         "last_name": "James",
         "roles": [2],
-        "teacher": 1,
         "active": true,
-        "state": "confirmed",
-        "universities": [3]
+        "state": "active",
+        "universities": [3, 11, 84]
     },
     {
         "email": "student2@writ.co",
@@ -24,8 +23,8 @@
         "first_name": "Rachel",
         "last_name": "Parsons",
         "roles": [2],
-        "teacher": 1,
         "active": true,
-        "state": "confirmed"
+        "state": "confirmed",
+        "universities": []
     }
 ]

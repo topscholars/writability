@@ -597,6 +597,45 @@ button, input[type="checkbox"] {
 
         clear: both;
         padding: (@smallMargin + 72px) @bigMargin @smallMargin @bigMargin;
+
+        .tab-list-item {
+            .smallText();
+
+            margin-top: @smallPadding;
+            padding: @smallPadding @innerPadding;
+            border: @thinBorder @black solid;
+            cursor: pointer;
+
+            &:hover {
+                background-color: @greyLightest;
+            }
+
+            &.selected {
+                @hoverVerticalPadding: @smallPadding + @thinBorder - @wideBorder;
+                @hoverHorizontalPadding: @innerPadding + @thinBorder - @wideBorder;
+                padding: @hoverVerticalPadding @hoverHorizontalPadding;
+                border: @wideBorder @black solid;
+            }
+
+            &.unselected {
+                text-decoration: line-through;
+                color: @grey;
+                border-color: @grey;
+
+            }
+
+            .tab-li-field {
+                margin-bottom: @innerPadding;
+
+                &:last-of-type {
+                    margin-bottom: 0px;
+                }
+            }
+
+            .tab-li-field.app-text {
+                .bodyText();
+            }
+        }
     }
 
     .details-field {
@@ -910,4 +949,16 @@ button, input[type="checkbox"] {
     &:hover {
         border-left: @thinBorder @greyDark solid;
     }
+}
+
+.auto-height {
+    height: auto !important;
+}
+
+.registration-errors li {
+    padding-left: 45px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: red;
+    font-weight: bold;
 }

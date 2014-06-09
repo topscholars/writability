@@ -7,6 +7,18 @@ This model attaches the app to the database and imports all tables.
 """
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
+from flask.ext.security import user_registered
+
+db = SQLAlchemy()
+
+
+def on_user_registered(sender, user, confirm_token):
+    invitation = Invitation.query.filter_by(
+        email=user.email, is_registered=False).first()
+    if invitation is not None:
+        user.teacher_id = invitation.teacher_id
+        invitation.is_registered = True
+        db.session.commit()
 
 
 def init_app(app, security_forms):
@@ -17,8 +29,8 @@ def init_app(app, security_forms):
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
         Security(app, user_datastore, **security_forms)
         db.create_all()
+    user_registered.connect(on_user_registered, app)
 
-db = SQLAlchemy()
 
 # Imports at the bottom as they require db
 # They need to be imported to be added to the db

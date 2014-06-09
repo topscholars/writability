@@ -1,3 +1,4 @@
+/* globals App, DS */
 App.Draft = DS.Model.extend({
     // properties
     plain_text: DS.attr('string'),
