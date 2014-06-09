@@ -529,7 +529,7 @@ def populate_db():
     ApplicationEssayTemplatePopulator()
     TagPopulator()
     # custom data
-    delete_users()
+    # delete_users()
     UserPopulator()
     DraftPopulator()
     ReviewPopulator()

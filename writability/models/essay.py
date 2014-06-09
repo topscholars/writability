@@ -110,22 +110,13 @@ class ThemeEssay(StatefulModel, Essay):
     #     assert len(proposed_topics) == 2
     #     return proposed_topics
     ALLOWED_APP_ESSAY_STATES = ["selected","not_selected","pending"]
-    _application_essay_states = db.Column(db.PickleType, default={})
-    
-    @property
-    def application_essay_states(self):
-        """
-        Returns a dict of the application essays and their states
-        relative to this ThemeEssay.
-        """
-        # might not need this accessor?
-        return self._application_essay_states
+    application_essay_states = db.Column(db.PickleType, default={})
 
-    @validates('_application_essay_states')
-    def validate_app_essay_states(self, key, _application_essay_states):
-        for val in _application_essay_states.values():
-            assert val in ALLOWED_APP_ESSAY_STATES
-        return _application_essay_states
+    @validates('application_essay_states')
+    def validate_app_essay_states(self, key, application_essay_states):
+        for val in application_essay_states.values():
+            assert val in self.ALLOWED_APP_ESSAY_STATES
+        return application_essay_states
 
     @classmethod
     def create(class_, object_dict):
@@ -140,9 +131,9 @@ class ThemeEssay(StatefulModel, Essay):
         self.audience = theme_essay_template.audience
         self.context = theme_essay_template.context
         self.theme = theme_essay_template.theme
-        self._application_essay_states = {}
+        self.application_essay_states = {}
         for ae in self._application_essays:
-            self._application_essay_states[ae.id] = "pending"
+            self.application_essay_states[ae.id] = "pending"
 
     def change_related_objects(self):
         """
@@ -153,16 +144,16 @@ class ThemeEssay(StatefulModel, Essay):
         super(ThemeEssay, self).change_related_objects()
         # just in case new application essays get in
         for ae in self._application_essays:
-            if ae.id not in self._application_essay_states.keys():
-                self._application_essay_states[ae.id] = "pending"
+            if ae.id not in self.application_essay_states.keys():
+                self.application_essay_states[ae.id] = "pending"
         # now mark others not selected
-        if self._application_essay_states:
-            selected_ae_ids = [id for id in self._application_essay_states if self._application_essay_states[id]=="selected"]
+        if self.application_essay_states:
+            selected_ae_ids = [id for id in self.application_essay_states if self.application_essay_states[id]=="selected"]
             for ae_id in selected_ae_ids:
                 ae = ApplicationEssay.read(ae.id) 
                 for te in ae.theme_essays:
                     if te != self:
-                        te._application_essay_states[ae.id] = "not_selected"
+                        te.application_essay_states[ae.id] = "not_selected"
 
 
     def change_related_objects(self):
@@ -252,7 +243,7 @@ class ApplicationEssay(Essay):
         """
         Gets the ThemeEssay for which this ApplicationEssay is selected.
         """
-        ste = [te for te in self.theme_essays if te._application_essay_states[self.id] == "selected"]
+        ste = [te for te in self.theme_essays if te.application_essay_states[self.id] == "selected"]
         assert len(ste) <= 1
         return ste[0] if ste[0] else None
 
