@@ -32,6 +32,8 @@
         <p>{{controller.proposed_topic_1}}</p>
     </div>
 
-    <button {{action 'approveProposedTopics' model}}>Approve Topic</button>
-    <button {{action 'mergeEssay' model}}>Merge Essay</button>
+    {{#if topicsReadyForApproval}}
+        <button {{action 'approveProposedTopics' model}}>Approve Topic</button>
+    {{/if}}
 {{/if}}
+<button {{action 'mergeEssay' model}}>Merge Essay</button>

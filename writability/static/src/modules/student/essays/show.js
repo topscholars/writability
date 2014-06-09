@@ -1,4 +1,5 @@
 App.StudentEssaysShowController = Ember.ObjectController.extend({
+    topicsReadyForApproval: Ember.computed.equal('state', 'added_topics')
 });
 
 App.StudentEssaysShowOverviewTab = Ember.View.extend({
