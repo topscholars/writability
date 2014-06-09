@@ -17,7 +17,6 @@ App.Router.map(function () {
     this.resource('draft', {path: '/drafts/:id'});
 
     this.resource('universities', function () {
-        this.route('/');
     });
     // no university item resource
 
