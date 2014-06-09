@@ -25,13 +25,13 @@
 {{else}}
     <div class="details-field">
         <div class="key">Topic 1:</div>
-        {{textarea class="value student-text" valueBinding="controller.proposed_topic_0"}}
-        {{! view App.ProposedTopicOne valueBinding="proposed_topic_0"}}
+        <p>{{controller.proposed_topic_0}}</p>
     </div>
     <div class="details-field">
         <div class="key">Topic 2:</div>
-        {{textarea class="value student-text" valueBinding="controller.proposed_topic_1"}}
+        <p>{{controller.proposed_topic_1}}</p>
     </div>
 
-    <button {{action 'submitProposedTopics' model}}>Submit Proposed Topics</button>
+    <button {{action 'approveProposedTopics' model}}>Approve Topic</button>
+    <button {{action 'mergeEssay' model}}>Merge Essay</button>
 {{/if}}
