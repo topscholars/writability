@@ -150,8 +150,6 @@ class ThemeEssay(StatefulModel, Essay):
         if self._application_essay_states:
             selected_ae_ids = [id for id in self._application_essay_states if self._application_essay_states[id]=="selected"]
             for ae_id in selected_ae_ids:
-                import pdb; pdb.set_trace();
-                # how do I get the ApplicationEssay objects that correspond to these ids??
                 ae = ApplicationEssay.read(ae.id) 
                 for te in ae.theme_essays:
                     if te != self:

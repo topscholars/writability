@@ -468,13 +468,13 @@ def delete_users():
 
 def populate_db():
     # predefined
-    RolePopulator()
-    UniversityPopulator()
-    ThemePopulator()
-    ThemeEssayTemplatePopulator()
-    ApplicationEssayTemplatePopulator()
+    # RolePopulator()
+    # UniversityPopulator()
+    # ThemePopulator()
+    # ThemeEssayTemplatePopulator()
+    # ApplicationEssayTemplatePopulator()
     # custom data
-    # delete_users()
+    delete_users()
     UserPopulator()
     DraftPopulator()
 
