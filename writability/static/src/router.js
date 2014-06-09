@@ -12,7 +12,7 @@ App.Router.map(function () {
     this.resource('students', function () {
         this.resource('student', {path: '/:id'}, function() {
             this.resource("student.essays", { path: "/essays" }, function() {
-                this.route("show", { path: "/:essay_id" });
+                this.route("show", { path: "/:theme_essay_id" });
             });
         });
     });
@@ -235,17 +235,12 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
         this.render('core/select-prompt', {into: 'core/layouts/main', outlet: 'right-side-outlet'});
     }
 });
-App.StudentEssayRoute = App.AuthenticatedRoute.extend({
-    model: function (params) {
-        return this.store.find('themeEssay', params.id);
-    },
 
+App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
-        console.log('this.currentModel id: ' + this.currentModel.id );
-        //this.modelFor(this.EssayRoute)
         var id = this.currentModel.id;
-        //var id = this.controller.get('model').id;
-        this.controllerFor('essays').findBy('id', id).send('select');
+
+        this.controllerFor('student.essays').findBy('id', id).send('select');
         this.render({outlet: 'right-side-outlet'});
     }
 });
