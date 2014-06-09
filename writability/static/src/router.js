@@ -21,7 +21,6 @@ App.Router.map(function () {
     this.resource('draft', {path: '/drafts/:id'});
 
     this.resource('universities', function () {
-        this.route('/');
     });
     // no university item resource
 
@@ -195,7 +194,7 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
 
 App.StudentRoute = App.AuthenticatedRoute.extend({
     model: function (params) {
-        return this.get('currentTeacher').get('students').then(function(students) {
+        return this.get('currentTeacher.students').then(function(students) {
             return students.findBy('id', params.id);
         });
     },

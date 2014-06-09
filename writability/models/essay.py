@@ -11,6 +11,7 @@ Essays have a series of Drafts that the Student writes.
 """
 from sqlalchemy.orm import validates
 
+import draft
 from .db import db
 from .base import BaseModel, StatefulModel
 from .fields import SerializableStringList
@@ -38,7 +39,9 @@ class Essay(BaseModel):
     # relationships
     student_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     drafts = db.relationship("Draft", backref="essay", order_by="Draft.id")
-    essay_template_id = db.Column(db.Integer, db.ForeignKey("essay_template.id"))
+    essay_template_id = db.Column(
+        db.Integer,
+        db.ForeignKey("essay_template.id"))
 
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
@@ -57,18 +60,17 @@ class Essay(BaseModel):
     @property
     def current_draft(self):
         if self.drafts:
-            curr_draft_list = self.drafts[-1:]  #List. ordered by ID
-            return curr_draft_list[0]  
+            # List. ordered by ID
+            curr_draft_list = self.drafts[-1:]
+            return curr_draft_list[0]
         else:
             return None
 
     @property
     def draft_due_date(self):
         """Return due date of current draft."""
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         return self.current_draft.due_date
-
-
 
 
 class ThemeEssay(StatefulModel, Essay):
@@ -92,6 +94,11 @@ class ThemeEssay(StatefulModel, Essay):
         secondary=essay_associations,
         backref=db.backref("theme_essays", lazy="dynamic"))
 
+    @validates('proposed_topics')
+    def validate_proposed_topics(self, key, proposed_topics):
+        assert len(proposed_topics) == 2
+        return proposed_topics
+
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
         super(ThemeEssay, self).process_before_create()
@@ -100,10 +107,16 @@ class ThemeEssay(StatefulModel, Essay):
         self.context = theme_essay_template.context
         self.theme = theme_essay_template.theme
 
-    @validates('proposed_topics')
-    def validate_proposed_topics(self, key, proposed_topics):
-        assert len(proposed_topics) == 2
-        return proposed_topics
+    def change_related_objects(self):
+        """Change any related objects before commit."""
+        super(ThemeEssay, self).change_related_objects()
+
+        if self.state == "in_progress" and not self.drafts:
+            new_draft_params = {
+                "essay": self
+            }
+
+            self.drafts.append(draft.Draft(**new_draft_params))
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
@@ -128,18 +141,18 @@ class ThemeEssay(StatefulModel, Essay):
     def next_action(self):
         """Return next action to be taken on essay."""
         drafts = self.drafts
-        existing_drafts = len(drafts) 
+        existing_drafts = len(drafts)
         num_of_drafts = self.num_of_drafts
         curr_draft = self.current_draft
         s = curr_draft.state if curr_draft else None
-                    #chokes when no curr_draft
+        # chokes when no curr_draft
         action = "ERROR"
 
-        #if self.proposed_topics[0] or self.proposed_topics[1]:
+        # if self.proposed_topics[0] or self.proposed_topics[1]:
 
         if self.state == "new":
             action = "Add Topics"
-        elif self.state == "added_topics": #State change may need added
+        elif self.state == "added_topics":  # State change may need added
             action = "Approve Topic"
         elif self.state == "in_progress":
             if existing_drafts != 0 and existing_drafts < num_of_drafts:
@@ -147,12 +160,16 @@ class ThemeEssay(StatefulModel, Essay):
                     action = "Write"
                 elif s == "submitted":
                     action = "Review"
-                return "%s Draft %d / %d" % (action, existing_drafts, num_of_drafts)
+                return "%s Draft %d / %d" % (
+                    action,
+                    existing_drafts,
+                    num_of_drafts)
         elif curr_draft.is_final_draft and s == "reviewed":
             action = "Complete"
         else:
             action = "Error"
         return action
+
 
 class ApplicationEssay(Essay):
 

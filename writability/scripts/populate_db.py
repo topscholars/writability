@@ -11,6 +11,7 @@ HOST = "http://localhost:5000/"
 ROOT_URL = HOST + "api/"
 HEADERS = {'Content-type': 'application/json'}
 
+
 class Populator(object):
 
     _PATH = None
@@ -42,7 +43,6 @@ class Populator(object):
     def _parse_file_into_objects(self, file):
         objects = [line for line in file.splitlines() if line]
         return objects
-
 
     def _populate_db(self, payload):
         resp = requests.post(
@@ -271,7 +271,6 @@ class UserPopulator(JsonPopulator):
         # don't call super because you don't want a nested obj
         return obj
 
-
     def _populate_db(self, payload):
         # setup the session cookie
         cookies_dict = {"session": payload["session_cookie"]}
@@ -295,22 +294,8 @@ class UserPopulator(JsonPopulator):
                 self._get_url() + "/0",
                 cookies=new_cookie_dict)
             id = id_resp.json()["user"]["id"]
-            # setup the dict for the PUT request
-            if "password" in payload:
-                del payload["password"]
-            if "password_confirm" in payload:
-                del payload["password_confirm"]
-            user_payload = {"user": payload}
-            # add the missing parameters here through an API put request
-            put_url = "{}/{}".format(self._get_url(), id)
-            put_resp = requests.put(
-                put_url,
-                cookies=new_cookie_dict,
-                data=json.dumps(user_payload),
-                headers=HEADERS)
-
-            if put_resp.status_code != 200:
-                return False
+            is_success = self._setup_user(id, payload, new_cookie_dict)
+            return is_success
 
         return True
 
@@ -318,6 +303,123 @@ class UserPopulator(JsonPopulator):
         return "{} {}".format(
             payload["first_name"],
             payload["last_name"])
+
+    def _setup_user(self, user_id, payload, authenticated_cookies):
+        # setup the dict for the PUT request
+        if "password" in payload:
+            del payload["password"]
+        if "password_confirm" in payload:
+            del payload["password_confirm"]
+        if "roles" in payload and 2 in payload["roles"]:
+            payload["teacher"] = self.teacher_id
+        user_payload = {"user": payload}
+
+        # add the missing parameters here through an API put request
+        put_url = "{}/{}".format(self._get_url(), user_id)
+        put_resp = requests.put(
+            put_url,
+            cookies=authenticated_cookies,
+            data=json.dumps(user_payload),
+            headers=HEADERS)
+        if put_resp.status_code != 200:
+            return False
+        # if student then add essays for the universities
+        elif 2 in payload["roles"]:
+            return self._add_essays_to_student(
+                user_id,
+                payload["universities"])
+        else:
+            self.teacher_id = user_id
+
+        return True
+
+    def _add_essays_to_student(self, student_id, uni_ids):
+        # for each university get a list of application essay templates
+        application_essay_template_ids = []
+        for uni_id in uni_ids:
+            uni_url = "{}universities/{}".format(ROOT_URL, uni_id)
+            uni_resp = requests.get(uni_url)
+            if uni_resp.status_code != 200:
+                return False
+            uni = uni_resp.json()["university"]
+            application_essay_template_ids += uni[
+                "application_essay_templates"]
+
+        # for each application essay template, create an application essay
+        application_essays = []
+        for app_essay_template_id in application_essay_template_ids:
+            app_essay_url = "{}application-essays".format(ROOT_URL)
+            app_essay_payload = {
+                "application_essay": {
+                    "student": student_id,
+                    "essay_template": app_essay_template_id
+                }
+            }
+            app_essay_resp = requests.post(
+                app_essay_url,
+                data=json.dumps(app_essay_payload),
+                headers=HEADERS)
+            if app_essay_resp.status_code != 201:
+                return False
+            app_essay = app_essay_resp.json()["application_essay"]
+            application_essays.append(app_essay)
+
+        # group application essays by theme_id from essay templates
+        app_essay_ids_by_theme_id = {}
+        for app_essay in application_essays:
+            app_essay_template_id = app_essay["essay_template"]
+            app_essay_template_url = "{}application-essay-templates/{}".format(
+                ROOT_URL,
+                app_essay_template_id)
+            app_essay_template_resp = requests.get(app_essay_template_url)
+            if app_essay_template_resp.status_code != 200:
+                return False
+            app_essay_template = app_essay_template_resp.json()[
+                "application_essay_template"]
+            app_essay_id = app_essay["id"]
+            for theme_id in app_essay_template["themes"]:
+                if theme_id in app_essay_ids_by_theme_id:
+                    app_essay_ids_by_theme_id[theme_id].append(app_essay_id)
+                else:
+                    app_essay_ids_by_theme_id[theme_id] = [app_essay_id]
+
+        # get the themes for each theme_id
+        themes = []
+        for theme_id in app_essay_ids_by_theme_id.keys():
+            theme_url = "{}themes/{}".format(ROOT_URL, theme_id)
+            theme_resp = requests.get(theme_url)
+            if theme_resp.status_code != 200:
+                return False
+            theme = theme_resp.json()["theme"]
+            themes.append(theme)
+
+        # for each theme create a theme essay using the template id and attach
+        # application essays as ids
+        theme_essays = []
+        for theme in themes:
+            theme_essay_template_id = theme["theme_essay_template"]
+            theme_id = theme["id"]
+            application_essay_ids = app_essay_ids_by_theme_id[theme_id]
+            theme_essay_url = "{}theme-essays".format(ROOT_URL)
+            theme_essay_payload = {
+                "theme_essay": {
+                    "essay_template": theme_essay_template_id,
+                    "student": student_id,
+                    "due_date": "2014-07-06",
+                    "application_essays": application_essay_ids,
+                    "num_of_drafts": 5
+                }
+            }
+            theme_essay_resp = requests.post(
+                theme_essay_url,
+                data=json.dumps(theme_essay_payload),
+                headers=HEADERS)
+            if theme_essay_resp.status_code != 201:
+                return False
+            theme_essay = theme_essay_resp.json()["theme_essay"]
+            theme_essays.append(theme_essay)
+
+        return True
 
 
 class ThemeEssayPopulator(JsonPopulator):
@@ -342,8 +444,10 @@ class ThemeEssayPopulator(JsonPopulator):
         _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
         url = _THEME_QUERY_URL + _QUERY_STRING
 
-        theme_essay_template_id = self._get_field_with_query_url(url, "themes",
-                "theme_essay_template")
+        theme_essay_template_id = self._get_field_with_query_url(
+            url,
+            "themes",
+            "theme_essay_template")
         return theme_essay_template_id
 
     def _get_title(self, payload):
@@ -359,6 +463,15 @@ class DraftPopulator(JsonPopulator):
     def _get_title(self, payload):
         return payload["draft"]["formatted_text"][0:40]
 
+
+def delete_users():
+    users_url = "{}users".format(ROOT_URL)
+    users = requests.get(users_url)
+    for user in users.json()["users"]:
+        delete_user_url = "{}/{}".format(users_url, user["id"])
+        requests.delete(delete_user_url)
+
+
 def populate_db():
     # predefined
     RolePopulator()
@@ -367,8 +480,8 @@ def populate_db():
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
     # custom data
+    # delete_users()
     UserPopulator()
-    ThemeEssayPopulator()
     DraftPopulator()
 
 

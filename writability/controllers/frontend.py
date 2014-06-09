@@ -21,4 +21,5 @@ def index(path):
     if current_user.is_authenticated():
         return render_template('pages/app.jinja')
     else:
-        return render_template('pages/landing.jinja', form=Form())
+        return render_template('security/register_user.html',
+                               register_user_form=Form())
