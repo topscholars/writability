@@ -33,7 +33,7 @@
       <div class="modal-title">Sign Up</div>
       <button class="close-button">X</button>
       <form action="/register" method="POST" name="register_user_form">
-        {{ form.hidden_tag() }}
+        {{ register_user_form.hidden_tag() }}
         <ol>
           <li>
             <input name="first_name" class="double-column" placeholder="First Name" />
@@ -41,6 +41,13 @@
           </li>
           <li>
             <input name="email" type="email" class="single-column" placeholder="Email" />
+            {% if register_user_form.email and register_user_form.email.errors %}
+              <ul class="registration-errors">
+              {% for error in register_user_form.email.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
           </li>
           <li>
             <input name="password" type="password" class="double-column" placeholder="Password" />

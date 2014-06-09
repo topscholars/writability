@@ -153,8 +153,17 @@ App.UniversitiesIndexRoute = App.AuthenticatedRoute.extend({
 
 App.StudentsRoute = App.AuthenticatedRoute.extend({
     model: function () {
-       // TODO: concatenate invites and students
-        return this.get('currentTeacher').get('students');
+        return Ember.RSVP.Promise.all([
+            this.get('currentTeacher').get('students'),
+            this.get('currentTeacher').get('invitations')
+        ]).then(function(values) {
+            return {students: values[0], invitations: values[1]};
+        });
+    },
+
+    setupController: function (controller, model) {
+        controller.set('students', model.students);
+        controller.set('invitations', model.invitations);
     },
 
     renderTemplate: function () {
@@ -162,20 +171,34 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
         this.render('Header', {outlet: 'header'});
         // needs into explicity because core/layouts/main was rendered
         // within function
-        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
+        this.render('modules/students', {into: 'core/layouts/main', outlet: 'left-side-outlet'});
     },
 
     actions: {
-        // TODO This should create an invitation model and add to list
-        inviteStudent: function (student) {
-            console.log('invite');
-            var students = this.get('currentTeacher').get('students');
-            students.pushObject(student);
-            // Set status to server
-            students.save();  // Ember magic   s.model has a save with
-            // student.invitation.create
+        inviteStudent: function (studentEmail) {
+            var invitation = this.store.createRecord('invitation', {
+                email: studentEmail,
+                is_registered: false,
+                teacher: this.get('currentTeacher')
+            });
+            this.get('currentTeacher').get('invitations').then(function(invitations) {
+                invitations.pushObject(invitation);
+                invitations.save();
+            });
         }
     }
+});
+
+App.StudentRoute = App.AuthenticatedRoute.extend({
+    model: function (params) {
+        return this.get('currentTeacher.students').then(function(students) {
+            return students.findBy('id', params.id);
+        });
+    },
+
+    renderTemplate: function() {
+        this.render({outlet: 'right-side-outlet'});
+    },
 });
 
 App.EssaysRoute = App.AuthenticatedRoute.extend({

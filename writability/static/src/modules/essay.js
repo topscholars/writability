@@ -36,6 +36,11 @@ App.EssayTabs = Ember.ContainerView.extend({
 App.EssayController = Ember.ObjectController.extend({
     needs: ['essays'],
 
+    proposedTopicsRules: {
+        'proposed_topic_0': 'required',
+        'proposed_topic_1': 'required'
+    },
+
     currentDraft: function () {
         return this.draftByMostCurrent(0);
     }.property('drafts'),
@@ -114,12 +119,37 @@ App.EssayController = Ember.ObjectController.extend({
         });
     },
 
+    submitTopic: function(model) {
+        model.set('state', 'added_topics');
+        model.save().then(
+            function() {
+                console.log('saved');
+            },
+            function() {
+                console.log('error');
+            });
+    },
+
     actions: {
         openDraft: function () {
             var that = this;
             this.getMostRecentDraft().then(function (id) {
                 that.transitionToRoute('draft', id);
             });
+        },
+        submitProposedTopics: function(model) {
+            var input = {
+                proposed_topic_0: model.get('proposed_topic_0'),
+                proposed_topic_1: model.get('proposed_topic_1')
+            };
+            var validator = new Validator(input, this.proposedTopicsRules);
+            if (validator.fails()) {
+                alert('You must supply two proposed topics');
+            } else {
+                if (confirm('Are you sure you want to submit these topics?')) {
+                    this.submitTopic(model);
+                }
+            }
         }
     }
 });
