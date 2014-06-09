@@ -3,11 +3,7 @@
 	<span class="student-info">{{student.name}}</span>
 	<button>Show</button>
 </div>
-<ol class="list">
 {{#if actionRequiredEssays}}
 	<h3>Take Action</h3>
-	{{#each actionRequiredEssays}}
-	    {{view view.listItem classNameBindings="isSelected" }}
-	{{/each}}
+	{{view App.StudentEssaysListView}}
 {{/if}}
-</ol>

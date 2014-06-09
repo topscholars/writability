@@ -1,0 +1,9 @@
+<ol class="list">
+{{#each}}
+    {{view view.listItem classNameBindings="isSelected" }}
+{{/each}}
+
+{{#if view.newItem}}
+    {{view view.newItem}}
+{{/if}}
+</ol>

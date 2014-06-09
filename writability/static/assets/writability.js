@@ -939,25 +939,58 @@ App.StudentView = App.DetailsView.extend({
 
 App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
+    itemController: 'student.essay.item',
     student: Ember.computed.alias('controllers.student.model'),
     actionRequiredEssays: Ember.computed.filter('model', function(essay) {
         return essay.state != 'completed';
     }),
     actions: {
-        select: function() {
-            console.log('select essay');
-        }
+        // select: function() {
+        //     console.log('select essay');
+        // }
     }
+});
+
+App.StudentEssayItemController = Ember.ObjectController.extend({
+    isSelected: (function () {
+        var selectedEssay = this.get('controllers.studentEssays.selectedEssay');
+        return selectedEssay === this.get('model');
+    }).property('controllers.studentEssays.selectedEssay'),
+
+    needs: ['studentEssays'],
+
+    actions: {
+        select: function () {
+            var model = this.get('model');
+            this.get('controllers.studentEssays').send('selectEssay', model);
+        }
+    },
 });
 
 App.StudentEssaysHeaderView = Ember.View.extend({
     templateName: 'modules/student/essay'
 });
 
+App.StudentEssayItemView = App.ThickListItem.extend({
+    templateName: "modules/_essays-list-item",
+    click: function (ev) {
+        this.get('controller').send('select');
+    },
+});
+
+App.StudentEssaysListView = Ember.View.extend({
+    templateName: 'modules/student/list',
+    title: null,
+    //sections: [],
+    listItem: "",
+    //elementId: "list-module",  // No id, could have multiple on page.
+    tagName: "section",
+    listItem: App.StudentEssayItemView
+});
+
 App.StudentEssaysView = App.ListView.extend({
     templateName: 'modules/student/essay-layout',
     //sections: ['To do', 'Not to do'],
-    listItem: App.EssayItemView
 });
 
 /* globals App, Ember */
@@ -1748,7 +1781,9 @@ Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<d
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
-Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t<button>Show</button>\n</div>\n<ol class=\"list\">\n{{#if actionRequiredEssays}}\n\t<h3>Take Action</h3>\n\t{{#each actionRequiredEssays}}\n\t    {{view view.listItem classNameBindings=\"isSelected\" }}\n\t{{/each}}\n{{/if}}\n</ol>\n");
+Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t<button>Show</button>\n</div>\n{{#if actionRequiredEssays}}\n\t<h3>Take Action</h3>\n\t{{view App.StudentEssaysListView}}\n{{/if}}\n");
+
+Ember.TEMPLATES["modules/student/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("{{#with students}}\n    {{view App.StudentsListView}}\n{{/with}}\n\n{{#with pendingInvitations}}\n    {{view App.InvitationsListView}}\n{{/with}}\n");
 
