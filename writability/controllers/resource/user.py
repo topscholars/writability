@@ -73,6 +73,7 @@ class TeacherResourceManager(UserResourceManager):
                 absolute=True)),
             "teacher_essays": fields.List(ResourceField(
                 essay.ThemeEssayResourceManager.item_resource_name,
+                absolute=True)),
             "invitations": fields.List(ResourceField(
                 InvitationResourceManager.item_resource_name,
                 absolute=True))
