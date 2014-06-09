@@ -994,7 +994,16 @@ App.StudentEssaysView = App.ListView.extend({
 });
 
 App.StudentEssaysShowController = Ember.ObjectController.extend({
-    topicsReadyForApproval: Ember.computed.equal('state', 'added_topics')
+    topicsReadyForApproval: Ember.computed.equal('state', 'added_topics'),
+
+    actions: {
+        approveProposedTopics: function(model) {
+            if (confirm('Are you sure you want to submit these topics?')) {
+                model.set('state', 'in_progress');
+                model.save();
+            }
+        }
+    }
 });
 
 App.StudentEssaysShowOverviewTab = Ember.View.extend({
