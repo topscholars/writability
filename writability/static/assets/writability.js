@@ -993,6 +993,69 @@ App.StudentEssaysView = App.ListView.extend({
     //sections: ['To do', 'Not to do'],
 });
 
+App.StudentEssaysShowController = Ember.ObjectController.extend({
+});
+
+App.StudentEssaysShowOverviewTab = Ember.View.extend({
+    name: "Overview",
+    templateName: "modules/student/essays/show/_overview"
+});
+
+App.StudentEssaysShowApplicationsTab = App.DetailsListView.extend({
+    name: "Applications",
+    summaryText: "Click on an application question to exclusively associate it with this essay. Each question must be associated with a single essay.",
+    listItemPartial: "modules/_essay-app-tab-list-item"
+});
+
+App.StudentEssaysShowTabs = Ember.ContainerView.extend({
+    /**
+     * Create the child views in init so they are recreated on a later
+     * transition.
+     */
+    init: function () {
+        this.set('overview', App.StudentEssaysShowOverviewTab.create());
+        this.set('application', App.StudentEssaysShowApplicationsTab.create());
+        this.set('childViews', ['overview']);
+        this._super();
+    },
+
+    showTab: function (tabKey) {
+        this.popObject();
+        this.pushObject(this.get(tabKey));
+    }
+});
+
+App.StudentEssaysShowView = App.DetailsView.extend({
+
+    tabsViewClass: App.StudentEssaysShowTabs,
+
+    selectedTab: 'overview',
+
+    tabs: [
+        {key: 'overview', title: 'Overview'},
+        {key: 'application', title: 'Applications'},
+    ],
+
+    didInsertElement: function () {
+        Ember.$('#tab-' + this.selectedTab).addClass('is-selected');
+    },
+
+    actions: {
+        selectTab: function (tabKey) {
+            //TODO: make this cleaner
+            Ember.$('.tab-header').each(function (index, el) {
+                var elID = Ember.$(el).attr('id');
+                if (elID === ("tab-" + tabKey)) {
+                    Ember.$(el).addClass("is-selected");
+                } else {
+                    Ember.$(el).removeClass("is-selected");
+                }
+            });
+            this.get('tabsView').showTab(tabKey);
+        }
+    }
+});
+
 /* globals App, Ember */
 
 App.StudentItemView = App.ThinListItem.extend({
@@ -1777,6 +1840,8 @@ Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<d
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
 Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t<button>Show</button>\n</div>\n{{#if actionRequiredEssays}}\n\t<h3>Take Action</h3>\n\t{{view App.StudentEssaysListView}}\n{{/if}}\n");
+
+Ember.TEMPLATES["modules/student/essays/show/_overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Email:</div>\n    <div class=\"value app-text\">{{email}}</div>\n</div>\n\n{{#link-to 'student.essays.index'}}<button>See Essays</button>{{/link-to}}\n");
 
 Ember.TEMPLATES["modules/student/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
