@@ -6,24 +6,24 @@ App.StudentEssaysController = Ember.ArrayController.extend({
         return essay.state != 'completed';
     }),
     actions: {
-        // select: function() {
-        //     console.log('select essay');
-        // }
+        selectEssay: function(model) {
+            this.transitionTo('student.essays.show', model);
+        }
     }
 });
 
 App.StudentEssayItemController = Ember.ObjectController.extend({
+    needs: ['studentEssays'],
+
     isSelected: (function () {
         var selectedEssay = this.get('controllers.studentEssays.selectedEssay');
         return selectedEssay === this.get('model');
     }).property('controllers.studentEssays.selectedEssay'),
 
-    needs: ['studentEssays'],
-
     actions: {
         select: function () {
             var model = this.get('model');
-            this.get('controllers.studentEssays').send('selectEssay', model);
+            this.send('selectEssay', model);
         }
     },
 });
