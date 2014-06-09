@@ -1,3 +1,4 @@
+/* globals App, Ember, CKEDITOR */
 App.TextEditor = Ember.TextArea.extend({
 
     actions: {
@@ -9,6 +10,7 @@ App.TextEditor = Ember.TextArea.extend({
     attributeBindings: ['contenteditable'],
     contenteditable: 'true',
     editor: null,
+    isReadOnly: false,
     _suspendValueChange: false,
     _minimumChangeMilliseconds: 1000,
 
@@ -26,6 +28,8 @@ App.TextEditor = Ember.TextArea.extend({
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             this.set ('editor', editor);
+
+            editor.setReadOnly(this.get('isReadOnly'));
 
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);

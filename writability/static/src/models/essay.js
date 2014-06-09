@@ -8,22 +8,26 @@ App.Essay = DS.Model.extend({
     num_of_drafts: DS.attr('number'),
     topic: DS.attr('string'),
     max_words: DS.attr('number'),
-    draft_due_date: DS.attr('date'),
-    next_action: DS.attr('string'),
+    draft_due_date: DS.attr('date', {readOnly: true}),
+    next_action: DS.attr('string', {readOnly: true}),
 
     // relationships
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
-    essay_template: DS.belongsTo('essay_template')
+    essay_template: DS.belongsTo('essay_template'),
 });
 
 App.ThemeEssay = App.Essay.extend({
     next_states: DS.attr('array', {readOnly: true}),
     proposed_topics: DS.attr('array'),
+    // proposed_topics: ['test', 'stop'],
     state: DS.attr('string'),
 
     // relationships
-    theme: DS.belongsTo('theme', {async: true})
+    theme: DS.belongsTo('theme', {async: true}),
+
+    proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
+    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1)
 });
 
 App.ApplicationEssay = App.Essay.extend({

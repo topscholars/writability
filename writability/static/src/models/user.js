@@ -20,8 +20,9 @@ App.User = DS.Model.extend({
 App.Teacher = App.User.extend({
     // properties
     // relationships
-    students: DS.hasMany('student', { async: true }),
-    reviews: DS.hasMany('review')
+    students: DS.hasMany('student', {async: true}),
+    reviews: DS.hasMany('review', {async: true}),
+    teacher_essays: DS.hasMany('themeEssay', {async: true})
 });
 
 App.Student = App.User.extend({

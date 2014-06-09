@@ -74,56 +74,38 @@
             format('svg'); // old ios
 }
 
-@font-face {
-    font-family: 'Helvetica Neue';
-    .font-src('helvetica-neue-webfont');
-    font-weight: normal;
-    font-style: normal;
-}
-
-// Leage Gothic is a temporary replacement for Trade Gothic
-@font-face {
-    font-family: 'League Gothic';
-    .font-src('leaguegothic-regular-webfont');
-    font-weight: normal;
-    font-style: normal;
-}
-
-// Kameron is a temporary replacement for Rockwell
-@import url('http://fonts.googleapis.com/css?family=Kameron:400,700');
-
 .headerText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @smallHeaderFontSize;
 }
 
 .bodyText() {
-    font-family: 'Kameron', sans-serif;
+    font-family: 'Trade Gothic W01', sans-serif;
     font-size: @bodyFontSize;
 }
 
 .highlightedText() {
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Trade Gothic W01', sans-serif;
     font-size: @bigBodyFontSize;
 }
 
 .moduleHeaderText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @bigHeaderFontSize;
 }
 
 .sectionHeaderText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @smallestHeaderFontSize;
 }
 
 .itemHeaderText() {
-    font-family: 'Kameron', serif;
+    font-family: 'Rockwell W01', serif;
     font-size: @headerFontSize;
 }
 
 .smallText() {
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Trade Gothic W01', sans-serif;
     font-size: @smallBodyFontSize;
 }
 
@@ -140,8 +122,12 @@
     box-shadow: @hShadow @vShadow @blur @spread @alpha;
 }
 
-.vertical-section-shadow() {
+.left-section-shadow() {
     box-shadow: -1px 0px 5px 0px rgba(0, 0, 0, .3);
+}
+
+.right-section-shadow() {
+    box-shadow: 1px 0px 5px 0px rgba(0, 0, 0, .3);
 }
 
 .horizontal-section-shadow() {
@@ -245,18 +231,20 @@ a {
 /***********************************************************
 * CORE COMPONENTS
 ************************************************************/
-input, button, label, select, textarea {
+input, label, select, textarea {
     .bodyText();
+}
 
+input, button, label, select, textarea {
+    line-height: normal;
     -moz-outline: none;
     outline: none;
     background-color: @white;
     border-radius: 0px;
+    margin: 0px;
 }
 
 textarea {
-    .bodyText();
-
     border-radius: @round;
     border: @thinBorder @grey dashed;
     padding: @innerPadding;
@@ -268,6 +256,8 @@ textarea {
 }
 
 button, input[type="checkbox"] {
+    .sectionHeaderText();
+
     border-color: @black;
     border: @wideBorder solid;
     color: @black;
@@ -409,6 +399,8 @@ button, input[type="checkbox"] {
         }
 
         input, button, label {
+            .sectionHeaderText();
+
             background-color: @black;
             color: @white;
             border: 0px;
@@ -427,7 +419,7 @@ button, input[type="checkbox"] {
 ************************************************************/
 #header {
     .horizontal-section-shadow();
-    .headerText();
+    .sectionHeaderText();
 
     background-color: @black;
     color: @white;
@@ -441,6 +433,10 @@ button, input[type="checkbox"] {
     .header-title {
         display: table-cell;
         vertical-align: middle;
+    }
+
+    button {
+        .sectionHeaderText();
     }
 }
 
@@ -552,7 +548,7 @@ button, input[type="checkbox"] {
 * CORE MODULE: DETAILS
 ************************************************************/
 .details-module {
-    .vertical-section-shadow();
+    .left-section-shadow();
 
     background-color: @white;
     height: 100%;
@@ -663,14 +659,54 @@ button, input[type="checkbox"] {
         height: 100%;
         position: fixed;
         top: 0px;
-        width: 25%;
+        width: 28%;
         padding-top: @editor-top-margin;
-        padding-left: @bigMargin;
+        z-index: 15;
 
-        .essay-prompt {
-            clear: both;
-            padding-top: @innerPadding;
-            padding-bottom: @innerPadding;
+        .summary-header {
+            padding-left: @bigMargin;
+            padding-right: @bigMargin;
+
+            .essay-prompt {
+                clear: both;
+                padding-top: @innerPadding;
+                padding-bottom: @innerPadding;
+            }
+
+        }
+
+        .summary-panel-container {
+            .right-section-shadow();
+
+            border-top: @thinBorder @grey solid;
+            border-right: @thinBorder @grey solid;
+            box-sizing: content-box;
+            visibility: hidden;
+            position: fixed;
+            top: 180px;
+            bottom: 0px;
+            width: 28%;
+            overflow-y: scroll;
+
+            .summary-panel {
+                margin: @smallMargin @bigMargin;
+
+                .panel-title {
+                    margin-bottom: @innerPadding;
+                }
+
+                .details-field {
+                    font-size: @smallBodyFontSize;
+                    margin-bottom: @smallPadding;
+                }
+            }
+
+            .review-editor {
+                .smallText();
+
+                height: 300px;
+                width: 100%;
+            }
         }
     }
 
@@ -678,32 +714,33 @@ button, input[type="checkbox"] {
         border-left: @thinBorder @greyLight solid;
         border-right: @thinBorder @greyLight solid;
         height: 100%;
-        left: 25%;
-        position: fixed;
-        top: 0px;
-        width: 45%;
+        left: 28%;
+        position: relative;
         text-align: center;
+        width: 44%;
+        z-index: 12;
 
         .toolbar-container {
-            position: absolute;
+            position: fixed;
             top: @editor-top-margin;
-            width: 100%;
+            visibility: hidden;
+            width: 44%;
+            z-index: 15;
 
             .editor-toolbar {
-                position: relative;
+                .horizontal-section-shadow();
+
                 cursor: pointer;
                 display: inline-block;
-                // display: block !important;
-                z-index: 15;
-
-                .cke_detached {
-                }
+                visibility: visible;
             }
         }
     }
 
-    .annotations-coumn {
-        width: 35%;
+    .annotations-column {
+        height: 100%;
+        position: relative;
+        width: 25%;
     }
 }
 
@@ -720,7 +757,6 @@ button, input[type="checkbox"] {
     padding: (@headerHeight + 55px + @smallPadding) @smallMargin @smallMargin @smallMargin;
     resize: none;
     position: relative;
-    z-index: 12;
     text-align: left;
 
     ul {
@@ -746,14 +782,14 @@ button, input[type="checkbox"] {
     }
 }
 
-.editor-toggles {
+.panel-toggle-container {
     .horizontal-section-shadow();
 
     border: @thinBorder @grey solid;
     position: relative;
     float: left;
 
-    .editor-toggle {
+    .panel-toggle {
         .smallText();
 
         background-color: @white;
@@ -771,6 +807,10 @@ button, input[type="checkbox"] {
 
         &:last-child {
             border: 0px;
+        }
+
+        &.active {
+            background-color: @greyLight;
         }
     }
 }
@@ -849,7 +889,11 @@ button, input[type="checkbox"] {
 }
 
 .landing-modal {
-
+    input[type="checkbox"] {
+        margin-left: 10px;
+        position: relative;
+        top: -3px;
+    }
 }
 
 /***********************************************************
