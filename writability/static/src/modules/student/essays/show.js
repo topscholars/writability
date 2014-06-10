@@ -7,6 +7,9 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
                 model.set('state', 'in_progress');
                 model.save();
             }
+        },
+        mergeEssay: function(model) {
+            this.transitionToRoute('student.essays.show.merge');
         }
     }
 });

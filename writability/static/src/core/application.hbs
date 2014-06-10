@@ -1,5 +1,5 @@
 {{outlet header}}
 <div id="layout-container">{{outlet}}</div>
-<div id="modal-container">
+<div id="modal-container" {{bind-attr class="modalActive:active"}}>
     <section id="modal-module" class="module">{{outlet modal-module}}</section>
 </div>

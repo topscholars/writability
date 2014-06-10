@@ -12,7 +12,9 @@ App.Router.map(function () {
     this.resource('students', function () {
         this.resource('student', {path: '/:id'}, function() {
             this.resource("student.essays", { path: "/essays" }, function() {
-                this.route("show", { path: "/:theme_essay_id" });
+                this.resource("student.essays.show", { path: "/:theme_essay_id" }, function() {
+                    this.route('merge', { path: "/merge" });
+                });
             });
         });
     });
@@ -215,7 +217,7 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
             console.log('in teacher side of essaysroute');
             return this.get('currentTeacher').get('students').get('theme_essays');
         }
-        
+
     },
 
     renderTemplate: function () {
@@ -247,6 +249,13 @@ App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
 
         this.controllerFor('student.essays').findBy('id', id).send('select');
         this.render({outlet: 'right-side-outlet'});
+    }
+});
+
+App.StudentEssaysShowMergeRoute = App.AuthenticatedRoute.extend({
+    renderTemplate: function() {
+        this.controllerFor('application').set('modalActive', true);
+        this.render({into: 'application', outlet: 'modal-module'});
     }
 });
 
