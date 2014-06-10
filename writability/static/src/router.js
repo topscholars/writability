@@ -98,6 +98,15 @@ App.ApplicationRoute = App.AuthenticatedRoute.extend({
     model: function () {
         return this.get('currentUser');
     },
+
+    actions: {
+        closeModal: function() {
+            this.controllerFor('application').set('modalActive', false);
+        },
+        openModal: function() {
+            this.controllerFor('application').set('modalActive', true);
+        }
+    }
 });
 
 
@@ -254,12 +263,12 @@ App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
 
 App.StudentEssaysShowMergeRoute = App.AuthenticatedRoute.extend({
     setupController: function(controller, model) {
-        console.log(this.modelFor('student.essays.show'));
         controller.set('parentEssay', this.modelFor('student.essays.show'));
+        controller.set('essays', this.modelFor('student.essays'));
     },
     renderTemplate: function() {
-        this.controllerFor('application').set('modalActive', true);
         this.render({into: 'application', outlet: 'modal-module'});
+        this.send('openModal');
     }
 });
 
