@@ -19,6 +19,7 @@ class Review(StatefulModel):
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
+    draft_id = db.Column(db.Integer, db.ForeignKey("draft.id"))
 
     # optional fields
     text = db.Column(db.String)
@@ -28,7 +29,7 @@ class Review(StatefulModel):
 
     # relationships
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    draft = db.relationship("Draft", uselist=False, backref="review")
+    annotations = db.relationship("Annotation", backref="review")
 
     @validates('review_type')
     def validate_review_type(self, key, review_type):
