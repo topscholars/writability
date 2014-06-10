@@ -5,11 +5,6 @@ App.StudentOverviewTab = Ember.View.extend({
     templateName: "modules/_student-details-overview"
 });
 
-App.StudentApplicationsTab = Ember.View.extend({
-    name: "Applications",
-    templateName: "modules/_student-details-overview"
-});
-
 App.StudentTabs = Ember.ContainerView.extend({
     /**
      * Create the child views in init so they are recreated on a later
@@ -17,19 +12,22 @@ App.StudentTabs = Ember.ContainerView.extend({
      */
     init: function () {
         this.set('overview', App.StudentOverviewTab.create());
-        this.set('application', App.StudentApplicationsTab.create());
         this.set('childViews', ['overview']);
         this._super();
+    },
+
+    showTab: function (tabKey) {
+        this.popObject();
+        this.pushObject(this.get(tabKey));
     }
 });
 
 App.StudentView = App.DetailsView.extend({
     selectedTab: 'overview',
-    tabView: App.StudentTabs,
+    tabsViewClass: App.StudentTabs,
 
     tabs: [
         {key: 'overview', title: 'Overview'},
-        {key: 'application', title: 'Applications'},
     ],
 
     didInsertElement: function () {
