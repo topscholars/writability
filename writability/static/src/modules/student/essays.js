@@ -7,7 +7,7 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     }),
     actions: {
         selectEssay: function(model) {
-            this.transitionTo('student.essays.show', model);
+            this.transitionToRoute('student.essays.show', model);
         }
     }
 });
