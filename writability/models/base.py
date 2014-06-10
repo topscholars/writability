@@ -41,6 +41,7 @@ class BaseModel(db.Model):
 
     def process_before_update(self, prepared_dict):
         """Process model upon update / save."""
+        pass
 
     def change_related_objects(self):
         """Change any related objects before commit."""
