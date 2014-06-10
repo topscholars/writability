@@ -247,7 +247,7 @@ App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
         var id = this.currentModel.id;
 
-        this.controllerFor('student.essays').findBy('id', id).send('select');
+        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
         this.render({outlet: 'right-side-outlet'});
     }
 });

@@ -959,7 +959,7 @@ App.StudentEssayItemController = Ember.ObjectController.extend({
     }).property('controllers.studentEssays.selectedEssay'),
 
     actions: {
-        select: function () {
+        select: function (transition) {
             var model = this.get('model');
             this.send('selectEssay', model);
         }
@@ -1710,7 +1710,7 @@ App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
         var id = this.currentModel.id;
 
-        this.controllerFor('student.essays').findBy('id', id).send('select');
+        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
         this.render({outlet: 'right-side-outlet'});
     }
 });
