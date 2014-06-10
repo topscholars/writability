@@ -5,12 +5,14 @@ controllers.resource.essay
 This module contains the resource Essay, ThemeEssay, and ApplicationEssay.
 
 """
-from flask.ext.restful import fields
+from flask import request
+from flask.ext.restful import Resource, fields
+from flask.ext.restful import marshal
 
 from models.essay import Essay, ThemeEssay, ApplicationEssay
 
 from .base import ResourceManager, ItemResource, ListResource
-from .base import StatefulResourceManager
+from .base import StatefulResourceManager, InvalidUsage
 from .fields import ResourceField
 import draft
 import theme
@@ -71,9 +73,7 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
             "theme": ResourceField(
                 theme.ThemeResourceManager.item_resource_name,
                 absolute=True),
-            "application_essays": fields.List(ResourceField(
-                ApplicationEssayResourceManager.item_resource_name,
-                absolute=True))
+            "application_essay_states": fields.String
         })
 
 
@@ -111,3 +111,51 @@ class ApplicationEssayResource(EssayResource):
 class ApplicationEssayListResource(EssayListResource):
 
     resource_manager_class = ApplicationEssayResourceManager
+
+
+class ApplicationEssayStateResource(ThemeEssayResource):
+    """
+    This resource allows direct updates of the Application Essay states upon clicking
+    them in the Essays view. 
+    """
+    def get(self, themeessay_id, appessay_id):
+        # what's the correct way to 404 this?
+        raise NotImplementedError()
+        return None
+
+    def delete(self, themeessay_id, appessay_id):
+        # what's the correct way to 404 this?
+        raise NotImplementedError()
+        return None
+
+    def put(self, themeessay_id, appessay_id):
+        resource_name = self.resource_manager.item_resource_name
+        model_class = self.resource_manager.model_class
+        item_field = self.resource_manager.item_field
+
+        payload = self._get_payload(appessay_id)
+        # print resource_name, id   # TODO KIRK DELETE THESE
+        # print payload
+
+        app_essay_states = model_class.read(themeessay_id).application_essay_states
+
+        if appessay_id in app_essay_states:
+            # Should return a single state. Validated by the model class.
+            app_essay_states[appessay_id] = payload
+            item = {resource_name: model_class.update(themeessay_id, { 'application_essay_states' : app_essay_states })}            
+            return marshal(item, item_field)
+        else:
+            raise InvalidUsage('Did you pass the correct application essay ID in the URL?')
+
+    def _get_payload(self, appessay_id):
+        """
+        Get the JSON body of the request.
+        Should be in the form { "appessay_id" : "NEW_STATE" }
+
+        """        
+        json = request.get_json()
+        try:            
+            payload = json[str(appessay_id)]
+        except:
+            raise InvalidUsage('Did you pass the correct application essay ID in the request body?')
+        return payload

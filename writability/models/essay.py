@@ -89,15 +89,40 @@ class ThemeEssay(StatefulModel, Essay):
     # relationships
     theme_id = db.Column(db.Integer, db.ForeignKey("theme.id"))
     theme = db.relationship("Theme")
-    application_essays = db.relationship(
+
+    # parent has many merged_theme_essays.
+    parent = db.relationship(
+        "ThemeEssay",
+        backref=db.backref("merged_theme_essays", uselist=True),
+        uselist=False,
+        remote_side="ThemeEssay.id",
+        foreign_keys="ThemeEssay.parent_id")
+    parent_id = db.Column(db.Integer, db.ForeignKey("theme_essay.id"))
+
+    _application_essays = db.relationship(
         "ApplicationEssay",
         secondary=essay_associations,
         backref=db.backref("theme_essays", lazy="dynamic"))
 
-    @validates('proposed_topics')
-    def validate_proposed_topics(self, key, proposed_topics):
-        assert len(proposed_topics) == 2
-        return proposed_topics
+    ## Commented from Master for merging merge-backend
+    # @validates('proposed_topics')
+    # def validate_proposed_topics(self, key, proposed_topics):
+    #     assert len(proposed_topics) == 2
+    #     return proposed_topics
+    ALLOWED_APP_ESSAY_STATES = ["selected","not_selected","pending"]
+    application_essay_states = db.Column(db.PickleType, default={})
+
+    @validates('application_essay_states')
+    def validate_app_essay_states(self, key, application_essay_states):
+        for val in application_essay_states.values():
+            assert val in self.ALLOWED_APP_ESSAY_STATES
+        return application_essay_states
+
+    @classmethod
+    def create(class_, object_dict):
+        if 'application_essays' in object_dict:
+            object_dict['_application_essays'] = object_dict.pop('application_essays')
+        super(ThemeEssay, class_).create(object_dict)
 
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
@@ -106,6 +131,30 @@ class ThemeEssay(StatefulModel, Essay):
         self.audience = theme_essay_template.audience
         self.context = theme_essay_template.context
         self.theme = theme_essay_template.theme
+        self.application_essay_states = {}
+        for ae in self._application_essays:
+            self.application_essay_states[ae.id] = "pending"
+
+    def change_related_objects(self):
+        """
+        If an application essay state is "selected", go through all other
+        theme essays and mark it "not_selected".
+
+        """
+        super(ThemeEssay, self).change_related_objects()
+        # just in case new application essays get in
+        for ae in self._application_essays:
+            if ae.id not in self.application_essay_states.keys():
+                self.application_essay_states[ae.id] = "pending"
+        # now mark others not selected
+        if self.application_essay_states:
+            selected_ae_ids = [id for id in self.application_essay_states if self.application_essay_states[id]=="selected"]
+            for ae_id in selected_ae_ids:
+                ae = ApplicationEssay.read(ae.id) 
+                for te in ae.theme_essays:
+                    if te != self:
+                        te.application_essay_states[ae.id] = "not_selected"
+
 
     def change_related_objects(self):
         """Change any related objects before commit."""
@@ -136,6 +185,11 @@ class ThemeEssay(StatefulModel, Essay):
     def _get_initial_states(self):
         """Get the allowed initial states."""
         return ["new"]
+
+    @property
+    def application_essays(self):
+        """Return application essays to be shown in the list for this item."""
+        return self._application_essays
 
     @property
     def next_action(self):
@@ -183,6 +237,15 @@ class ApplicationEssay(Essay):
 
     # relationships
     # theme_essays: don't explicitly declare it but it's here
+
+    @property
+    def selected_theme_essay(self):
+        """
+        Gets the ThemeEssay for which this ApplicationEssay is selected.
+        """
+        ste = [te for te in self.theme_essays if te.application_essay_states[self.id] == "selected"]
+        assert len(ste) <= 1
+        return ste[0] if ste[0] else None
 
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
