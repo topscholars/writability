@@ -139,6 +139,33 @@ class ThemePopulator(Populator):
     def _get_title(self, payload):
         return payload["theme"]["name"]
 
+class TagPopulator(Populator):
+
+    _PATH = "tags"
+    _FILE_PATH = "data/tags.csv"
+
+    def _construct_payload(self, line):
+        tokens = line.split('\t')
+        name = tokens[0].strip()
+        tag_type = tokens[1].strip()
+        category = tokens[2].strip()
+        description = tokens[3].strip()
+        example = tokens[4].strip()
+
+        payload = {
+            "tag": {
+                "name" : name,
+                "tag_type" : tag_type,
+                "category" : category,
+                "description" : description,
+                "example" : example
+            }
+        }
+
+        return payload
+
+    def _get_title(self, payload):
+        return payload["tag"]["name"]
 
 class ThemeEssayTemplatePopulator(Populator):
 
@@ -464,6 +491,27 @@ class DraftPopulator(JsonPopulator):
         return payload["draft"]["formatted_text"][0:40]
 
 
+class ReviewPopulator(JsonPopulator):
+
+    _PATH = "reviews"
+    _FILE_PATH = "data/reviews.json"
+    _OBJECT_NAME = "review"
+
+    def _get_title(self, payload):
+        return payload["review"]["text"][0:40]
+
+
+class AnnotationPopulator(JsonPopulator):
+
+    # Note: this only works for loading annotations for review with id=0
+    _PATH = "reviews/0/annotations"
+    _FILE_PATH = "data/annotations.json"
+    _OBJECT_NAME = "annotation"
+
+    def _get_title(self, payload):
+        return payload["annotation"]["comment"][0:40]
+
+
 def delete_users():
     users_url = "{}users".format(ROOT_URL)
     users = requests.get(users_url)
@@ -479,10 +527,14 @@ def populate_db():
     ThemePopulator()
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
+    TagPopulator()
     # custom data
     # delete_users()
     UserPopulator()
     DraftPopulator()
+    ReviewPopulator()
+    AnnotationPopulator()
 
 
 populate_db()
+# TagPopulator()

@@ -1,0 +1,18 @@
+[
+    {
+        "id": 0,
+        "state": "new",
+        "comment": "this sounds awkward",
+        "original": "the original text",
+        "tag_id": 1,
+        "review_id": 0
+    },
+    {
+        "id": 1,
+        "state": "new",
+        "comment": "too verbose",
+        "original": "more original text",
+        "tag_id": 2,
+        "review_id": 0
+    }
+]
