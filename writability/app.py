@@ -16,7 +16,7 @@ from logging import Formatter, FileHandler
 # from forms import LoginForm, RegisterForm, ForgotForm
 
 from models.db import init_app
-from controllers import frontend, api, security
+from controllers import frontend, api, security, resource
 
 # ----------------------------------------------------------------------------#
 # App Config.
@@ -67,6 +67,12 @@ def internal_error_500(error):
 @app.errorhandler(404)
 def internal_error_404(error):
     return render_template('errors/404.html'), 404
+
+@app.errorhandler(resource.base.InvalidUsage)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 if not app.debug:
     file_handler = FileHandler('error.log')
