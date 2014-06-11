@@ -132,9 +132,9 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     setupController: function(controller, model) {
-        controller.set('model', model); //Required boilerplate
+        controller.set('student', this.get('currentStudent'));
         controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
+        this._super(controller, model); //Required boilerplate
     },
 
     renderTemplate: function () {
