@@ -145,11 +145,11 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         selectedUniversity: function (university) {
-            var universities = this.get('currentStudent').get('universities');
+            var student = this.get('currentStudent');
+            var universities = student.get('universities');
 
-            // Send update to server to add a university for this student
-            // Ember.$().ajax()
             universities.pushObject(university);
+            student.save();
         }
     }
 });
