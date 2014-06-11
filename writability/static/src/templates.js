@@ -55,3 +55,5 @@ Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("{{#with students
 Ember.TEMPLATES["partials/_details-list"] = Ember.Handlebars.compile("<p>{{view.summaryText}}</p>\n\n{{#each application_essays}}\n    {{partial view.listItemPartial}}\n{{/each}}\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
+
+Ember.TEMPLATES["partials/tags"] = Ember.Handlebars.compile("<div id=\"tag-box\">\n<input id=\"tag-search\">\n<div id=\"tag-menu\"></div>\n</div>\n");
