@@ -4,7 +4,7 @@ App.User = DS.Model.extend({
     email: DS.attr('string'),
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
-    roles: DS.hasMany('role', {async: true}),
+    roles: DS.hasMany('role', {async: true, readOnly: true}),
     state: DS.attr('string'),
 
     // computed properties
@@ -41,5 +41,6 @@ App.Student = App.User.extend({
     //essays: DS.hasMany('themeEssay', {async: true}),
     theme_essays: DS.hasMany('themeEssay', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
-    universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there
+    universities: DS.hasMany('university', {async: true}), // Use async true or ember expects data to already be there
+    roles: DS.attr()
 });
