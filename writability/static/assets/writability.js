@@ -436,7 +436,7 @@ App.Student = App.User.extend({
     theme_essays: DS.hasMany('themeEssay', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
     universities: DS.hasMany('university', {async: true}), // Use async true or ember expects data to already be there
-    roles: DS.attr()
+    roles: DS.attr(null, {readOnly: true})
 });
 
 /* globals App, Ember */
