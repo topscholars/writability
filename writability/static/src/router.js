@@ -132,9 +132,9 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     setupController: function(controller, model) {
-        controller.set('model', model); //Required boilerplate
+        controller.set('student', this.get('currentStudent'));
         controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
+        this._super(controller, model); //Required boilerplate
     },
 
     renderTemplate: function () {
@@ -145,11 +145,11 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         selectedUniversity: function (university) {
-            var universities = this.get('currentStudent').get('universities');
+            var student = this.get('currentStudent');
+            var universities = student.get('universities');
 
-            // Send update to server to add a university for this student
-            // Ember.$().ajax()
             universities.pushObject(university);
+            student.save();
         }
     }
 });
