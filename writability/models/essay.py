@@ -122,7 +122,7 @@ class ThemeEssay(StatefulModel, Essay):
     def create(class_, object_dict):
         if 'application_essays' in object_dict:
             object_dict['_application_essays'] = object_dict.pop('application_essays')
-        super(ThemeEssay, class_).create(object_dict)
+        return super(ThemeEssay, class_).create(object_dict)
 
     def process_before_create(self):
         """Process model to prepare it for adding it db."""

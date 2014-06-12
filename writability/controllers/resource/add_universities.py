@@ -13,6 +13,23 @@ class AddUniversitiesResource(Resource):
     def get_endpoint(self):
         return 'add-universities'
 
+    def _create(self, model, **kwargs):
+        return model.create(kwargs)
+
+    def _create_application_essay(self, student, application_essay_template):
+        return self._create(ApplicationEssay,
+                            student=student.id,
+                            essay_template=application_essay_template.id)
+
+    def _create_theme_essay(self, student, application_essay, theme):
+        return self._create(ThemeEssay,
+                            theme=theme.id,
+                            application_essays=[application_essay.id],
+                            essay_template=theme.theme_essay_template.id,
+                            student=student.id,
+                            state='new',
+                            proposed_topics=['',''])
+
     def post(self, student_id):
         university_ids = json.loads(request.form.get('universities', '[]'))
         student = User.query.filter_by(id=student_id).first()
@@ -25,14 +42,12 @@ class AddUniversitiesResource(Resource):
         application_essay_templates = [x for x in required_application_essay_templates
                                        if x.id not in existing_application_essay_template_ids]
         for application_essay_template in application_essay_templates:
-            application_essay = ApplicationEssay(essay_template=application_essay_template,
-                                                 essay_prompt=application_essay_template.essay_prompt,
-                                                 student_id=student.id)
+            application_essay = self._create_application_essay(student, application_essay_template)
             db.session.add(application_essay)
+            db.session.flush()
+            db.session.refresh(application_essay)   # make sure 'id' field is set properly
             for theme in application_essay_template.themes:
-                theme_essay = ThemeEssay(theme_id=theme.id,
-                                         essay_prompt=application_essay_template.essay_prompt,
-                                         student_id=student.id)
-                db.session.add(theme_essay)
+                db.session.add(self._create_theme_essay(student, application_essay, theme))
+        if len(application_essay_templates) > 0:
             db.session.commit()
         return 'OK ' + str(len(application_essay_templates))
