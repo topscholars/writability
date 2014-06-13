@@ -7,8 +7,7 @@ StatefulResource.
 
 """
 from flask import request
-from flask.ext.restful import Resource, fields
-from flask.ext.restful import marshal
+from flask.ext.restful import Resource, fields, marshal, abort
 
 
 class ResourceManager(object):
@@ -93,7 +92,11 @@ class ItemResource(BaseResource):
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
-        item = {resource_name: model_class.read(id)}
+        instance = model_class.read(id)
+        if instance is None:
+            abort(404, message='{0} with ID {1} not found'.format(
+                    resource_name, id))
+        item = {resource_name: instance}
         return marshal(item, item_field)
 
     def put(self, id):
