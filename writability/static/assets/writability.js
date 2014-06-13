@@ -960,7 +960,7 @@ App.StudentEssayItemController = Ember.ObjectController.extend({
     }).property('controllers.studentEssays.selectedEssay'),
 
     actions: {
-        select: function () {
+        select: function (transition) {
             var model = this.get('model');
             this.send('selectEssay', model);
         }
@@ -1073,6 +1073,24 @@ App.StudentEssaysShowMergeView = Ember.View.extend({
 	templateName: 'modules/student/essays/show/merge'
 });
 
+App.StudentEssaysShowMergeController = Ember.Controller.extend({
+	mergeEssays: function() {
+		var parentEssay = this.get('parentEssay');
+
+		return this.get('essays').filter(function(essay) {
+			return essay.id != parentEssay.id;
+		});
+	}.property('parentEssay', 'essays'),
+
+	actions: {
+		closeModal: function() {
+			this.transitionToRoute('student.essays.show');
+
+			return true;
+		}
+	}
+})
+
 /* globals App, Ember */
 
 App.StudentItemView = App.ThinListItem.extend({
@@ -1136,168 +1154,48 @@ App.UniversitiesController = Ember.ArrayController.extend({
         return this.store.find('university');
     }.property(),
 
+    universityHasBeenSelected: function () {
+        this.set('defaultValueOption', null);
+    },
+
     select: function (ev) {
         var newUniversity = this.get('newUniversity');
         if (newUniversity) {
-            this.send('selectedUniversity', this.get('newUniversity'));
-            this.set('defaultValueOption', null);
+            this.send('selectedUniversity', this.get('newUniversity'), this);
         }
     }.observes("newUniversity"),
 
-    convertEssays: function (student) {  //pass in?   scope = this
-        var deferred = $.Deferred();
-        console.log('convertEssays() called');
-        var that = this;
-        var app_essay_templates;    // ManyArray, universities.all.app_essay_templates
+    attachEssays: function() {
+        var student = this.get('student');
+        var universitiesPromise = student.get('universities');
+        var urlForStudent = '/api/students/' + student.id + '/add-universities';
 
-        // This checks for existing AppEssays and prevents dupes based on the linked AppEssTemplate ID
-        // Other parts of the application could still create dupes.
-        var existing_app_essay_tmp_ids = [];
-        student.get('application_essays')
-            .then( function (app_essays) {
-                app_essays.forEach( function (app_essay) {
-                    existing_app_essay_tmp_ids.push(app_essay.essay_template.id);
-                });
-            });
-        //console.log(existing_app_essay_tmp_ids);
-
-        this.getAllTemplatesForStudent(student)
-            .done( function (app_essay_templates) {
-                var all_themes = [];
-                console.log('all_themes at start: ' + all_themes);
-                app_essay_templates.forEach(function (app_essay_template, index) {            // For each AppEssay Template
-                    if (existing_app_essay_tmp_ids.indexOf(app_essay_template.id) == -1) {    // If related Essay doesn't exist
-                        var item_id = app_essay_template.get('id');
-
-                        // Create App Essay. Setting app_essay during theme_essay creation handles both sides of the relationship
-                        if ( existing_app_essay_tmp_ids.indexOf(item_id) == -1 ) {
-                            var app_essay_id = that.createAppEssay(student, app_essay_template);
-                            existing_app_essay_tmp_ids.push(item_id);
-                        }
-
-                        // Create Theme Essays for each app essay template
-                        app_essay_template.get('themes').then(function (themes) {       // Each app_ess_tmp hasMany themes
-                            var themes_length =  themes.get('length');
-
-                            themes.forEach( function (theme, index) {                   // This theme variable doesn't contain
-                                var theme_id = theme.get('id');
-                                if ( all_themes.indexOf(theme_id) == -1 ) {             // If themeEssay not yet created
-                                    //console.log('theme: ' + theme + 'theme_id: ' + theme_id);  // Collect data before entering these functions
-                                    //console.log(all_themes);
-                                    //console.log('index_of id: ' + all_themes.indexOf(theme_id));
-                                    all_themes.push(theme_id);
-
-                                    theme.get('theme_essay_template')                   // TODO: API call here is horrific
-                                        .then(function (theme_essay_template) {         // ERROR: This sometimes gives a NULL error. (theme_id=6)
-                                            //console.log('theme essay_template: ' + theme_essay_template);
-                                            var theme_essay = that.store.createRecord('theme_essay', {
-                                                theme: theme,
-                                                application_essays: app_essay_id,    // should be app_essay, not app_essay_template
-                                                essay_template: theme_essay_template,// get theme essay template
-                                                student: student,
-                                                state: "new",                        // AssertionError without
-                                                proposed_topics: ["",""]                  // Without this attr, it tries False gives a Bool isn't iterable error
-                                            });
-                                            theme_essay.save();                      // Create theme_essay
-
-                                            if (index == themes_length - 1) {             // Resolve when complete!
-                                                deferred.resolve();
-                                            }
-                                        })
-                                        .catch( function(error) {
-                                            console.log(theme_id + ' <- If this is "6" then this is an ember quirk where a .get fails');
-                                        });
-                                }
-                            });
-                        });
-                    } else {
-                        console.log('Skipping creation of duplicate App Essay.');
-                    }
-                });
-            });
-        return deferred.promise();
-
-    },
-    createAppEssay: function (student, item) {
-        var app_essay = this.store.createRecord('application_essay', {
-                            student: student,
-                            essay_template: item    // Requires object, not ID.  backref creates other other model's relation.
-                        });
-        app_essay.save();
-        return app_essay.get('id');                 // Return ID
-    },
-    // Move to model
-    // app_essay_templates are always unique. May 14, 2014
-    getAllTemplatesForStudent: function (student) {
-        var deferred = jQuery.Deferred();
-        var essays_list = [];
-        var last_univ = false;
-        student.get('universities').then(function (univs) {
-            var univs_count = univs.get('length');
-            console.log('univs count: ' + univs_count );
-
-            // Outside all loops
-            univs.forEach(function (item, index, enumerable) {            // For each Univ
-                last_univ = (index == univs_count - 1) ? true : false ;   // end of univ loop?
-                item.get('application_essay_templates')                   // Get app templates
-                    .then( function (app_essay_templates) {               // for each template
-                        app_ess_tmps_length = app_essay_templates.get('length');
-                        app_essay_templates.forEach(function (item, index) {
-                            var last_essay = (index == app_ess_tmps_length - 1) ? true : false ;
-                            essays_list.push(item);                     // Add essays
-                            if (last_univ && last_essay) {              // Return after all univs/essays are looped
-                                deferred.resolve(essays_list);
-                            }
-                        });
+        return essaysAttachPromise = new Promise(function(resolve) {
+            universitiesPromise.then(function(universities) {
+                Ember.$.ajax({
+                    url: urlForStudent,
+                    method: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        student_id: student.id,
+                        universities: universities.getEach('id')
                     })
-                    .catch( function (error) {
-                        console.log('Error in univs.forEach loop.');
-                        console.log(error);
-                        deferred.reject(error);
-                    });
+                }).then(function() { resolve() });
             });
         });
-        return deferred.promise();
     },
 
     actions: {
         next: function() {
-            var that = this;
+            var controller = this;
+            var student = this.get('student');
 
-            this.store.find('student', 0).then(function (student) {
-                student.get('roles').then(function (oldRoles) {
-                    student.save().then(function () {
-                        //student.get('roles').then(function (newRoles) {
-                        //console.log(oldRoles.content.length);
-                        //alert();
-                        //    console.log(newRoles.content.length);
-                        //    alert();
-                                that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
-                                    .done( function () {
-                                        student.set('state', 'active');             // Set student state to active
-                                        student.get('roles').then(function (newRoles) {
-                                            console.log(newRoles.content.length);
-                                            student.save().then(function () {
-                                                console.log(newRoles.content.length);
-                                                //debugger;
-                                                that.transitionToRoute("essays");           // Redirect to Essays page
-                                            });
-                                        });
-
-                                    })
-                                    .fail( function (error) {
-                                        console.log(error);
-                                    });
-                             //   });
-                        //});
-
-
-                    })
-                    .catch( function (error) {
-                        console.log(error);
-                        alert("Sorry! We've encountered an error.");
-                    });
-                });
+            this.attachEssays().then(function() {
+                student.set('state', 'active');
+                return student.save();
+            }).then(function() {
+                controller.transitionToRoute('essays');
             });
         }
     }
@@ -1347,6 +1245,72 @@ App.RightNavButton = App.NavButton.extend({
     }
 
 });
+
+
+App.TagBox = Ember.View.extend({
+    templateName: 'partials/tags',
+    didInsertElement: initializeTagBox
+});
+
+$.widget( "custom.catcomplete", $.ui.autocomplete, {
+    _create: function() {
+        this._super();
+        this.widget().menu( "option", "items",
+                            "> :not(.ui-autocomplete-category)" );
+    },
+    _renderItem: function( ul, item ) {
+        var type = item.tag_type.toLowerCase();
+        return $( "<li>" )
+            .append( $( "<a class=\"tag-" + type + "\">" ).text(item.label))
+            .appendTo( ul );
+    },
+    _renderMenu: function( ul, items ) {
+        var that = this;
+        var currentCategory = "";
+        $.each( items, function( index, item ) {
+            if ( item.category != currentCategory ) {
+                ul.append( "<li class='ui-autocomplete-category'>"
+                           + item.category + " :</li>" );
+                currentCategory = item.category;
+            }
+            var li = that._renderItemData( ul, item );
+            if ( item.category ) {
+                li.attr( "aria-label", item.category + " : " + item.label );
+            }
+        });
+    }
+});
+
+function initializeTagBox() {
+    var data = [
+        { label: "anders", category: "Random", tag_type: "POSITIVE"},
+        { label: "andreas", category: "Random", tag_type: "NEGATIVE"},
+        { label: "antal", category: "Random", tag_type: "POSITIVE" },
+        { label: "annhhx10", category: "Products", tag_type: "NEGATIVE" },
+        { label: "annk K12", category: "Products", tag_type: "NEUTRAL" },
+        { label: "annttop C13", category: "Products", tag_type: "NEGATIVE" },
+        { label: "anders andersson", category: "People", tag_type: "POSITIVE" },
+        { label: "andreas andersson", category: "People", tag_type: "NEGATIVE" },
+        { label: "andreas johnson", category: "People", tag_type: "POSITIVE" }
+    ];
+
+    var filter = function(request, response) {
+        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+        response( $.grep( data, function(value) {
+            return matcher.test( value.category + ' ' + value.label );
+        } ) );
+    }
+
+    var catcomplete = $( "#tag-search" ).catcomplete({
+        delay: 0,
+        appendTo: '#tag-menu',
+        source: filter,
+        select: function(event, ui) {
+            alert( ui.item.label );
+        },
+        position: { my: 'left top', at: 'left top', of: '#tag-menu' }
+    });
+}
 
 /* globals App, Ember, CKEDITOR */
 App.TextEditor = Ember.TextArea.extend({
@@ -1562,6 +1526,15 @@ App.ApplicationRoute = App.AuthenticatedRoute.extend({
     model: function () {
         return this.get('currentUser');
     },
+
+    actions: {
+        closeModal: function() {
+            this.controllerFor('application').set('modalActive', false);
+        },
+        openModal: function() {
+            this.controllerFor('application').set('modalActive', true);
+        }
+    }
 });
 
 
@@ -1587,9 +1560,9 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     setupController: function(controller, model) {
-        controller.set('model', model); //Required boilerplate
+        controller.set('student', this.get('currentStudent'));
         controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
+        this._super(controller, model); //Required boilerplate
     },
 
     renderTemplate: function () {
@@ -1599,9 +1572,16 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     actions: {
-        selectedUniversity: function (university) {
-            var universities = this.get('currentStudent').get('universities');
-            universities.pushObject(university);
+        selectedUniversity: function (university, controller) {
+            var student = this.get('currentStudent');
+            var universitiesPromise = student.get('universities');
+
+            universitiesPromise.then(function(universities) {
+                universities.pushObject(university);
+                student.save().then(function () {
+                    controller.universityHasBeenSelected();
+                });
+            });
         }
     }
 });
@@ -1671,11 +1651,14 @@ App.StudentRoute = App.AuthenticatedRoute.extend({
 });
 
 App.EssaysRoute = App.AuthenticatedRoute.extend({
+    beforeModel: function() {
+        if (this.get('currentUser').get('isStudent') && this.get('currentStudent').get('state') !== 'active') {
+                this.transitionTo('universities');
+
+        }
+    },
     model: function () {
         if (this.get('currentUser').get('isStudent')) {
-            if (this.get('currentStudent').get('state') !== 'active') {
-                this.transitionTo('universities');
-            }
             return this.get('currentStudent').get('theme_essays');
         } else {
             console.log('in teacher side of essaysroute');
@@ -1711,15 +1694,19 @@ App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
         var id = this.currentModel.id;
 
-        this.controllerFor('student.essays').findBy('id', id).send('select');
+        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
         this.render({outlet: 'right-side-outlet'});
     }
 });
 
 App.StudentEssaysShowMergeRoute = App.AuthenticatedRoute.extend({
+    setupController: function(controller, model) {
+        controller.set('parentEssay', this.modelFor('student.essays.show'));
+        controller.set('essays', this.modelFor('student.essays'));
+    },
     renderTemplate: function() {
-        this.controllerFor('application').set('modalActive', true);
         this.render({into: 'application', outlet: 'modal-module'});
+        this.send('openModal');
     }
 });
 
@@ -1874,7 +1861,7 @@ Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div
 
 Ember.TEMPLATES["modules/student/essays/show/_overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if is_in_progress}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n\n    {{#if review}}\n        <button {{action openDraft}}>Read Draft</button>\n    {{else}}\n        <button {{action openDraft}}>Write Draft</button>\n    {{/if}}\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        <p>{{controller.proposed_topic_0}}</p>\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        <p>{{controller.proposed_topic_1}}</p>\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopics' model}}>Approve Topic</button>\n    {{/if}}\n{{/if}}\n<button {{action 'mergeEssay' model}}>Merge Essay</button>\n");
 
-Ember.TEMPLATES["modules/student/essays/show/merge"] = Ember.Handlebars.compile("TEST MERGE\n");
+Ember.TEMPLATES["modules/student/essays/show/merge"] = Ember.Handlebars.compile("<div class=\"modal-content\">\n  <button class=\"close-button\" {{action 'closeModal'}}>X</button>\n  <div class=\"modal-title\">Merge Essays</div>\n  <div class=\"instructions\">\n  \t<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>\n  \t<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>\n  </div>\n  <ul>\n  \t{{#each essay in mergeEssays}}\n  \t\t<li {{action 'toggleMergeSelected' essay}}>\n  \t\t\t{{essay.theme.name}}\n  \t\t</li>\n  \t{{/each}}\n  </ul>\n</div>\n");
 
 Ember.TEMPLATES["modules/student/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
@@ -1883,3 +1870,5 @@ Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("{{#with students
 Ember.TEMPLATES["partials/_details-list"] = Ember.Handlebars.compile("<p>{{view.summaryText}}</p>\n\n{{#each application_essays}}\n    {{partial view.listItemPartial}}\n{{/each}}\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
+
+Ember.TEMPLATES["partials/tags"] = Ember.Handlebars.compile("<div id=\"tag-box\">\n<input id=\"tag-search\">\n<div id=\"tag-menu\"></div>\n</div>\n");

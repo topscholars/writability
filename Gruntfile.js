@@ -54,7 +54,8 @@ module.exports = function(grunt) {
                     "writability/static/libs/ember-data/ember-data.js",
                     "writability/static/libs/bootstrap/dist/js/bootstrap.js",
                     "writability/static/libs/momentjs/moment.js",
-                    "writability/static/libs/validatorjs/dist/validator.min.js"
+                    "writability/static/libs/validatorjs/dist/validator.min.js",
+                    "writability/static/libs/jquery-ui/js/jquery-ui-1.10.4.custom.js"
                     // "writability/static/libs/ckeditor/ckeditor.js"
                 ],
                 // the location of the resulting JS file
