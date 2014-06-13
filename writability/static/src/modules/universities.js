@@ -144,42 +144,31 @@ App.UniversitiesController = Ember.ArrayController.extend({
 
     actions: {
         next: function() {
-            var that = this;
+            var controller = this;
+            var student = this.get('student');
+            var universitiesPromise = student.get('universities');
+            var urlForStudent = '/api/students/' + student.id + '/add-universities';
 
-            this.store.find('student', 0).then(function (student) {
-                student.get('roles').then(function (oldRoles) {
-                    student.save().then(function () {
-                        //student.get('roles').then(function (newRoles) {
-                        //console.log(oldRoles.content.length);
-                        //alert();
-                        //    console.log(newRoles.content.length);
-                        //    alert();
-                                that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
-                                    .done( function () {
-                                        student.set('state', 'active');             // Set student state to active
-                                        student.get('roles').then(function (newRoles) {
-                                            console.log(newRoles.content.length);
-                                            student.save().then(function () {
-                                                console.log(newRoles.content.length);
-                                                //debugger;
-                                                that.transitionToRoute("essays");           // Redirect to Essays page
-                                            });
-                                        });
-
-                                    })
-                                    .fail( function (error) {
-                                        console.log(error);
-                                    });
-                             //   });
-                        //});
-
-
-                    })
-                    .catch( function (error) {
-                        console.log(error);
-                        alert("Sorry! We've encountered an error.");
-                    });
+            var essaysAttachPromise = new Promise(function(resolve) {
+                universitiesPromise.then(function(universities) {
+                    Ember.$.ajax({
+                        url: urlForStudent,
+                        method: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify({
+                            student_id: student.id,
+                            universities: universities.getEach('id')
+                        })
+                    }).then(function() { resolve() });
                 });
+            });
+
+            essaysAttachPromise.then(function() {
+                student.set('state', 'active');
+                return student.save();
+            }).then(function() {
+                controller.transitionToRoute('essays');
             });
         }
     }

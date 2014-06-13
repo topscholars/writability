@@ -27,7 +27,7 @@ class Draft(StatefulModel):
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
+    review_id = db.relationship("Review", backref="draft")
 
     def change_related_objects(self):
         """Change any related objects before commit."""
@@ -41,7 +41,6 @@ class Draft(StatefulModel):
             }
 
             self.review = review.Review(**new_review_params)
-
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""

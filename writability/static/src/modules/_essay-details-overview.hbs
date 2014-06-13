@@ -11,12 +11,17 @@
     <div class="value app-text">{{context}}</div>
 </div>
 
-{{#if topic }}
+{{#if is_in_progress}}
     <div class="details-field">
         <div class="key">Topic:</div>
         <div class="value student-text">{{topic}}</div>
     </div>
-    <button {{action openDraft}}>Write</button>
+
+    {{#if review}}
+        <button {{action openDraft}}>Read Draft</button>
+    {{else}}
+        <button {{action openDraft}}>Write Draft</button>
+    {{/if}}
 {{else}}
     <div class="details-field">
         <div class="key">Topic 1:</div>

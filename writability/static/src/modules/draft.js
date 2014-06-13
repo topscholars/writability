@@ -46,6 +46,14 @@ App.StudentDraftController = App.DraftController.extend({
             }.bind(this));
     }.observes('essay'),
 
+    onNewDraftOpened: function () {
+        var draft = this.get('model');
+        if (draft.get('state') === 'new') {
+            draft.set('state', 'in_progress');
+            draft.save();
+        }
+    }.observes('model'),
+
     actions: {
         /**
          * Respond to next by submitting draft.

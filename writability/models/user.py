@@ -57,6 +57,8 @@ class User(StatefulModel, UserMixin):
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     essays = db.relationship("Essay", backref="student")
+    
+
     universities = db.relationship(
         "University",
         secondary=student_university_associations,
@@ -80,6 +82,18 @@ class User(StatefulModel, UserMixin):
     def _get_initial_states(self):
         """Get the allowed initial states."""
         return ["unconfirmed", "confirmed"]
+
+    @property
+    def teacher_essays(self):
+        """Return list of a teacher's students' essays."""
+        # assumes self.students=[] if user is Student
+        essays_arr = []
+        for s in self.students:
+            for essay in s.essays:
+                if essay.isTheme():
+                    essays_arr.append(essay)
+        #import pdb; pdb.set_trace();
+        return essays_arr
 
     @property
     def theme_essays(self):

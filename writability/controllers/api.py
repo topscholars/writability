@@ -9,7 +9,7 @@ from flask.ext import restful
 from resource.essay import EssayListResource, EssayResource
 from resource.essay import ThemeEssayListResource, ThemeEssayResource
 from resource.essay import ApplicationEssayListResource
-from resource.essay import ApplicationEssayResource
+from resource.essay import ApplicationEssayResource, ApplicationEssayStateResource
 from resource.draft import DraftListResource, DraftResource
 from resource.review import ReviewListResource, ReviewResource
 from resource.university import UniversityListResource, UniversityResource
@@ -25,6 +25,8 @@ from resource.user import TeacherListResource, TeacherResource
 from resource.user import StudentListResource, StudentResource
 from resource.user import InvitationListResource, InvitationResource
 from resource.role import RoleListResource, RoleResource
+from resource.annotation import AnnotationResource, AnnotationListResource, TagResource, TagListResource
+from resource.add_universities import AddUniversitiesResource
 
 
 def add_resource_with_endpoint(api, resource_class, path):
@@ -64,6 +66,10 @@ def initialize(app, api_prefix):
         ApplicationEssayResource,
         "/application-essays/<int:id>")
 
+    # application essay state update
+    api.add_resource(ApplicationEssayStateResource,
+        "/theme-essays/<int:themeessay_id>/select-application-essay/<int:appessay_id>")
+
     # draft
     add_resource_with_endpoint(api, DraftListResource, "/drafts")
     add_resource_with_endpoint(api, DraftResource, "/drafts/<int:id>")
@@ -71,6 +77,14 @@ def initialize(app, api_prefix):
     # review
     add_resource_with_endpoint(api, ReviewListResource, "/reviews")
     add_resource_with_endpoint(api, ReviewResource, "/reviews/<int:id>")
+
+    # annotation
+    add_resource_with_endpoint(api, AnnotationListResource, "/reviews/<int:review_id>/annotations")
+    add_resource_with_endpoint(api, AnnotationResource, "/annotations/<int:id>")
+
+    # tags
+    add_resource_with_endpoint(api, TagListResource, "/tags")
+    add_resource_with_endpoint(api, TagResource, "/tags/<int:id>")
 
     # university
     add_resource_with_endpoint(api, UniversityListResource, "/universities")
@@ -123,6 +137,8 @@ def initialize(app, api_prefix):
     # student
     add_resource_with_endpoint(api, StudentListResource, "/students")
     add_resource_with_endpoint(api, StudentResource, "/students/<int:id>")
+    add_resource_with_endpoint(api, AddUniversitiesResource,
+                               "/students/<int:student_id>/add-universities")
 
     # invitation
     add_resource_with_endpoint(api, InvitationListResource, "/invitations")

@@ -11,6 +11,7 @@ HOST = "http://localhost:5000/"
 ROOT_URL = HOST + "api/"
 HEADERS = {'Content-type': 'application/json'}
 
+
 class Populator(object):
 
     _PATH = None
@@ -42,7 +43,6 @@ class Populator(object):
     def _parse_file_into_objects(self, file):
         objects = [line for line in file.splitlines() if line]
         return objects
-
 
     def _populate_db(self, payload):
         resp = requests.post(
@@ -139,6 +139,33 @@ class ThemePopulator(Populator):
     def _get_title(self, payload):
         return payload["theme"]["name"]
 
+class TagPopulator(Populator):
+
+    _PATH = "tags"
+    _FILE_PATH = "data/tags.csv"
+
+    def _construct_payload(self, line):
+        tokens = line.split('\t')
+        name = tokens[0].strip()
+        tag_type = tokens[1].strip()
+        category = tokens[2].strip()
+        description = tokens[3].strip()
+        example = tokens[4].strip()
+
+        payload = {
+            "tag": {
+                "name" : name,
+                "tag_type" : tag_type,
+                "category" : category,
+                "description" : description,
+                "example" : example
+            }
+        }
+
+        return payload
+
+    def _get_title(self, payload):
+        return payload["tag"]["name"]
 
 class ThemeEssayTemplatePopulator(Populator):
 
@@ -271,7 +298,6 @@ class UserPopulator(JsonPopulator):
         # don't call super because you don't want a nested obj
         return obj
 
-
     def _populate_db(self, payload):
         # setup the session cookie
         cookies_dict = {"session": payload["session_cookie"]}
@@ -327,8 +353,8 @@ class UserPopulator(JsonPopulator):
         # if student then add essays for the universities
         elif 2 in payload["roles"]:
             return self._add_essays_to_student(
-                    user_id,
-                    payload["universities"])
+                user_id,
+                payload["universities"])
         else:
             self.teacher_id = user_id
 
@@ -343,7 +369,8 @@ class UserPopulator(JsonPopulator):
             if uni_resp.status_code != 200:
                 return False
             uni = uni_resp.json()["university"]
-            application_essay_template_ids += uni["application_essay_templates"]
+            application_essay_template_ids += uni[
+                "application_essay_templates"]
 
         # for each application essay template, create an application essay
         application_essays = []
@@ -374,7 +401,8 @@ class UserPopulator(JsonPopulator):
             app_essay_template_resp = requests.get(app_essay_template_url)
             if app_essay_template_resp.status_code != 200:
                 return False
-            app_essay_template = app_essay_template_resp.json()["application_essay_template"]
+            app_essay_template = app_essay_template_resp.json()[
+                "application_essay_template"]
             app_essay_id = app_essay["id"]
             for theme_id in app_essay_template["themes"]:
                 if theme_id in app_essay_ids_by_theme_id:
@@ -405,7 +433,8 @@ class UserPopulator(JsonPopulator):
                     "essay_template": theme_essay_template_id,
                     "student": student_id,
                     "due_date": "2014-07-06",
-                    "application_essays": application_essay_ids
+                    "application_essays": application_essay_ids,
+                    "num_of_drafts": 5
                 }
             }
             theme_essay_resp = requests.post(
@@ -442,8 +471,10 @@ class ThemeEssayPopulator(JsonPopulator):
         _QUERY_STRING = "name={}&category={}".format(theme_name, category_name)
         url = _THEME_QUERY_URL + _QUERY_STRING
 
-        theme_essay_template_id = self._get_field_with_query_url(url, "themes",
-                "theme_essay_template")
+        theme_essay_template_id = self._get_field_with_query_url(
+            url,
+            "themes",
+            "theme_essay_template")
         return theme_essay_template_id
 
     def _get_title(self, payload):
@@ -459,12 +490,35 @@ class DraftPopulator(JsonPopulator):
     def _get_title(self, payload):
         return payload["draft"]["formatted_text"][0:40]
 
+
+class ReviewPopulator(JsonPopulator):
+
+    _PATH = "reviews"
+    _FILE_PATH = "data/reviews.json"
+    _OBJECT_NAME = "review"
+
+    def _get_title(self, payload):
+        return payload["review"]["text"][0:40]
+
+
+class AnnotationPopulator(JsonPopulator):
+
+    # Note: this only works for loading annotations for review with id=0
+    _PATH = "reviews/0/annotations"
+    _FILE_PATH = "data/annotations.json"
+    _OBJECT_NAME = "annotation"
+
+    def _get_title(self, payload):
+        return payload["annotation"]["comment"][0:40]
+
+
 def delete_users():
     users_url = "{}users".format(ROOT_URL)
     users = requests.get(users_url)
     for user in users.json()["users"]:
         delete_user_url = "{}/{}".format(users_url, user["id"])
         requests.delete(delete_user_url)
+
 
 def populate_db():
     # predefined
@@ -473,10 +527,14 @@ def populate_db():
     ThemePopulator()
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
+    TagPopulator()
     # custom data
     # delete_users()
     UserPopulator()
     DraftPopulator()
+    ReviewPopulator()
+    AnnotationPopulator()
 
 
 populate_db()
+# TagPopulator()

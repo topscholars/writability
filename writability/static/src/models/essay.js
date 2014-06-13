@@ -28,7 +28,10 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
-    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1)
+    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
+    is_in_progress: function () {
+        return this.get('state') === 'in_progress';
+    }.property('state')
 });
 
 App.ApplicationEssay = App.Essay.extend({

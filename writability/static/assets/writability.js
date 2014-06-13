@@ -268,6 +268,7 @@ App.computed.aliasArrayObject = function (dependentKey, index) {
 	});
 }
 
+/* globals App, DS */
 App.Draft = DS.Model.extend({
     // properties
     plain_text: DS.attr('string'),
@@ -313,7 +314,10 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
-    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1)
+    proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
+    is_in_progress: function () {
+        return this.get('state') === 'in_progress';
+    }.property('state')
 });
 
 App.ApplicationEssay = App.Essay.extend({
@@ -394,7 +398,7 @@ App.User = DS.Model.extend({
     email: DS.attr('string'),
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
-    roles: DS.hasMany('role', {async: true}),
+    roles: DS.hasMany('role', {async: true, readOnly: true}),
     state: DS.attr('string'),
 
     // computed properties
@@ -415,8 +419,9 @@ App.Teacher = App.User.extend({
     // properties
     // relationships
     students: DS.hasMany('student', {async: true}),
+    reviews: DS.hasMany('review', {async: true}),
+    teacher_essays: DS.hasMany('themeEssay', {async: true}),
     invitations: DS.hasMany('invitation', {async: true}),
-    reviews: DS.hasMany('review', {async: true})
 });
 
 App.Student = App.User.extend({
@@ -430,7 +435,8 @@ App.Student = App.User.extend({
     //essays: DS.hasMany('themeEssay', {async: true}),
     theme_essays: DS.hasMany('themeEssay', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
-    universities: DS.hasMany('university', {async: true}) // Use async true or ember expects data to already be there
+    universities: DS.hasMany('university', {async: true}), // Use async true or ember expects data to already be there
+    roles: DS.attr(null, {readOnly: true})
 });
 
 /* globals App, Ember */
@@ -497,6 +503,14 @@ App.StudentDraftController = App.DraftController.extend({
                 this.set('currentReview', review);
             }.bind(this));
     }.observes('essay'),
+
+    onNewDraftOpened: function () {
+        var draft = this.get('model');
+        if (draft.get('state') === 'new') {
+            draft.set('state', 'in_progress');
+            draft.save();
+        }
+    }.observes('model'),
 
     actions: {
         /**
@@ -879,11 +893,6 @@ App.StudentOverviewTab = Ember.View.extend({
     templateName: "modules/_student-details-overview"
 });
 
-App.StudentApplicationsTab = Ember.View.extend({
-    name: "Applications",
-    templateName: "modules/_student-details-overview"
-});
-
 App.StudentTabs = Ember.ContainerView.extend({
     /**
      * Create the child views in init so they are recreated on a later
@@ -891,19 +900,22 @@ App.StudentTabs = Ember.ContainerView.extend({
      */
     init: function () {
         this.set('overview', App.StudentOverviewTab.create());
-        this.set('application', App.StudentApplicationsTab.create());
         this.set('childViews', ['overview']);
         this._super();
+    },
+
+    showTab: function (tabKey) {
+        this.popObject();
+        this.pushObject(this.get(tabKey));
     }
 });
 
 App.StudentView = App.DetailsView.extend({
     selectedTab: 'overview',
-    tabView: App.StudentTabs,
+    tabsViewClass: App.StudentTabs,
 
     tabs: [
         {key: 'overview', title: 'Overview'},
-        {key: 'application', title: 'Applications'},
     ],
 
     didInsertElement: function () {
@@ -924,6 +936,160 @@ App.StudentView = App.DetailsView.extend({
         }
     }
 });
+
+App.StudentEssaysController = Ember.ArrayController.extend({
+    needs: ['student'],
+    itemController: 'student.essay.item',
+    student: Ember.computed.alias('controllers.student.model'),
+    actionRequiredEssays: Ember.computed.filter('model', function(essay) {
+        return essay.state != 'completed';
+    }),
+    actions: {
+        selectEssay: function(model) {
+            this.transitionToRoute('student.essays.show', model);
+        }
+    }
+});
+
+App.StudentEssayItemController = Ember.ObjectController.extend({
+    needs: ['studentEssays'],
+
+    isSelected: (function () {
+        var selectedEssay = this.get('controllers.studentEssays.selectedEssay');
+        return selectedEssay === this.get('model');
+    }).property('controllers.studentEssays.selectedEssay'),
+
+    actions: {
+        select: function (transition) {
+            var model = this.get('model');
+            this.send('selectEssay', model);
+        }
+    },
+});
+
+App.StudentEssaysHeaderView = Ember.View.extend({
+    templateName: 'modules/student/essay'
+});
+
+App.StudentEssayItemView = App.ThickListItem.extend({
+    templateName: "modules/_essays-list-item",
+    click: function (ev) {
+        this.get('controller').send('select');
+    },
+});
+
+App.StudentEssaysListView = Ember.View.extend({
+    templateName: 'modules/student/list',
+    title: null,
+    //sections: [],
+    listItem: "",
+    //elementId: "list-module",  // No id, could have multiple on page.
+    tagName: "section",
+    listItem: App.StudentEssayItemView
+});
+
+App.StudentEssaysView = App.ListView.extend({
+    templateName: 'modules/student/essay-layout',
+    //sections: ['To do', 'Not to do'],
+});
+
+App.StudentEssaysShowController = Ember.ObjectController.extend({
+    topicsReadyForApproval: Ember.computed.equal('state', 'added_topics'),
+
+    actions: {
+        approveProposedTopics: function(model) {
+            if (confirm('Are you sure you want to submit these topics?')) {
+                model.set('state', 'in_progress');
+                model.save();
+            }
+        },
+        mergeEssay: function(model) {
+            this.transitionToRoute('student.essays.show.merge');
+        }
+    }
+});
+
+App.StudentEssaysShowOverviewTab = Ember.View.extend({
+    name: "Overview",
+    templateName: "modules/student/essays/show/_overview"
+});
+
+App.StudentEssaysShowApplicationsTab = App.DetailsListView.extend({
+    name: "Applications",
+    summaryText: "Click on an application question to exclusively associate it with this essay. Each question must be associated with a single essay.",
+    listItemPartial: "modules/_essay-app-tab-list-item"
+});
+
+App.StudentEssaysShowTabs = Ember.ContainerView.extend({
+    /**
+     * Create the child views in init so they are recreated on a later
+     * transition.
+     */
+    init: function () {
+        this.set('overview', App.StudentEssaysShowOverviewTab.create());
+        this.set('application', App.StudentEssaysShowApplicationsTab.create());
+        this.set('childViews', ['overview']);
+        this._super();
+    },
+
+    showTab: function (tabKey) {
+        this.popObject();
+        this.pushObject(this.get(tabKey));
+    }
+});
+
+App.StudentEssaysShowView = App.DetailsView.extend({
+
+    tabsViewClass: App.StudentEssaysShowTabs,
+
+    selectedTab: 'overview',
+
+    tabs: [
+        {key: 'overview', title: 'Overview'},
+        {key: 'application', title: 'Applications'},
+    ],
+
+    didInsertElement: function () {
+        Ember.$('#tab-' + this.selectedTab).addClass('is-selected');
+    },
+
+    actions: {
+        selectTab: function (tabKey) {
+            //TODO: make this cleaner
+            Ember.$('.tab-header').each(function (index, el) {
+                var elID = Ember.$(el).attr('id');
+                if (elID === ("tab-" + tabKey)) {
+                    Ember.$(el).addClass("is-selected");
+                } else {
+                    Ember.$(el).removeClass("is-selected");
+                }
+            });
+            this.get('tabsView').showTab(tabKey);
+        }
+    }
+});
+
+App.StudentEssaysShowMergeView = Ember.View.extend({
+	templateName: 'modules/student/essays/show/merge'
+});
+
+App.StudentEssaysShowMergeController = Ember.Controller.extend({
+	mergeEssays: function() {
+		var parentEssay = this.get('parentEssay');
+
+		return this.get('essays').filter(function(essay) {
+			return essay.id != parentEssay.id;
+		});
+	}.property('parentEssay', 'essays'),
+
+	actions: {
+		closeModal: function() {
+			this.transitionToRoute('student.essays.show');
+
+			return true;
+		}
+	}
+})
 
 /* globals App, Ember */
 
@@ -1114,42 +1280,31 @@ App.UniversitiesController = Ember.ArrayController.extend({
 
     actions: {
         next: function() {
-            var that = this;
+            var controller = this;
+            var student = this.get('student');
+            var universitiesPromise = student.get('universities');
+            var urlForStudent = '/api/students/' + student.id + '/add-universities';
 
-            this.store.find('student', 0).then(function (student) {
-                student.get('roles').then(function (oldRoles) {
-                    student.save().then(function () {
-                        //student.get('roles').then(function (newRoles) {
-                        //console.log(oldRoles.content.length);
-                        //alert();
-                        //    console.log(newRoles.content.length);
-                        //    alert();
-                                that.convertEssays(student)  // Create App & Theme essays from Univs' prompts
-                                    .done( function () {
-                                        student.set('state', 'active');             // Set student state to active
-                                        student.get('roles').then(function (newRoles) {
-                                            console.log(newRoles.content.length);
-                                            student.save().then(function () {
-                                                console.log(newRoles.content.length);
-                                                //debugger;
-                                                that.transitionToRoute("essays");           // Redirect to Essays page
-                                            });
-                                        });
-
-                                    })
-                                    .fail( function (error) {
-                                        console.log(error);
-                                    });
-                             //   });
-                        //});
-
-
-                    })
-                    .catch( function (error) {
-                        console.log(error);
-                        alert("Sorry! We've encountered an error.");
-                    });
+            var essaysAttachPromise = new Promise(function(resolve) {
+                universitiesPromise.then(function(universities) {
+                    Ember.$.ajax({
+                        url: urlForStudent,
+                        method: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify({
+                            student_id: student.id,
+                            universities: universities.getEach('id')
+                        })
+                    }).then(function() { resolve() });
                 });
+            });
+
+            essaysAttachPromise.then(function() {
+                student.set('state', 'active');
+                return student.save();
+            }).then(function() {
+                controller.transitionToRoute('essays');
             });
         }
     }
@@ -1199,6 +1354,72 @@ App.RightNavButton = App.NavButton.extend({
     }
 
 });
+
+
+App.TagBox = Ember.View.extend({
+    templateName: 'partials/tags',
+    didInsertElement: initializeTagBox
+});
+
+$.widget( "custom.catcomplete", $.ui.autocomplete, {
+    _create: function() {
+        this._super();
+        this.widget().menu( "option", "items",
+                            "> :not(.ui-autocomplete-category)" );
+    },
+    _renderItem: function( ul, item ) {
+        var type = item.tag_type.toLowerCase();
+        return $( "<li>" )
+            .append( $( "<a class=\"tag-" + type + "\">" ).text(item.label))
+            .appendTo( ul );
+    },
+    _renderMenu: function( ul, items ) {
+        var that = this;
+        var currentCategory = "";
+        $.each( items, function( index, item ) {
+            if ( item.category != currentCategory ) {
+                ul.append( "<li class='ui-autocomplete-category'>"
+                           + item.category + " :</li>" );
+                currentCategory = item.category;
+            }
+            var li = that._renderItemData( ul, item );
+            if ( item.category ) {
+                li.attr( "aria-label", item.category + " : " + item.label );
+            }
+        });
+    }
+});
+
+function initializeTagBox() {
+    var data = [
+        { label: "anders", category: "Random", tag_type: "POSITIVE"},
+        { label: "andreas", category: "Random", tag_type: "NEGATIVE"},
+        { label: "antal", category: "Random", tag_type: "POSITIVE" },
+        { label: "annhhx10", category: "Products", tag_type: "NEGATIVE" },
+        { label: "annk K12", category: "Products", tag_type: "NEUTRAL" },
+        { label: "annttop C13", category: "Products", tag_type: "NEGATIVE" },
+        { label: "anders andersson", category: "People", tag_type: "POSITIVE" },
+        { label: "andreas andersson", category: "People", tag_type: "NEGATIVE" },
+        { label: "andreas johnson", category: "People", tag_type: "POSITIVE" }
+    ];
+
+    var filter = function(request, response) {
+        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+        response( $.grep( data, function(value) {
+            return matcher.test( value.category + ' ' + value.label );
+        } ) );
+    }
+
+    var catcomplete = $( "#tag-search" ).catcomplete({
+        delay: 0,
+        appendTo: '#tag-menu',
+        source: filter,
+        select: function(event, ui) {
+            alert( ui.item.label );
+        },
+        position: { my: 'left top', at: 'left top', of: '#tag-menu' }
+    });
+}
 
 /* globals App, Ember, CKEDITOR */
 App.TextEditor = Ember.TextArea.extend({
@@ -1326,14 +1547,19 @@ App.Router.map(function () {
     });
 
     this.resource('students', function () {
-        this.resource('student', {path: '/:id'});
+        this.resource('student', {path: '/:id'}, function() {
+            this.resource("student.essays", { path: "/essays" }, function() {
+                this.resource("student.essays.show", { path: "/:theme_essay_id" }, function() {
+                    this.route('merge', { path: "/merge" });
+                });
+            });
+        });
     });
 
     // no drafts list resource
     this.resource('draft', {path: '/drafts/:id'});
 
     this.resource('universities', function () {
-        this.route('/');
     });
     // no university item resource
 
@@ -1409,6 +1635,15 @@ App.ApplicationRoute = App.AuthenticatedRoute.extend({
     model: function () {
         return this.get('currentUser');
     },
+
+    actions: {
+        closeModal: function() {
+            this.controllerFor('application').set('modalActive', false);
+        },
+        openModal: function() {
+            this.controllerFor('application').set('modalActive', true);
+        }
+    }
 });
 
 
@@ -1434,9 +1669,9 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     setupController: function(controller, model) {
-        controller.set('model', model); //Required boilerplate
+        controller.set('student', this.get('currentStudent'));
         controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
+        this._super(controller, model); //Required boilerplate
     },
 
     renderTemplate: function () {
@@ -1447,8 +1682,11 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
 
     actions: {
         selectedUniversity: function (university) {
-            var universities = this.get('currentStudent').get('universities');
+            var student = this.get('currentStudent');
+            var universities = student.get('universities');
+
             universities.pushObject(university);
+            student.save();
         }
     }
 });
@@ -1518,12 +1756,20 @@ App.StudentRoute = App.AuthenticatedRoute.extend({
 });
 
 App.EssaysRoute = App.AuthenticatedRoute.extend({
+    beforeModel: function() {
+        if (this.get('currentUser').get('isStudent') && this.get('currentStudent').get('state') !== 'active') {
+                this.transitionTo('universities');
+
+        }
+    },
     model: function () {
-        if (this.get('currentStudent').get('state') !== 'active') {
-            this.transitionTo('universities');
+        if (this.get('currentUser').get('isStudent')) {
+            return this.get('currentStudent').get('theme_essays');
+        } else {
+            console.log('in teacher side of essaysroute');
+            return this.get('currentTeacher').get('students').get('theme_essays');
         }
 
-        return this.get('currentStudent').get('theme_essays');
     },
 
     renderTemplate: function () {
@@ -1533,8 +1779,43 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-App.EssayRoute = App.AuthenticatedRoute.extend({
+/*  Here we use StudentEssay(s) to match student.essay(s) route */
+App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
+    model: function () {
+        var student = this.modelFor('student');
 
+        return student.get('theme_essays');
+    },
+
+    renderTemplate: function () {
+        // this.render('core/layouts/main');
+        this.render('Header', {outlet: 'header'});
+        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
+        this.render('core/select-prompt', {into: 'core/layouts/main', outlet: 'right-side-outlet'});
+    }
+});
+
+App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
+    renderTemplate: function () {
+        var id = this.currentModel.id;
+
+        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
+        this.render({outlet: 'right-side-outlet'});
+    }
+});
+
+App.StudentEssaysShowMergeRoute = App.AuthenticatedRoute.extend({
+    setupController: function(controller, model) {
+        controller.set('parentEssay', this.modelFor('student.essays.show'));
+        controller.set('essays', this.modelFor('student.essays'));
+    },
+    renderTemplate: function() {
+        this.render({into: 'application', outlet: 'modal-module'});
+        this.send('openModal');
+    }
+});
+
+App.EssayRoute = App.AuthenticatedRoute.extend({
     model: function (params) {
         this._assert_authorized(params.id);
         return this.store.find('themeEssay', params.id);
@@ -1561,7 +1842,6 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
 });
 
 App.DraftRoute = App.AuthenticatedRoute.extend({
-
     activate: function () {
         this._super();
         if (this.get('currentUser').get('isStudent')) {
@@ -1638,7 +1918,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\">\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
+Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\" {{bind-attr class=\"modalActive:active\"}}>\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
 
 Ember.TEMPLATES["core/layouts/editor"] = Ember.Handlebars.compile("<div id=\"editor-layout\" class=\"layout\">\n    <section id=\"editor-module\" class=\"module\">{{outlet editor-module}}</section>\n</div>\n");
 
@@ -1648,11 +1928,13 @@ Ember.TEMPLATES["core/modules/details"] = Ember.Handlebars.compile("<nav class=\
 
 Ember.TEMPLATES["core/modules/editor"] = Ember.Handlebars.compile("\n");
 
-Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"header-title\">{{view.title}}</div>\n");
+Ember.TEMPLATES["core/modules/header"] = Ember.Handlebars.compile("<div class=\"temp_logout\">  \n  <a href=\"/logout\">Logout</a>\n</div>\n<div class=\"header-title\">{{view.title}}</div>\n");
 
 Ember.TEMPLATES["core/modules/list"] = Ember.Handlebars.compile("<div class=\"module-title\">{{view.title}}</div>\n<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 
-Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.LeftNavButton}}</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.RightNavButton}}</div>\n");
+Ember.TEMPLATES["core/modules/nav_header"] = Ember.Handlebars.compile("<div class=\"nav-section left-nav\">{{view App.LeftNavButton}}</div>\n<div class=\"temp_logout\">  \n  <a href=\"/logout\">Logout</a>\n</div>\n<div class=\"header-title\">{{view.title}}</div>\n<div class=\"nav-section right-nav\">{{view App.RightNavButton}}</div>\n");
+
+Ember.TEMPLATES["core/select-prompt"] = Ember.Handlebars.compile("<h3>Please Select An Item From the Left</h3>\n");
 
 Ember.TEMPLATES["modules/_application_essay_templates-list-item"] = Ember.Handlebars.compile("\n{{#each t in application_essay_templates }}\n    <li class=\"list-item\">\n        <strong>{{../name}}</strong>: {{dotdotfifty t.essay_prompt}}\n    </li>\n{{/each}}\n");
 
@@ -1662,13 +1944,13 @@ Ember.TEMPLATES["modules/_draft-review-panel"] = Ember.Handlebars.compile("<div 
 
 Ember.TEMPLATES["modules/_essay-app-tab-list-item"] = Ember.Handlebars.compile("<li class=\"tab-list-item\">\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 
-Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if topic }}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n    <button {{action openDraft}}>Write</button>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n\n    <button {{action 'submitProposedTopics' model}}>Submit Proposed Topics</button>\n{{/if}}\n");
+Ember.TEMPLATES["modules/_essay-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if is_in_progress}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n\n    {{#if review}}\n        <button {{action openDraft}}>Read Draft</button>\n    {{else}}\n        <button {{action openDraft}}>Write Draft</button>\n    {{/if}}\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n        {{! view App.ProposedTopicOne valueBinding=\"proposed_topic_0\"}}\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n\n    <button {{action 'submitProposedTopics' model}}>Submit Proposed Topics</button>\n{{/if}}\n");
 
 Ember.TEMPLATES["modules/_essays-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">{{id}} +7</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">{{theme.name}}</div>\n    <div class=\"sub-line\">{{theme.category}}</div>\n</div>\n<div class=\"arrow-icon\">&gt;</div>\n<div class=\"details-group\">\n    <div class=\"next-action\">{{next_action}}</div>\n    <div class=\"draft-due\">\n        Draft Due: &nbsp;\n                  {{#if draft_due_date}}\n                    {{formatDate draft_due_date}}\n                  {{else}}N/A{{/if}}\n    </div>\n    <div class=\"essay-due\">\n      Essay Due:  {{#if due_date}} {{formatDate due_date}}\n                  {{else}}         N/A             {{/if}}\n    </div>\n</div>\n");
 
 Ember.TEMPLATES["modules/_invitation-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{email}}\n    </div>\n</div>\n");
 
-Ember.TEMPLATES["modules/_student-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Email:</div>\n    <div class=\"value app-text\">{{email}}</div>\n</div>\n\n<button>See Essays</button>\n");
+Ember.TEMPLATES["modules/_student-details-overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Email:</div>\n    <div class=\"value app-text\">{{email}}</div>\n</div>\n\n{{#link-to 'student.essays.index'}}<button>See Essays</button>{{/link-to}}\n");
 
 Ember.TEMPLATES["modules/_students-list-item"] = Ember.Handlebars.compile("<!-- <div class=\"list-style-group\">@{{index}}</div> -->\n<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{#link-to \"student\" this}}\n            {{name}}\n        {{/link-to}}\n    </div>\n</div>\n");
 
@@ -1680,8 +1962,18 @@ Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<d
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
+Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t<button>Show</button>\n</div>\n{{#if actionRequiredEssays}}\n\t<h3>Take Action</h3>\n\t{{view App.StudentEssaysListView}}\n{{/if}}\n");
+
+Ember.TEMPLATES["modules/student/essays/show/_overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if is_in_progress}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n\n    {{#if review}}\n        <button {{action openDraft}}>Read Draft</button>\n    {{else}}\n        <button {{action openDraft}}>Write Draft</button>\n    {{/if}}\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        <p>{{controller.proposed_topic_0}}</p>\n    </div>\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        <p>{{controller.proposed_topic_1}}</p>\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopics' model}}>Approve Topic</button>\n    {{/if}}\n{{/if}}\n<button {{action 'mergeEssay' model}}>Merge Essay</button>\n");
+
+Ember.TEMPLATES["modules/student/essays/show/merge"] = Ember.Handlebars.compile("<div class=\"modal-content\">\n  <button class=\"close-button\" {{action 'closeModal'}}>X</button>\n  <div class=\"modal-title\">Merge Essays</div>\n  <div class=\"instructions\">\n  \t<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>\n  \t<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>\n  </div>\n  <ul>\n  \t{{#each essay in mergeEssays}}\n  \t\t<li {{action 'toggleMergeSelected' essay}}>\n  \t\t\t{{essay.theme.name}}\n  \t\t</li>\n  \t{{/each}}\n  </ul>\n</div>\n");
+
+Ember.TEMPLATES["modules/student/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
+
 Ember.TEMPLATES["modules/students"] = Ember.Handlebars.compile("{{#with students}}\n    {{view App.StudentsListView}}\n{{/with}}\n\n{{#with pendingInvitations}}\n    {{view App.InvitationsListView}}\n{{/with}}\n");
 
 Ember.TEMPLATES["partials/_details-list"] = Ember.Handlebars.compile("<p>{{view.summaryText}}</p>\n\n{{#each application_essays}}\n    {{partial view.listItemPartial}}\n{{/each}}\n");
 
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
+
+Ember.TEMPLATES["partials/tags"] = Ember.Handlebars.compile("<div id=\"tag-box\">\n<input id=\"tag-search\">\n<div id=\"tag-menu\"></div>\n</div>\n");

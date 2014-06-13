@@ -1,0 +1,12 @@
+[
+    {
+        "id": 0,
+        "draft_id": 1,
+        "state": "new",
+        "text": "this is my review",
+        "is_draft_approved": false,
+        "due_date": "2014-06-17",
+        "review_type": "TEXT_REVIEW",
+        "teacher_id": 1
+    }
+]
