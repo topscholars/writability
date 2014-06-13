@@ -5,7 +5,7 @@
   	<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>
   	<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>
   </div>
-  <ul>
+  <ul class="modal-list">
   	{{#each essay in mergeEssays}}
   		<li {{action 'toggleMergeSelected' essay}}>
         {{is-in-array-checkbox list=parentEssay.merged_theme_essays target=essay.id}}
@@ -13,4 +13,7 @@
   		</li>
   	{{/each}}
   </ul>
+  <div class="modal-actions">
+    <button class="double-column" {{action 'mergeEssays' parentEssay}}>Merge &gt;</button>
+  </div>
 </div>

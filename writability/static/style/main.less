@@ -61,15 +61,15 @@
 * Temporary logout button
 **/
 .temp_logout {
-    position:absolute; 
-    top:0; 
+    position:absolute;
+    top:0;
     left:100px;
     margin-top: 11px;
     a {
-        color: @greyDark; 
+        color: @greyDark;
         &:hover {
             text-decoration: none;
-        }   
+        }
     }
 }
 
@@ -394,6 +394,12 @@ button, input[type="checkbox"] {
             top: @smallPadding;
             right: @smallMargin;
             padding: 0px;
+        }
+
+        ul.modal-list {
+            max-height: 350px;
+            overflow: scroll;
+            border-bottom: @thinBorder @grey solid;
         }
 
         li {
