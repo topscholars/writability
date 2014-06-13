@@ -2006,16 +2006,45 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     _assert_teachers_review: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
-            route.get('currentTeacher.reviews'),
+            //route.get('currentTeacher.reviews'), //From master
+            route.get('currentTeacher'),
             route.store.find('draft', id)
         ]).then(function (values) {
-            var reviews = values[0];
+            var teacher = values[0];
             var draft = values[1];
-            var review_id = draft.get('review.id');
 
-            if (review_id && !reviews.isAny('id', review_id)) {
-                route.transitionTo('error.unauthorized');
-            }
+            //<<<<<<< HEAD
+            //var review_id = draft.get('review.id');
+            //if (review_id && !reviews.isAny('id', review_id)) {
+            //    route.transitionTo('error.unauthorized');
+            //}
+            //=======
+            console.log(draft);
+
+            Ember.RSVP.Promise.all([
+                draft.get('reviews')
+            ]).then(function(values) {
+                var reviews = values[0];
+                console.log(reviews);
+                if(!draft) {
+                    console.log('Could not find draft with ID = ' + id.toString());
+                    route.transitionTo('error.unauthorized');
+                } else if(!review) {
+                    console.log('Could not find review for draft');
+                    route.transitionTo('error.unauthorized');
+                } else {
+                    var review_id = review.id;
+                    Ember.RSVP.Promise.all([
+                        teacher.get('reviews')
+                    ]).then(function(values) {
+                        var reviews = values[0];
+                        if (!reviews.isAny('id', review_id)) {
+                            route.transitionTo('error.unauthorized');
+                        }
+                    });
+                }
+            });
+            //>>>>>>> Working on drafts route
         });
     }
 });
