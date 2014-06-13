@@ -1285,7 +1285,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
             var universitiesPromise = student.get('universities');
             var urlForStudent = '/api/students/' + student.id + '/add-universities';
 
-            var waiter = new Promise(function(resolve) {
+            var essaysAttachPromise = new Promise(function(resolve) {
                 universitiesPromise.then(function(universities) {
                     Ember.$.ajax({
                         url: urlForStudent,
@@ -1299,7 +1299,10 @@ App.UniversitiesController = Ember.ArrayController.extend({
                 });
             });
 
-            waiter.then(function() {
+            student.set('state', 'active');
+            var studentPromise = student.save();
+
+            Promise.all([studentPromise, essaysAttachPromise]).then(function() {
                 controller.transitionToRoute('essays');
             });
         }
