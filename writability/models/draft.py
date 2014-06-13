@@ -27,7 +27,10 @@ class Draft(StatefulModel):
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
-    review = db.relationship("Review", backref="draft", uselist=False)
+
+    #non_tag master 
+    #review = db.relationship("Review", backref="draft", uselist=False)
+    reviews = db.relationship("Review", backref="draft", order_by="Review.id")
 
     def change_related_objects(self):
         """Change any related objects before commit."""
