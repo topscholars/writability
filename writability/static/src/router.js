@@ -219,11 +219,14 @@ App.StudentRoute = App.AuthenticatedRoute.extend({
 });
 
 App.EssaysRoute = App.AuthenticatedRoute.extend({
+    beforeModel: function() {
+        if (this.get('currentUser').get('isStudent') && this.get('currentStudent').get('state') !== 'active') {
+                this.transitionTo('universities');
+
+        }
+    },
     model: function () {
         if (this.get('currentUser').get('isStudent')) {
-            if (this.get('currentStudent').get('state') !== 'active') {
-                this.transitionTo('universities');
-            }
             return this.get('currentStudent').get('theme_essays');
         } else {
             console.log('in teacher side of essaysroute');
