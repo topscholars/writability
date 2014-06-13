@@ -164,10 +164,10 @@ App.UniversitiesController = Ember.ArrayController.extend({
                 });
             });
 
-            student.set('state', 'active');
-            var studentPromise = student.save();
-
-            Promise.all([studentPromise, essaysAttachPromise]).then(function() {
+            essaysAttachPromise.then(function() {
+                student.set('state', 'active');
+                return student.save();
+            }).then(function() {
                 controller.transitionToRoute('essays');
             });
         }
