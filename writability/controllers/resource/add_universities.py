@@ -32,6 +32,8 @@ class AddUniversitiesResource(Resource):
 
     def post(self, student_id):
         university_ids = request.get_json().get('universities')
+        if university_ids is None:
+            return 'Missing "universities" parameter in JSON request', 400
         student = User.query.filter_by(id=student_id).first()
         required_application_essay_templates = []
         for university_id in university_ids:
