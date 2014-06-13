@@ -144,12 +144,16 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     actions: {
-        selectedUniversity: function (university) {
+        selectedUniversity: function (university, controller) {
             var student = this.get('currentStudent');
-            var universities = student.get('universities');
+            var universitiesPromise = student.get('universities');
 
-            universities.pushObject(university);
-            student.save();
+            universitiesPromise.then(function(universities) {
+                universities.pushObject(university);
+                student.save().then(function () {
+                    controller.universityHasBeenSelected();
+                });
+            });
         }
     }
 });

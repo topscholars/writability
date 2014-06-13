@@ -1154,11 +1154,14 @@ App.UniversitiesController = Ember.ArrayController.extend({
         return this.store.find('university');
     }.property(),
 
+    universityHasBeenSelected: function () {
+        this.set('defaultValueOption', null);
+    },
+
     select: function (ev) {
         var newUniversity = this.get('newUniversity');
         if (newUniversity) {
-            this.send('selectedUniversity', this.get('newUniversity'));
-            this.set('defaultValueOption', null);
+            this.send('selectedUniversity', this.get('newUniversity'), this);
         }
     }.observes("newUniversity"),
 
@@ -1569,12 +1572,16 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     actions: {
-        selectedUniversity: function (university) {
+        selectedUniversity: function (university, controller) {
             var student = this.get('currentStudent');
-            var universities = student.get('universities');
+            var universitiesPromise = student.get('universities');
 
-            universities.pushObject(university);
-            student.save();
+            universitiesPromise.then(function(universities) {
+                universities.pushObject(university);
+                student.save().then(function () {
+                    controller.universityHasBeenSelected();
+                });
+            });
         }
     }
 });

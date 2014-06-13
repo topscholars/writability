@@ -18,11 +18,14 @@ App.UniversitiesController = Ember.ArrayController.extend({
         return this.store.find('university');
     }.property(),
 
+    universityHasBeenSelected: function () {
+        this.set('defaultValueOption', null);
+    },
+
     select: function (ev) {
         var newUniversity = this.get('newUniversity');
         if (newUniversity) {
-            this.send('selectedUniversity', this.get('newUniversity'));
-            this.set('defaultValueOption', null);
+            this.send('selectedUniversity', this.get('newUniversity'), this);
         }
     }.observes("newUniversity"),
 
