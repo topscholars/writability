@@ -1162,29 +1162,33 @@ App.UniversitiesController = Ember.ArrayController.extend({
         }
     }.observes("newUniversity"),
 
+    attachEssays: function() {
+        var student = this.get('student');
+        var universitiesPromise = student.get('universities');
+        var urlForStudent = '/api/students/' + student.id + '/add-universities';
+
+        return essaysAttachPromise = new Promise(function(resolve) {
+            universitiesPromise.then(function(universities) {
+                Ember.$.ajax({
+                    url: urlForStudent,
+                    method: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        student_id: student.id,
+                        universities: universities.getEach('id')
+                    })
+                }).then(function() { resolve() });
+            });
+        });
+    },
+
     actions: {
         next: function() {
             var controller = this;
             var student = this.get('student');
-            var universitiesPromise = student.get('universities');
-            var urlForStudent = '/api/students/' + student.id + '/add-universities';
 
-            var essaysAttachPromise = new Promise(function(resolve) {
-                universitiesPromise.then(function(universities) {
-                    Ember.$.ajax({
-                        url: urlForStudent,
-                        method: 'POST',
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        data: JSON.stringify({
-                            student_id: student.id,
-                            universities: universities.getEach('id')
-                        })
-                    }).then(function() { resolve() });
-                });
-            });
-
-            essaysAttachPromise.then(function() {
+            this.attachEssays().then(function() {
                 student.set('state', 'active');
                 return student.save();
             }).then(function() {
