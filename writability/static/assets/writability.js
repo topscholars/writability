@@ -1290,6 +1290,7 @@ App.UniversitiesController = Ember.ArrayController.extend({
                     Ember.$.ajax({
                         url: urlForStudent,
                         method: 'POST',
+                        contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         data: JSON.stringify({
                             student_id: student.id,
