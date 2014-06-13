@@ -31,7 +31,7 @@ class AddUniversitiesResource(Resource):
                             proposed_topics=['',''])
 
     def post(self, student_id):
-        university_ids = json.loads(request.form.get('universities', '[]'))
+        university_ids = request.get_json().get('universities')
         student = User.query.filter_by(id=student_id).first()
         required_application_essay_templates = []
         for university_id in university_ids:
