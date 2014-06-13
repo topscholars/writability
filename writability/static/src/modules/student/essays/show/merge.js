@@ -16,6 +16,11 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 			this.transitionToRoute('student.essays.show');
 
 			return true;
+		},
+		toggleMergeSelected: function(essay) {
+			var mergedEssays = this.get('parentEssay.merged_theme_essays');
+			// Strange but needed to fire listener events for now...
+			this.set('parentEssay.merged_theme_essays', mergedEssays.concat([essay.id]));
 		}
 	}
 })

@@ -3,5 +3,5 @@ App.IsInArrayCheckboxComponent = Ember.Component.extend({
 	list: [],
 	isInArray: function() {
 		return this.get('list').indexOf(this.get('target')) != -1;
-	}.property('list', 'target')
+	}.property('list.@each', 'target')
 });
