@@ -21,7 +21,7 @@ App.StudentEssayItemController = Ember.ObjectController.extend({
     }).property('controllers.studentEssays.selectedEssay'),
 
     actions: {
-        select: function () {
+        select: function (transition) {
             var model = this.get('model');
             this.send('selectEssay', model);
         }

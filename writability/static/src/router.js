@@ -98,6 +98,15 @@ App.ApplicationRoute = App.AuthenticatedRoute.extend({
     model: function () {
         return this.get('currentUser');
     },
+
+    actions: {
+        closeModal: function() {
+            this.controllerFor('application').set('modalActive', false);
+        },
+        openModal: function() {
+            this.controllerFor('application').set('modalActive', true);
+        }
+    }
 });
 
 
@@ -123,9 +132,9 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     setupController: function(controller, model) {
-        controller.set('model', model); //Required boilerplate
+        controller.set('student', this.get('currentStudent'));
         controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
+        this._super(controller, model); //Required boilerplate
     },
 
     renderTemplate: function () {
@@ -135,9 +144,16 @@ App.UniversitiesRoute = App.AuthenticatedRoute.extend({
     },
 
     actions: {
-        selectedUniversity: function (university) {
-            var universities = this.get('currentStudent').get('universities');
-            universities.pushObject(university);
+        selectedUniversity: function (university, controller) {
+            var student = this.get('currentStudent');
+            var universitiesPromise = student.get('universities');
+
+            universitiesPromise.then(function(universities) {
+                universities.pushObject(university);
+                student.save().then(function () {
+                    controller.universityHasBeenSelected();
+                });
+            });
         }
     }
 });
@@ -207,11 +223,14 @@ App.StudentRoute = App.AuthenticatedRoute.extend({
 });
 
 App.EssaysRoute = App.AuthenticatedRoute.extend({
+    beforeModel: function() {
+        if (this.get('currentUser').get('isStudent') && this.get('currentStudent').get('state') !== 'active') {
+                this.transitionTo('universities');
+
+        }
+    },
     model: function () {
         if (this.get('currentUser').get('isStudent')) {
-            if (this.get('currentStudent').get('state') !== 'active') {
-                this.transitionTo('universities');
-            }
             return this.get('currentStudent').get('theme_essays');
         } else {
             console.log('in teacher side of essaysroute');
@@ -247,15 +266,19 @@ App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
         var id = this.currentModel.id;
 
-        this.controllerFor('student.essays').findBy('id', id).send('select');
+        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
         this.render({outlet: 'right-side-outlet'});
     }
 });
 
 App.StudentEssaysShowMergeRoute = App.AuthenticatedRoute.extend({
+    setupController: function(controller, model) {
+        controller.set('parentEssay', this.modelFor('student.essays.show'));
+        controller.set('essays', this.modelFor('student.essays'));
+    },
     renderTemplate: function() {
-        this.controllerFor('application').set('modalActive', true);
         this.render({into: 'application', outlet: 'modal-module'});
+        this.send('openModal');
     }
 });
 

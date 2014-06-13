@@ -1,1 +1,15 @@
-TEST MERGE
+<div class="modal-content">
+  <button class="close-button" {{action 'closeModal'}}>X</button>
+  <div class="modal-title">Merge Essays</div>
+  <div class="instructions">
+  	<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>
+  	<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>
+  </div>
+  <ul>
+  	{{#each essay in mergeEssays}}
+  		<li {{action 'toggleMergeSelected' essay}}>
+  			{{essay.theme.name}}
+  		</li>
+  	{{/each}}
+  </ul>
+</div>

@@ -971,6 +971,67 @@ button, input[type="checkbox"] {
     }
 }
 
+/***********************************************************
+* Tag Selector
+************************************************************/
+
+#tag-box {
+    border: 1px solid gray;
+    height: 270px;
+    width: 320px;
+}
+
+#tag-search {
+    margin-left: 0px;
+    margin-top: 30px;
+    border-top: 1px dashed black;
+    border-bottom: 1px dashed black;
+    border-left: none;
+    border-right: none;
+    width: 318px;   /* tag-box width -2 */
+    font-size: 14px;
+    line-height: 30px;
+    outline: none;
+}
+
+#tag-menu .ui-autocomplete {
+    border-width: 0px;
+    overflow: scroll;
+    width: 300px;
+    height: 200px;
+    list-style-type: none;
+    padding-left: 10px;
+    margin-top: 0px;
+}
+
+.ui-helper-hidden-accessible {
+    display: none;
+}
+
+#tag-menu .ui-autocomplete-category {
+    margin-top: 20px;
+}
+
+#tag-menu .ui-menu-item a {
+    margin-left: 30px;
+}
+
+#tag-menu .ui-menu-item a.tag-positive {
+    color: lightseagreen;
+}
+
+#tag-menu .ui-menu-item a.tag-negative {
+    color: orange;
+}
+
+#tag-menu .ui-menu-item a.tag-neutral {
+    color: gray;
+}
+
+/***********************************************************
+* Miscellaneous
+************************************************************/
+
 .auto-height {
     height: auto !important;
 }
