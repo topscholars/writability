@@ -28,6 +28,11 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 				this.set('parentEssay.merged_theme_essays', mergedEssays.splice(indexOf + 1, 1));
 			}
 			console.log(this.get('parentEssay.merged_theme_essays'));
+		},
+		mergeEssays: function() {
+			this.get('parentEssay').save().then(function() {
+				console.log('done');
+			});
 		}
 	}
 })
