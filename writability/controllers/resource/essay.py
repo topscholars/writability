@@ -73,7 +73,10 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
             "theme": ResourceField(
                 theme.ThemeResourceManager.item_resource_name,
                 absolute=True),
-            "application_essay_states": fields.String
+            "application_essay_states": fields.String,
+            "merged_theme_essays": fields.List(ResourceField(
+                ThemeEssayResourceManager.item_resource_name,
+                absolute=True))
         })
 
 
