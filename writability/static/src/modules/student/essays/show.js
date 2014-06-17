@@ -1,10 +1,13 @@
 App.StudentEssaysShowController = Ember.ObjectController.extend({
-    topicsReadyForApproval: Ember.computed.equal('state', 'added_topics'),
-
     actions: {
         approveProposedTopics: function(model) {
-            if (confirm('Are you sure you want to submit these topics?')) {
+            if (confirm('Are you sure you want to approve these topics?')) {
                 model.set('state', 'in_progress');
+                model.save();
+            }
+        },
+        update: function(model) {
+            if (confirm('Are you sure you want to save these topics?')) {
                 model.save();
             }
         },

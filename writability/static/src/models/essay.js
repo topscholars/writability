@@ -30,7 +30,8 @@ App.ThemeEssay = App.Essay.extend({
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
     is_in_progress: Ember.computed.equal('state', 'in_progress'),
-    is_new_essay: Ember.computed.equal('state', 'new')
+    is_new_essay: Ember.computed.equal('state', 'new'),
+    topicsReadyForApproval: Ember.computed.equal('state', 'added_topics'),
 });
 
 App.ApplicationEssay = App.Essay.extend({
