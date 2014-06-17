@@ -124,6 +124,12 @@ class ThemeEssay(StatefulModel, Essay):
             object_dict['_application_essays'] = object_dict.pop('application_essays')
         return super(ThemeEssay, class_).create(object_dict)
 
+    @classmethod
+    def update(class_, id, updated_dict):
+        if 'application_essays' in updated_dict:
+            updated_dict['_application_essays'] = updated_dict.pop('application_essays')
+        return super(ThemeEssay, class_).update(id,updated_dict)
+
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
         super(ThemeEssay, self).process_before_create()
