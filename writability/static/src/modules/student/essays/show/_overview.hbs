@@ -28,13 +28,17 @@
         {{textarea class="value student-text" valueBinding="controller.proposed_topic_0"}}
     </div>
 
+    {{#if topicsReadyForApproval}}
+        <button {{action 'approveProposedTopic' model 'proposed_topic_0'}}>Approve Topic 1</button>
+    {{/if}}
+
     <div class="details-field">
         <div class="key">Topic 2:</div>
         {{textarea class="value student-text" valueBinding="controller.proposed_topic_1"}}
     </div>
 
     {{#if topicsReadyForApproval}}
-        <button {{action 'approveProposedTopics' model}}>Approve Topic</button>
+        <button {{action 'approveProposedTopic' model 'proposed_topic_1'}}>Approve Topic 2</button>
     {{else}}
         <button {{action 'update' model}}>Save Topics</button>
     {{/if}}
