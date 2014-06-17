@@ -27,8 +27,8 @@ class AddUniversitiesResource(Resource):
 
     def _create_theme_essay(self, student, application_essays, theme):
         essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id':theme})[0].id
-        existing_theme_essay = ThemeEssay.read_by_filter({'student_id':student.id, 'essay_template_id': essay_template_id})[0]
-        if existing_theme_essay:
+        try:
+            existing_theme_essay = ThemeEssay.read_by_filter({'student_id':student.id, 'essay_template_id': essay_template_id})[0]
             app_essays = existing_theme_essay.application_essays
             app_essays.extend(application_essays)
             return self._update(ThemeEssay,existing_theme_essay.id,
@@ -38,7 +38,8 @@ class AddUniversitiesResource(Resource):
                             student=student.id,
                             state='new',
                             proposed_topics=['',''])
-        return self._create(ThemeEssay,
+        except:
+            return self._create(ThemeEssay,
                             theme=theme,
                             application_essays=application_essays,
                             essay_template=essay_template_id,

@@ -6,6 +6,7 @@ This module contains custom output fields.
 
 """
 from flask.ext.restful import fields
+from flask import jsonify
 
 
 class ResourceField(fields.Url):
@@ -35,3 +36,12 @@ class ResourceField(fields.Url):
             # return super(ResourceField, self).output(key, id)
         else:
             return None
+
+class JSONField(fields.String):
+
+    """
+    Convert a string field to JSON for output.
+
+    """
+    def format(self, value):
+        return value

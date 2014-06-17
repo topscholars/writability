@@ -13,7 +13,7 @@ from models.essay import Essay, ThemeEssay, ApplicationEssay
 
 from .base import ResourceManager, ItemResource, ListResource
 from .base import StatefulResourceManager, InvalidUsage
-from .fields import ResourceField
+from .fields import ResourceField, JSONField
 import draft
 import theme
 import user
@@ -73,7 +73,7 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
             "theme": ResourceField(
                 theme.ThemeResourceManager.item_resource_name,
                 absolute=True),
-            "application_essay_states": fields.String,
+            "application_essay_states": JSONField,
             "merged_theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
                 absolute=True))
