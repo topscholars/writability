@@ -23,15 +23,31 @@
         <button {{action openDraft}}>Write Draft</button>
     {{/if}}
 {{else}}
-    <div class="details-field">
-        <div class="key">Topic 1:</div>
-        {{textarea class="value student-text" valueBinding="controller.proposed_topic_0"}}
-        {{! view App.ProposedTopicOne valueBinding="proposed_topic_0"}}
-    </div>
-    <div class="details-field">
-        <div class="key">Topic 2:</div>
-        {{textarea class="value student-text" valueBinding="controller.proposed_topic_1"}}
-    </div>
+    {{#if is_new_essay}}
+        <div class="details-field">
+            <div class="key">Topic 1:</div>
+            {{textarea class="value student-text" valueBinding="controller.proposed_topic_0"}}
+            {{! view App.ProposedTopicOne valueBinding="proposed_topic_0"}}
+        </div>
+        <div class="details-field">
+            <div class="key">Topic 2:</div>
+            {{textarea class="value student-text" valueBinding="controller.proposed_topic_1"}}
+        </div>
 
-    <button {{action 'submitProposedTopics' model}}>Submit Proposed Topics</button>
+        <button {{action 'submitProposedTopics' model}}>Submit Proposed Topics</button>
+    {{else}}
+        <div class="key">Topics Under Review</div>
+
+        <hr>
+
+        <div class="details-field">
+            <div class="key">Topic 1:</div>
+            {{textarea class="value student-text" valueBinding="controller.proposed_topic_0" disabled=true}}
+            {{! view App.ProposedTopicOne valueBinding="proposed_topic_0"}}
+        </div>
+        <div class="details-field">
+            <div class="key">Topic 2:</div>
+            {{textarea class="value student-text" valueBinding="controller.proposed_topic_1" disabled=true}}
+        </div>
+    {{/if}}
 {{/if}}
