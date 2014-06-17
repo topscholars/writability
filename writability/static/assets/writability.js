@@ -194,7 +194,10 @@ App.IsInArrayCheckboxComponent = Ember.Component.extend({
 	target: null,
 	list: [],
 	isInArray: function() {
-		return this.get('list').indexOf(this.get('target')) != -1;
+		var target = parseInt(this.get('target')),
+			list = this.get('list');
+
+		return list.indexOf(target) != -1;
 	}.property('list.@each', 'target')
 });
 
