@@ -7,7 +7,7 @@ App.EssayOverviewTab = Ember.View.extend({
 App.EssayApplicationsTab = App.DetailsListView.extend({
     name: "Applications",
     summaryText: "Click on an application question to exclusively associate it with this essay. Each question must be associated with a single essay.",
-    listItemPartial: "modules/_essay-app-tab-list-item"
+    listItemController: "modules/student/essays/show/_app-item"
 });
 
 App.ProposedTopicOne = Ember.View.extend({
