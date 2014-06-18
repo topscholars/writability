@@ -1,4 +1,4 @@
-<li class="tab-list-item">
+<li {{bind-attr class=":tab-list-item selected"}} {{action 'select'}}>
     <div class="tab-li-field app-text">{{essay_template.university.name}}:</div>
     <div class="tab-li-field">{{essay_prompt}}</div>
     {{#if theme_essays}}

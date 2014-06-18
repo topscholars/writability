@@ -39,6 +39,7 @@ App.ThemeEssay = App.Essay.extend({
     // relationships
     theme: DS.belongsTo('theme', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
+    selected_application_essay: DS.attr(),
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),

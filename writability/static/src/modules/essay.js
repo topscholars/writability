@@ -150,6 +150,10 @@ App.EssayController = Ember.ObjectController.extend({
                     this.submitTopic(model);
                 }
             }
+        },
+        selectApplicationEssay: function(applicationEssay) {
+            this.set('model.selected_application_essay', applicationEssay.id);
+
         }
     }
 });
