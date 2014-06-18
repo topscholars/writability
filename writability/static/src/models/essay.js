@@ -17,6 +17,20 @@ App.Essay = DS.Model.extend({
     essay_template: DS.belongsTo('essayTemplate', {async: true}),
 });
 
+App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
+    normalize: function(type, hash, prop) {
+        hash.application_essays = [];
+        $.each(hash.application_essay_states, function(id, value) {
+            hash.application_essays.push(id);
+            if (value == 'selected') {
+                hash.selected_application_essay = id;
+            }
+        });
+
+        return this._super(type, hash, prop);
+    }
+});
+
 App.ThemeEssay = App.Essay.extend({
     next_states: DS.attr('array', {readOnly: true}),
     proposed_topics: DS.attr('array'),
