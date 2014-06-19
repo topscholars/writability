@@ -138,6 +138,8 @@ class ThemeEssay(StatefulModel, Essay):
         self.context = theme_essay_template.context
         self.theme = theme_essay_template.theme
         self.application_essay_states = {}
+        # set a default number of drafts here for now
+        self.num_of_drafts = self.num_of_drafts or 3
         for ae in self._application_essays:
             self.application_essay_states[ae.id] = "pending"
 
@@ -207,7 +209,6 @@ class ThemeEssay(StatefulModel, Essay):
         s = curr_draft.state if curr_draft else None
         # chokes when no curr_draft
         action = "ERROR"
-
         # if self.proposed_topics[0] or self.proposed_topics[1]:
 
         if self.state == "new":
