@@ -306,11 +306,12 @@ App.Essay = DS.Model.extend({
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
     normalize: function(type, hash, prop) {
         hash.application_essays = [];
+        hash.selected_essays = [];
         hash.unselected_essays = [];
         $.each(hash.application_essay_states, function(id, value) {
             hash.application_essays.push(id);
             if (value == 'selected') {
-                hash.selected_application_essay = id;
+                hash.selected_essays.push(id);
             } else if (value == 'not_selected') {
                 hash.unselected_essays.push(id);
             }
@@ -328,8 +329,8 @@ App.ThemeEssay = App.Essay.extend({
     // relationships
     theme: DS.belongsTo('theme', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
-    selected_application_essay: DS.attr(),
-    unselected_essays: DS.attr(),
+    selected_essays: DS.attr('array'),
+    unselected_essays: DS.attr('array'),
 
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
 
@@ -875,12 +876,13 @@ App.EssayView = App.DetailsView.extend({
 App.ThemeEssayController = App.EssayController.extend({});
 
 App.ModulesEssayAppItemController = Ember.ObjectController.extend({
+    essayController: 'controllers.essay',
     needs: ['essay'],
     selected: function() {
-        var selectedEssay = this.get('controllers.essay.selected_application_essay');
+        var selectedEssay = this.get('controllers.essay.selected_essays');
 
-        return selectedEssay == this.get('model.id');
-    }.property('controllers.essay.selected_application_essay', 'model'),
+        return selectedEssay.indexOf(this.get('model.id')) != -1;
+    }.property('controllers.essay.selected_essays', 'model'),
 
     actions: {
         select: function() {
