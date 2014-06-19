@@ -150,22 +150,6 @@ App.EssayController = Ember.ObjectController.extend({
                     this.submitTopic(model);
                 }
             }
-        },
-        selectApplicationEssay: function(applicationEssay) {
-            this.set('model.selected_application_essay', applicationEssay.id);
-            var selectApplicationEssayUrl = '/api/theme-essays/' + this.get('model.id') + '/select-application-essay/' + applicationEssay.id;
-            var data = {};
-            data[applicationEssay.id] = 'selected';
-
-            var selectApplicationEssayPromise = new Ember.RSVP.Promise(function(resolve) {
-                Ember.$.ajax({
-                    url: selectApplicationEssayUrl,
-                    method: 'PUT',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(data)
-                }).then(function(data) { console.log(data); resolve(); });
-            });
         }
     }
 });
