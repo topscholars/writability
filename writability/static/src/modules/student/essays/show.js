@@ -17,6 +17,24 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
         },
         mergeEssay: function(model) {
             this.transitionToRoute('student.essays.show.merge');
+        },
+        selectApplicationEssay: function(applicationEssay) {
+            var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);
+            this.set('model.selected_essays', newSelectedEssays);
+
+            var selectApplicationEssayUrl = '/api/theme-essays/' + this.get('model.id') + '/select-application-essay/' + applicationEssay.id;
+            var data = {};
+            data[applicationEssay.id] = 'selected';
+
+            var selectApplicationEssayPromise = new Ember.RSVP.Promise(function(resolve) {
+                Ember.$.ajax({
+                    url: selectApplicationEssayUrl,
+                    method: 'PUT',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data)
+                }).then(function(data) { console.log(data); resolve(); });
+            });
         }
     }
 });
@@ -27,9 +45,10 @@ App.StudentEssaysShowOverviewTab = Ember.View.extend({
 });
 
 App.StudentEssaysShowApplicationsTab = App.DetailsListView.extend({
+    templateName: 'modules/student/essays/show/_details-list',
     name: "Applications",
     summaryText: "Click on an application question to exclusively associate it with this essay. Each question must be associated with a single essay.",
-    listItemPartial: "modules/_essay-app-tab-list-item"
+    listItemController: "modules/student/essays/show/_app-item"
 });
 
 App.StudentEssaysShowTabs = Ember.ContainerView.extend({

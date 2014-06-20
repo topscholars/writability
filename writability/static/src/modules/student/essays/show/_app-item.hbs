@@ -1,0 +1,12 @@
+<li {{bind-attr class=":tab-list-item selected unselected"}} {{action 'select'}}>
+    <div class="tab-li-field app-text">{{essay_template.university.name}}:</div>
+    <div class="tab-li-field">{{essay_prompt}}</div>
+    {{#if theme_essays}}
+        <div class="tab-li-field">Also with:
+        {{#each theme_essay in theme_essays}}
+            {{theme_essay.essay_template.theme.name}}
+            ({{theme_essay.essay_template.theme.category}}),
+        {{/each}}
+        </div>
+    {{/if}}
+</li>
