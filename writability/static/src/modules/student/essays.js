@@ -49,6 +49,8 @@ App.StudentEssayItemView = App.ThickListItem.extend({
     isSelectedHasChanged: function() {
         if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
             this.$().addClass('is-selected');
+        } else {
+            this.$().removeClass('is-selected');
         }
     }.observes('controller.selectedEssay'),
 
