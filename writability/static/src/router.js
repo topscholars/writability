@@ -236,7 +236,6 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
             console.log('in teacher side of essaysroute');
             return this.get('currentTeacher').get('students').get('theme_essays');
         }
-
     },
 
     renderTemplate: function () {
@@ -264,9 +263,7 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
 
 App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
-        var id = this.currentModel.id;
-
-        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
+        this.controllerFor('student.essays').send('selectEssay', this.currentModel);
         this.render({outlet: 'right-side-outlet'});
     }
 });
@@ -289,12 +286,7 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-
-        console.log('this.currentModel id: ' + this.currentModel.id );
-        //this.modelFor(this.EssayRoute)
-        var id = this.currentModel.id;
-        //var id = this.controller.get('model').id;
-        this.controllerFor('essays').findBy('id', id).send('select');
+        this.controllerFor('essays').send('selectEssay', this.currentModel);
         this.render({outlet: 'right-side-outlet'});
     },
 

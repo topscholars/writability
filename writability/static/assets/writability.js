@@ -190,6 +190,17 @@ Ember.Handlebars.registerHelper('eachIndexed', function eachHelper(path, options
     }
 });
 
+App.IsInArrayCheckboxComponent = Ember.Component.extend({
+	target: null,
+	list: [],
+	isInArray: function() {
+		var target = parseInt(this.get('target')),
+			list = this.get('list');
+
+		return (list.indexOf(target) != -1) || (list.indexOf(target.toString()) != -1);
+	}.property('list.@each', 'target')
+});
+
 /* globals App, Ember */
 App.DetailsView = Ember.View.extend({
     templateName: 'core/modules/details',
@@ -333,6 +344,9 @@ App.ThemeEssay = App.Essay.extend({
     unselected_essays: DS.attr('array'),
 
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
+    merged_theme_essays: DS.attr(null, {defaultValue: []}),
+
+    parent_id: DS.attr(null, {readOnly: true}),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
@@ -875,37 +889,37 @@ App.ModulesEssayAppItemController = Ember.ObjectController.extend({
     }
 });
 
-/* globals App, Ember */
-App.EssayItemController = Ember.ObjectController.extend({
-    isSelected: (function () {
-        var selectedEssay = this.get('controllers.essays.selectedEssay');
-        return selectedEssay === this.get('model');
-    }).property('controllers.essays.selectedEssay'),
-
-    needs: ['essays'],
-
-    actions: {
-        select: function () {
-            var model = this.get('model');
-            console.log('EssayItemController, essay id: ' + model.id);
-            this.get('controllers.essays').send('selectEssay', model);
-        }
-    },
-});
-
 App.EssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
-    click: function (ev) {
-        this.get('controller').send('select');
+
+    didInsertElement: function() {
+        this.isSelectedHasChanged();
     },
+    isSelectedHasChanged: function() {
+        if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
+            this.$().addClass('is-selected');
+        } else {
+            this.$().removeClass('is-selected');
+        }
+    }.observes('controller.selectedEssay'),
+
+    click: function (ev) {
+        this.get('controller').send('selectEssay', this.get('context'));
+    }
 });
 
 App.EssaysController = Ember.ArrayController.extend({
-    itemController: 'essay.item',
     // Ember won't accept an array for sorting by state..
-    sortProperties: ['next_action'], 
+    sortProperties: ['next_action'],
     sortAscending: false,
     selectedEssay: null,
+
+    unmergedEssays: Ember.computed.filter('model', function(essay) {
+        return (essay.get('parent_id') == 0);
+    }),
+    actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('state') != 'completed');
+    }),
 
     actions: {
         selectEssay: function (model) {
@@ -917,10 +931,16 @@ App.EssaysController = Ember.ArrayController.extend({
     }
 });
 
-App.EssaysView = App.ListView.extend({
+App.EssaysListView = Ember.View.extend({
+    templateName: 'modules/essays/list',
+    // templateName: 'modules/student/essays/list',
     title: 'Essays',
     //sections: ['To do', 'Not to do'],
     listItem: App.EssayItemView
+});
+
+App.EssaysView = App.ListView.extend({
+    templateName: 'modules/essays/layout'
 });
 
 /* globals App, Ember */
@@ -976,32 +996,31 @@ App.StudentView = App.DetailsView.extend({
 
 App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
-    itemController: 'student.essay.item',
+    sortProperties: ['next_action'],
+    sortAscending: false,
+
+    showMergedEssays: false,
+    selectedEssay: null,
+
     student: Ember.computed.alias('controllers.student.model'),
-    actionRequiredEssays: Ember.computed.filter('model', function(essay) {
-        return essay.state != 'completed';
+    mergedEssays: Ember.computed.filter('model', function(essay) {
+        return (essay.get('parent_id') != 0);
+    }),
+    unmergedEssays: Ember.computed.filter('model', function(essay) {
+        return (essay.get('parent_id') == 0);
+    }),
+    actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('state') != 'completed');
     }),
     actions: {
         selectEssay: function(model) {
+            this.set('selectedEssay', model);
             this.transitionToRoute('student.essays.show', model);
+        },
+        toggleMergedEssays: function() {
+            this.set('showMergedEssays', !this.get('showMergedEssays'));
         }
     }
-});
-
-App.StudentEssayItemController = Ember.ObjectController.extend({
-    needs: ['studentEssays'],
-
-    isSelected: (function () {
-        var selectedEssay = this.get('controllers.studentEssays.selectedEssay');
-        return selectedEssay === this.get('model');
-    }).property('controllers.studentEssays.selectedEssay'),
-
-    actions: {
-        select: function (transition) {
-            var model = this.get('model');
-            this.send('selectEssay', model);
-        }
-    },
 });
 
 App.StudentEssaysHeaderView = Ember.View.extend({
@@ -1010,13 +1029,25 @@ App.StudentEssaysHeaderView = Ember.View.extend({
 
 App.StudentEssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
-    click: function (ev) {
-        this.get('controller').send('select');
+
+    didInsertElement: function() {
+        this.isSelectedHasChanged();
     },
+    isSelectedHasChanged: function() {
+        if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
+            this.$().addClass('is-selected');
+        } else {
+            this.$().removeClass('is-selected');
+        }
+    }.observes('controller.selectedEssay'),
+
+    click: function (ev) {
+        this.get('controller').send('selectEssay', this.get('context'));
+    }
 });
 
 App.StudentEssaysListView = Ember.View.extend({
-    templateName: 'modules/student/list',
+    templateName: 'modules/student/essays/list',
     title: null,
     //sections: [],
     listItem: "",
@@ -1168,6 +1199,23 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 			this.transitionToRoute('student.essays.show');
 
 			return true;
+		},
+		toggleMergeSelected: function(essay) {
+			var mergedEssays = this.get('parentEssay.merged_theme_essays');
+			var indexOf = mergedEssays.indexOf(essay.id);
+
+			if (indexOf === -1) {
+				// Strange but needed to fire listener events for now...
+				this.set('parentEssay.merged_theme_essays', mergedEssays.concat([essay.id]));
+			} else {
+				this.set('parentEssay.merged_theme_essays', mergedEssays.splice(indexOf + 1, 1));
+			}
+			console.log(this.get('parentEssay.merged_theme_essays'));
+		},
+		mergeEssays: function() {
+			this.get('parentEssay').save().then(function() {
+				console.log('done');
+			});
 		}
 	}
 })
@@ -1745,7 +1793,6 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
             console.log('in teacher side of essaysroute');
             return this.get('currentTeacher').get('students').get('theme_essays');
         }
-
     },
 
     renderTemplate: function () {
@@ -1773,9 +1820,7 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
 
 App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
-        var id = this.currentModel.id;
-
-        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
+        this.controllerFor('student.essays').send('selectEssay', this.currentModel);
         this.render({outlet: 'right-side-outlet'});
     }
 });
@@ -1798,12 +1843,7 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-
-        console.log('this.currentModel id: ' + this.currentModel.id );
-        //this.modelFor(this.EssayRoute)
-        var id = this.currentModel.id;
-        //var id = this.controller.get('model').id;
-        this.controllerFor('essays').findBy('id', id).send('select');
+        this.controllerFor('essays').send('selectEssay', this.currentModel);
         this.render({outlet: 'right-side-outlet'});
     },
 
@@ -1894,6 +1934,8 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
+Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray}}\n");
+
 Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\" {{bind-attr class=\"modalActive:active\"}}>\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
 
 Ember.TEMPLATES["core/layouts/editor"] = Ember.Handlebars.compile("<div id=\"editor-layout\" class=\"layout\">\n    <section id=\"editor-module\" class=\"module\">{{outlet editor-module}}</section>\n</div>\n");
@@ -1940,7 +1982,13 @@ Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor
 
 Ember.TEMPLATES["modules/essay/_app-item"] = Ember.Handlebars.compile("<li {{bind-attr class=\":tab-list-item selected unselected\"}}>\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 
-Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t<button>Show</button>\n</div>\n{{#if actionRequiredEssays}}\n\t<h3>Take Action</h3>\n\t{{view App.StudentEssaysListView}}\n{{/if}}\n");
+Ember.TEMPLATES["modules/essays/layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n</div>\n\n{{view App.EssaysListView}}\n");
+
+Ember.TEMPLATES["modules/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n  {{#if actionRequiredEssays}}\n    <li class=\"legend\">Take Action</li>\n    {{#each actionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n</ol>\n");
+
+Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t{{#if showMergedEssays}}\n\t\t<button {{action 'toggleMergedEssays'}}>Hide Merged Essays</button>\n\t{{else}}\n\t\t<button {{action 'toggleMergedEssays'}}>Show Merged Essays</button>\n\t{{/if}}\n</div>\n\n{{view App.StudentEssaysListView}}\n");
+
+Ember.TEMPLATES["modules/student/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#if showMergedEssays}}\n  <li class=\"legend\">Merged</li>\n  {{#each mergedEssays}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n  {{/each}}\n{{else}}\n    {{#if actionRequiredEssays}}\n      <li class=\"legend\">Take Action</li>\n      {{#each actionRequiredEssays}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n      {{/each}}\n    {{/if}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["modules/student/essays/show/_app-item"] = Ember.Handlebars.compile("<li {{bind-attr class=\":tab-list-item selected unselected\"}} {{action 'select'}}>\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 
@@ -1948,7 +1996,7 @@ Ember.TEMPLATES["modules/student/essays/show/_details-list"] = Ember.Handlebars.
 
 Ember.TEMPLATES["modules/student/essays/show/_overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if is_in_progress}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopic' model 'proposed_topic_0'}}>Approve Topic 1</button>\n    {{/if}}\n\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopic' model 'proposed_topic_1'}}>Approve Topic 2</button>\n    {{else}}\n        <button {{action 'update' model}}>Save Topics</button>\n    {{/if}}\n{{/if}}\n<button {{action 'mergeEssay' model}}>Merge Essay</button>\n");
 
-Ember.TEMPLATES["modules/student/essays/show/merge"] = Ember.Handlebars.compile("<div class=\"modal-content\">\n  <button class=\"close-button\" {{action 'closeModal'}}>X</button>\n  <div class=\"modal-title\">Merge Essays</div>\n  <div class=\"instructions\">\n  \t<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>\n  \t<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>\n  </div>\n  <ul>\n  \t{{#each essay in mergeEssays}}\n  \t\t<li {{action 'toggleMergeSelected' essay}}>\n  \t\t\t{{essay.theme.name}}\n  \t\t</li>\n  \t{{/each}}\n  </ul>\n</div>\n");
+Ember.TEMPLATES["modules/student/essays/show/merge"] = Ember.Handlebars.compile("<div class=\"modal-content\">\n  <button class=\"close-button\" {{action 'closeModal'}}>X</button>\n  <div class=\"modal-title\">Merge Essays</div>\n  <div class=\"instructions\">\n  \t<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>\n  \t<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>\n  </div>\n  <ul class=\"modal-list\">\n  \t{{#each essay in mergeEssays}}\n  \t\t<li {{action 'toggleMergeSelected' essay}}>\n        {{is-in-array-checkbox list=parentEssay.merged_theme_essays target=essay.id}}\n  \t\t\t{{essay.theme.name}}\n  \t\t</li>\n  \t{{/each}}\n  </ul>\n  <div class=\"modal-actions\">\n    <button class=\"double-column\" {{action 'mergeEssays' parentEssay}}>Merge &gt;</button>\n  </div>\n</div>\n");
 
 Ember.TEMPLATES["modules/student/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#each}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n{{/each}}\n\n{{#if view.newItem}}\n    {{view view.newItem}}\n{{/if}}\n</ol>\n");
 

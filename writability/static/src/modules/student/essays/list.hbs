@@ -1,0 +1,15 @@
+<ol class="list">
+{{#if showMergedEssays}}
+  <li class="legend">Merged</li>
+  {{#each mergedEssays}}
+    {{view view.listItem classNameBindings="isSelected" }}
+  {{/each}}
+{{else}}
+    {{#if actionRequiredEssays}}
+      <li class="legend">Take Action</li>
+      {{#each actionRequiredEssays}}
+        {{view view.listItem classNameBindings="isSelected" }}
+      {{/each}}
+    {{/if}}
+{{/if}}
+</ol>
