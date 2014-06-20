@@ -238,13 +238,6 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
         }
     },
 
-    setupController: function(controller, model) {
-        model = model.filter(function(item) {
-            return item.get('parent_id') == 0;
-        })
-        controller.set('model', model);
-    },
-
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('Header', {outlet: 'header'});
@@ -258,13 +251,6 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
         var student = this.modelFor('student');
 
         return student.get('theme_essays');
-    },
-
-    setupController: function(controller, model) {
-        model = model.filter(function(item) {
-            return item.get('parent_id') == 0;
-        })
-        controller.set('model', model);
     },
 
     renderTemplate: function () {

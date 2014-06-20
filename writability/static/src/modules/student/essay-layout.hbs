@@ -1,9 +1,7 @@
 <div class="module-title">
 	<h2>Essays</h2>
 	<span class="student-info">{{student.name}}</span>
-	<button>Show</button>
+	<button {{action 'toggleMergedEssays'}}>Show Hidden Essays</button>
 </div>
-{{#if actionRequiredEssays}}
-	<h3>Take Action</h3>
-	{{view App.StudentEssaysListView}}
-{{/if}}
+
+{{view App.StudentEssaysListView}}
