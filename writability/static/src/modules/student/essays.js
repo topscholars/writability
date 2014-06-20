@@ -1,5 +1,8 @@
 App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
+    sortProperties: ['next_action'],
+    sortAscending: false,
+
     showMergedEssays: false,
     selectedEssay: null,
 
