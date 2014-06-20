@@ -29,6 +29,8 @@ App.StudentEssaysHeaderView = Ember.View.extend({
 });
 
 App.StudentEssayItemView = App.ThickListItem.extend({
+    templateName: "modules/_essays-list-item",
+
     didInsertElement: function() {
         this.isSelectedHasChanged();
     },
@@ -40,7 +42,6 @@ App.StudentEssayItemView = App.ThickListItem.extend({
         }
     }.observes('controller.selectedEssay'),
 
-    templateName: "modules/_essays-list-item",
     click: function (ev) {
         this.get('controller').send('selectEssay', this.get('context'));
     }

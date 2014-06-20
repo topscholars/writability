@@ -1,5 +1,6 @@
 App.EssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
+
     didInsertElement: function() {
         this.isSelectedHasChanged();
     },
@@ -10,8 +11,8 @@ App.EssayItemView = App.ThickListItem.extend({
             this.$().removeClass('is-selected');
         }
     }.observes('controller.selectedEssay'),
+
     click: function (ev) {
-        console.log(this.get('context'));
         this.get('controller').send('selectEssay', this.get('context'));
     }
 });
@@ -39,8 +40,14 @@ App.EssaysController = Ember.ArrayController.extend({
     }
 });
 
-App.EssaysView = App.ListView.extend({
+App.EssaysListView = Ember.View.extend({
+    templateName: 'modules/essays/list',
+    // templateName: 'modules/student/essays/list',
     title: 'Essays',
     //sections: ['To do', 'Not to do'],
     listItem: App.EssayItemView
+});
+
+App.EssaysView = App.ListView.extend({
+    templateName: 'modules/essays/layout'
 });

@@ -912,6 +912,7 @@ App.EssayItemController = Ember.ObjectController.extend({
 >>>>>>> Simplify isSelected
 App.EssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
+
     didInsertElement: function() {
         this.isSelectedHasChanged();
     },
@@ -922,8 +923,8 @@ App.EssayItemView = App.ThickListItem.extend({
             this.$().removeClass('is-selected');
         }
     }.observes('controller.selectedEssay'),
+
     click: function (ev) {
-        console.log(this.get('context'));
         this.get('controller').send('selectEssay', this.get('context'));
     }
 });
@@ -951,10 +952,16 @@ App.EssaysController = Ember.ArrayController.extend({
     }
 });
 
-App.EssaysView = App.ListView.extend({
+App.EssaysListView = Ember.View.extend({
+    templateName: 'modules/essays/list',
+    // templateName: 'modules/student/essays/list',
     title: 'Essays',
     //sections: ['To do', 'Not to do'],
     listItem: App.EssayItemView
+});
+
+App.EssaysView = App.ListView.extend({
+    templateName: 'modules/essays/layout'
 });
 
 /* globals App, Ember */
@@ -1039,6 +1046,8 @@ App.StudentEssaysHeaderView = Ember.View.extend({
 });
 
 App.StudentEssayItemView = App.ThickListItem.extend({
+    templateName: "modules/_essays-list-item",
+
     didInsertElement: function() {
         this.isSelectedHasChanged();
     },
@@ -1050,7 +1059,6 @@ App.StudentEssayItemView = App.ThickListItem.extend({
         }
     }.observes('controller.selectedEssay'),
 
-    templateName: "modules/_essays-list-item",
     click: function (ev) {
         this.get('controller').send('selectEssay', this.get('context'));
     }
@@ -1990,7 +1998,13 @@ Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<d
 
 Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
+<<<<<<< HEAD
 Ember.TEMPLATES["modules/essay/_app-item"] = Ember.Handlebars.compile("<li {{bind-attr class=\":tab-list-item selected unselected\"}}>\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
+=======
+Ember.TEMPLATES["modules/essays/layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n</div>\n\n{{view App.EssaysListView}}\n");
+
+Ember.TEMPLATES["modules/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n  {{#if actionRequiredEssays}}\n    <li class=\"legend\">Take Action</li>\n    {{#each actionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n</ol>\n");
+>>>>>>> Student Essays List
 
 Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t{{#if showMergedEssays}}\n\t\t<button {{action 'toggleMergedEssays'}}>Hide Merged Essays</button>\n\t{{else}}\n\t\t<button {{action 'toggleMergedEssays'}}>Show Merged Essays</button>\n\t{{/if}}\n</div>\n\n{{view App.StudentEssaysListView}}\n");
 
