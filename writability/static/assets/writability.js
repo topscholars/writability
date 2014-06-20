@@ -873,6 +873,7 @@ App.EssayView = App.DetailsView.extend({
 
 App.ThemeEssayController = App.EssayController.extend({});
 
+<<<<<<< HEAD
 App.ModulesEssayAppItemController = Ember.ObjectController.extend({
     essayController: 'controllers.essay',
     needs: ['essay'],
@@ -907,15 +908,27 @@ App.EssayItemController = Ember.ObjectController.extend({
     },
 });
 
+=======
+>>>>>>> Simplify isSelected
 App.EssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
-    click: function (ev) {
-        this.get('controller').send('select');
+    didInsertElement: function() {
+        this.isSelectedHasChanged();
     },
+    isSelectedHasChanged: function() {
+        if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
+            this.$().addClass('is-selected');
+        } else {
+            this.$().removeClass('is-selected');
+        }
+    }.observes('controller.selectedEssay'),
+    click: function (ev) {
+        console.log(this.get('context'));
+        this.get('controller').send('selectEssay', this.get('context'));
+    }
 });
 
 App.EssaysController = Ember.ArrayController.extend({
-    itemController: 'essay.item',
     // Ember won't accept an array for sorting by state..
     sortProperties: ['next_action'],
     sortAscending: false,
@@ -997,7 +1010,6 @@ App.StudentView = App.DetailsView.extend({
 
 App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
-    itemController: 'student.essay.item',
     showMergedEssays: false,
     selectedEssay: null,
 
@@ -1022,27 +1034,14 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     }
 });
 
-App.StudentEssayItemController = Ember.ObjectController.extend({
-    needs: ['studentEssays'],
-
-    isSelected: (function () {
-        var selectedEssay = this.get('controllers.studentEssays.selectedEssay');
-        return selectedEssay === this.get('model');
-    }).property('controllers.studentEssays.selectedEssay'),
-
-    actions: {
-        select: function (transition) {
-            var model = this.get('model');
-            this.send('selectEssay', model);
-        }
-    },
-});
-
 App.StudentEssaysHeaderView = Ember.View.extend({
     templateName: 'modules/student/essay'
 });
 
 App.StudentEssayItemView = App.ThickListItem.extend({
+    didInsertElement: function() {
+        this.isSelectedHasChanged();
+    },
     isSelectedHasChanged: function() {
         if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
             this.$().addClass('is-selected');
@@ -1831,9 +1830,7 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
 
 App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
-        var id = this.currentModel.id;
-
-        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
+        this.controllerFor('student.essays').send('selectEssay', this.currentModel);
         this.render({outlet: 'right-side-outlet'});
     }
 });
@@ -1856,12 +1853,7 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-
-        console.log('this.currentModel id: ' + this.currentModel.id );
-        //this.modelFor(this.EssayRoute)
-        var id = this.currentModel.id;
-        //var id = this.controller.get('model').id;
-        this.controllerFor('essays').findBy('id', id).send('select');
+        this.controllerFor('essays').send('selectEssay', this.currentModel);
         this.render({outlet: 'right-side-outlet'});
     },
 

@@ -1,30 +1,22 @@
-/* globals App, Ember */
-App.EssayItemController = Ember.ObjectController.extend({
-    isSelected: (function () {
-        var selectedEssay = this.get('controllers.essays.selectedEssay');
-        return selectedEssay === this.get('model');
-    }).property('controllers.essays.selectedEssay'),
-
-    needs: ['essays'],
-
-    actions: {
-        select: function () {
-            var model = this.get('model');
-            console.log('EssayItemController, essay id: ' + model.id);
-            this.get('controllers.essays').send('selectEssay', model);
-        }
-    },
-});
-
 App.EssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
-    click: function (ev) {
-        this.get('controller').send('select');
+    didInsertElement: function() {
+        this.isSelectedHasChanged();
     },
+    isSelectedHasChanged: function() {
+        if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
+            this.$().addClass('is-selected');
+        } else {
+            this.$().removeClass('is-selected');
+        }
+    }.observes('controller.selectedEssay'),
+    click: function (ev) {
+        console.log(this.get('context'));
+        this.get('controller').send('selectEssay', this.get('context'));
+    }
 });
 
 App.EssaysController = Ember.ArrayController.extend({
-    itemController: 'essay.item',
     // Ember won't accept an array for sorting by state..
     sortProperties: ['next_action'],
     sortAscending: false,

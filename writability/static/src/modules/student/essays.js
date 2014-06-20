@@ -1,6 +1,5 @@
 App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
-    itemController: 'student.essay.item',
     showMergedEssays: false,
     selectedEssay: null,
 
@@ -25,27 +24,14 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     }
 });
 
-App.StudentEssayItemController = Ember.ObjectController.extend({
-    needs: ['studentEssays'],
-
-    isSelected: (function () {
-        var selectedEssay = this.get('controllers.studentEssays.selectedEssay');
-        return selectedEssay === this.get('model');
-    }).property('controllers.studentEssays.selectedEssay'),
-
-    actions: {
-        select: function (transition) {
-            var model = this.get('model');
-            this.send('selectEssay', model);
-        }
-    },
-});
-
 App.StudentEssaysHeaderView = Ember.View.extend({
     templateName: 'modules/student/essay'
 });
 
 App.StudentEssayItemView = App.ThickListItem.extend({
+    didInsertElement: function() {
+        this.isSelectedHasChanged();
+    },
     isSelectedHasChanged: function() {
         if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
             this.$().addClass('is-selected');
