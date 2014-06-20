@@ -40,7 +40,7 @@ App.StudentEssayItemView = App.ThickListItem.extend({
 });
 
 App.StudentEssaysListView = Ember.View.extend({
-    templateName: 'modules/student/list',
+    templateName: 'modules/student/essays/list',
     title: null,
     //sections: [],
     listItem: "",

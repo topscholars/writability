@@ -1,0 +1,8 @@
+{{#if actionRequiredEssays}}
+<ol class="list">
+	<li class="legend">Action Required</li>
+	{{#each actionRequiredEssays}}
+	    {{view view.listItem classNameBindings="isSelected" }}
+	{{/each}}
+</ol>
+{{/if}}

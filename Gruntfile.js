@@ -20,6 +20,7 @@ module.exports = function(grunt) {
                 files: ['writability/static/style/**/*.less'],
                 tasks: ['less'],
                 options: {
+                    livereload: true,
                     nospawn: true
                 }
             }
