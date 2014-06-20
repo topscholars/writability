@@ -236,7 +236,13 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
             console.log('in teacher side of essaysroute');
             return this.get('currentTeacher').get('students').get('theme_essays');
         }
+    },
 
+    setupController: function(controller, model) {
+        model = model.filter(function(item) {
+            return item.get('parent_id') == 0;
+        })
+        controller.set('model', model);
     },
 
     renderTemplate: function () {
@@ -252,6 +258,13 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
         var student = this.modelFor('student');
 
         return student.get('theme_essays');
+    },
+
+    setupController: function(controller, model) {
+        model = model.filter(function(item) {
+            return item.get('parent_id') == 0;
+        })
+        controller.set('model', model);
     },
 
     renderTemplate: function () {

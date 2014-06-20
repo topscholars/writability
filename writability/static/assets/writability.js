@@ -346,6 +346,8 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
     merged_theme_essays: DS.attr(null, {defaultValue: []}),
 
+    parent_id: DS.attr(null, {readOnly: true}),
+
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
     is_in_progress: Ember.computed.equal('state', 'in_progress'),
@@ -1774,7 +1776,13 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
             console.log('in teacher side of essaysroute');
             return this.get('currentTeacher').get('students').get('theme_essays');
         }
+    },
 
+    setupController: function(controller, model) {
+        model = model.filter(function(item) {
+            return item.get('parent_id') == 0;
+        })
+        controller.set('model', model);
     },
 
     renderTemplate: function () {
@@ -1790,6 +1798,13 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
         var student = this.modelFor('student');
 
         return student.get('theme_essays');
+    },
+
+    setupController: function(controller, model) {
+        model = model.filter(function(item) {
+            return item.get('parent_id') == 0;
+        })
+        controller.set('model', model);
     },
 
     renderTemplate: function () {
