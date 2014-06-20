@@ -2,6 +2,7 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
     itemController: 'student.essay.item',
     showMergedEssays: false,
+    selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
     mergedEssays: Ember.computed.filter('model', function(essay) {
@@ -15,6 +16,7 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     }),
     actions: {
         selectEssay: function(model) {
+            this.set('selectedEssay', model);
             this.transitionToRoute('student.essays.show', model);
         },
         toggleMergedEssays: function() {
@@ -44,10 +46,16 @@ App.StudentEssaysHeaderView = Ember.View.extend({
 });
 
 App.StudentEssayItemView = App.ThickListItem.extend({
+    isSelectedHasChanged: function() {
+        if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
+            this.$().addClass('is-selected');
+        }
+    }.observes('controller.selectedEssay'),
+
     templateName: "modules/_essays-list-item",
     click: function (ev) {
-        this.get('controller').send('select');
-    },
+        this.get('controller').send('selectEssay', this.get('context'));
+    }
 });
 
 App.StudentEssaysListView = Ember.View.extend({

@@ -917,9 +917,16 @@ App.EssayItemView = App.ThickListItem.extend({
 App.EssaysController = Ember.ArrayController.extend({
     itemController: 'essay.item',
     // Ember won't accept an array for sorting by state..
-    sortProperties: ['next_action'], 
+    sortProperties: ['next_action'],
     sortAscending: false,
     selectedEssay: null,
+
+    unmergedEssays: Ember.computed.filter('model', function(essay) {
+        return (essay.get('parent_id') == 0);
+    }),
+    actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('state') != 'completed');
+    }),
 
     actions: {
         selectEssay: function (model) {
@@ -992,6 +999,7 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
     itemController: 'student.essay.item',
     showMergedEssays: false,
+    selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
     mergedEssays: Ember.computed.filter('model', function(essay) {
@@ -1005,6 +1013,7 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     }),
     actions: {
         selectEssay: function(model) {
+            this.set('selectedEssay', model);
             this.transitionToRoute('student.essays.show', model);
         },
         toggleMergedEssays: function() {
@@ -1034,10 +1043,16 @@ App.StudentEssaysHeaderView = Ember.View.extend({
 });
 
 App.StudentEssayItemView = App.ThickListItem.extend({
+    isSelectedHasChanged: function() {
+        if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
+            this.$().addClass('is-selected');
+        }
+    }.observes('controller.selectedEssay'),
+
     templateName: "modules/_essays-list-item",
     click: function (ev) {
-        this.get('controller').send('select');
-    },
+        this.get('controller').send('selectEssay', this.get('context'));
+    }
 });
 
 App.StudentEssaysListView = Ember.View.extend({
