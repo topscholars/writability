@@ -1589,6 +1589,14 @@ App.Router.map(function () {
 
 });
 
+App.LoadingRoute = Ember.Route.extend({
+    renderTemplate: function() {
+        this.send('openLoading');
+    },
+    deactivate: function() {
+        this.send('closeLoading');
+    }
+});
 
 /**
  * AuthenticatedRoute has access to a current user object.
@@ -1662,7 +1670,13 @@ App.ApplicationRoute = App.AuthenticatedRoute.extend({
         },
         openModal: function() {
             this.controllerFor('application').set('modalActive', true);
-        }
+        },
+        openLoading: function() {
+            this.controllerFor('application').set('loadingActive', true);
+        },
+        closeLoading: function() {
+            this.controllerFor('application').set('loadingActive', false);
+        },
     }
 });
 
@@ -1936,7 +1950,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray}}\n");
 
-Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\" {{bind-attr class=\"modalActive:active\"}}>\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n");
+Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\" {{bind-attr class=\"modalActive:active\"}}>\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n<div id=\"loading-container\" {{bind-attr class=\"loadingActive:active\"}}>\n\t<section id=\"loading-spinner\"></section>\n</div>\n");
 
 Ember.TEMPLATES["core/layouts/editor"] = Ember.Handlebars.compile("<div id=\"editor-layout\" class=\"layout\">\n    <section id=\"editor-module\" class=\"module\">{{outlet editor-module}}</section>\n</div>\n");
 
