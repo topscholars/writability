@@ -145,27 +145,12 @@ class ThemeEssay(StatefulModel, Essay):
 
     def change_related_objects(self):
         """
+        Change any related objects before commit.
+
         If an application essay state is "selected", go through all other
         theme essays and mark it "not_selected".
 
         """
-        super(ThemeEssay, self).change_related_objects()
-        # just in case new application essays get in
-        for ae in self._application_essays:
-            if ae.id not in self.application_essay_states.keys():
-                self.application_essay_states[ae.id] = "pending"
-        # now mark others not selected
-        if self.application_essay_states:
-            selected_ae_ids = [id for id in self.application_essay_states if self.application_essay_states[id]=="selected"]
-            for ae_id in selected_ae_ids:
-                ae = ApplicationEssay.read(ae.id) 
-                for te in ae.theme_essays:
-                    if te != self:
-                        te.application_essay_states[ae.id] = "not_selected"
-
-
-    def change_related_objects(self):
-        """Change any related objects before commit."""
         super(ThemeEssay, self).change_related_objects()
 
         if self.state == "in_progress" and not self.drafts:
@@ -174,6 +159,21 @@ class ThemeEssay(StatefulModel, Essay):
             }
 
             self.drafts.append(draft.Draft(**new_draft_params))
+
+        # just in case new application essays get in
+        for ae in self._application_essays:
+            if ae.id not in self.application_essay_states.keys():
+                import pdb; pdb.set_trace();
+                self.application_essay_states[ae.id] = "pending"
+        # now mark others not selected
+        if self.application_essay_states:
+            selected_ae_ids = [id for id in self.application_essay_states if self.application_essay_states[id]=="selected"]            
+            for ae_id in selected_ae_ids:
+                ae = ApplicationEssay.read(ae_id) 
+                for te in ae.theme_essays:
+                    if te != self:
+                        te.application_essay_states[ae_id] = "not_selected"
+
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
