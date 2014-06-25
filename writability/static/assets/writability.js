@@ -494,12 +494,15 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
 /* globals Ember, App */
 
 App.DraftController = Ember.ObjectController.extend({
-
-    formattedTextObserver: function () {
+    saveDraft: function() {
         var draft = this.get('model');
         if (draft.get('isDirty')) {
             draft.save().then(this.onSuccess, this.onFailure);
         }
+    },
+
+    formattedTextObserver: function () {
+        Ember.run.debounce(this, this.saveDraft, 10000);
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -799,8 +802,8 @@ App.EssayController = Ember.ObjectController.extend({
     // }.observes('proposed_topic_1'),
 
     getMostRecentDraft: function () {
-        return this.get('model').get('drafts').then(function (drafts) {
-            return drafts.get('lastObject').get('id');
+        return this.get('model.drafts').then(function (drafts) {
+            return drafts.get('lastObject');
         });
     },
 
@@ -818,8 +821,9 @@ App.EssayController = Ember.ObjectController.extend({
     actions: {
         openDraft: function () {
             var that = this;
-            this.getMostRecentDraft().then(function (id) {
-                that.transitionToRoute('draft', id);
+            this.getMostRecentDraft().then(function (draft) {
+                draft.set('state', 'in_progress');
+                that.transitionToRoute('draft', draft);
             });
         },
         submitProposedTopics: function(model) {

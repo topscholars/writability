@@ -1,12 +1,15 @@
 /* globals Ember, App */
 
 App.DraftController = Ember.ObjectController.extend({
-
-    formattedTextObserver: function () {
+    saveDraft: function() {
         var draft = this.get('model');
         if (draft.get('isDirty')) {
             draft.save().then(this.onSuccess, this.onFailure);
         }
+    },
+
+    formattedTextObserver: function () {
+        Ember.run.debounce(this, this.saveDraft, 10000);
     }.observes('formatted_text'),
 
     onSuccess: function () {
