@@ -9,7 +9,7 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-        Ember.run.throttle(this, this.saveDraft, 10000);
+        Ember.run.debounce(this, this.saveDraft, 10000);
     }.observes('formatted_text'),
 
     onSuccess: function () {
