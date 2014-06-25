@@ -49,7 +49,7 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
     merged_theme_essays: DS.attr(null, {defaultValue: []}),
 
-    parent_id: DS.attr(null, {readOnly: true}),
+    parent_id: DS.attr(null),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
