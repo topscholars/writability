@@ -30,8 +30,10 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 			console.log(this.get('parentEssay.merged_theme_essays'));
 		},
 		mergeEssays: function() {
+			var parentEssay = this.get('parentEssay'),
+				controller = this;
 			this.get('parentEssay').save().then(function() {
-				console.log('done');
+				var childrenEssay = parentEssay.get('children_essays');
 			});
 		}
 	}

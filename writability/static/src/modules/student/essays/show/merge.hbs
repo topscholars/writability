@@ -8,7 +8,7 @@
   <ul class="modal-list">
   	{{#each essay in mergeEssays}}
   		<li {{action 'toggleMergeSelected' essay}}>
-        {{is-in-array-checkbox list=parentEssay.merged_theme_essays target=essay.id}}
+        {{is-in-array-checkbox list=parentEssay.merged_theme_essays target=essay}}
   			{{essay.theme.name}}
   		</li>
   	{{/each}}
