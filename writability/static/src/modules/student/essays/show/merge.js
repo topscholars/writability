@@ -11,6 +11,17 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 		});
 	}.property('parentEssay', 'essays'),
 
+	reloadMergedEssays: function() {
+		var childrenEssay = this.get('parentEssay.merged_theme_essays');
+		childrenEssay.forEach(function(essay) {
+			essay.reload();
+		});
+	},
+
+	transitionBack: function() {
+
+	},
+
 	actions: {
 		closeModal: function() {
 			this.transitionToRoute('student.essays.show');
@@ -19,21 +30,21 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 		},
 		toggleMergeSelected: function(essay) {
 			var mergedEssays = this.get('parentEssay.merged_theme_essays');
-			var indexOf = mergedEssays.indexOf(essay.id);
+			var indexOf = mergedEssays.indexOf(essay);
 
 			if (indexOf === -1) {
 				// Strange but needed to fire listener events for now...
-				this.set('parentEssay.merged_theme_essays', mergedEssays.concat([essay.id]));
+				this.get('parentEssay.merged_theme_essays').pushObject(essay);
 			} else {
-				this.set('parentEssay.merged_theme_essays', mergedEssays.splice(indexOf + 1, 1));
+				this.get('parentEssay.merged_theme_essays').removeObject(essay);
 			}
-			console.log(this.get('parentEssay.merged_theme_essays'));
 		},
 		mergeEssays: function() {
 			var parentEssay = this.get('parentEssay'),
 				controller = this;
 			this.get('parentEssay').save().then(function() {
-				var childrenEssay = parentEssay.get('children_essays');
+				controller.reloadMergedEssays();
+				controller.transitionBack();
 			});
 		}
 	}

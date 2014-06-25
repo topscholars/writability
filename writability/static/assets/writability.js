@@ -197,8 +197,6 @@ App.IsInArrayCheckboxComponent = Ember.Component.extend({
 		var target = this.get('target'),
 			list = this.get('list');
 
-		debugger;
-
 		return (list.indexOf(target) != -1) || (list.indexOf(target.toString()) != -1);
 	}.property('list.@each', 'target')
 });
@@ -1006,12 +1004,16 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
-    mergedEssays: Ember.computed.filter('model', function(essay) {
-        return (essay.get('parent_id') != 0);
-    }),
-    unmergedEssays: Ember.computed.filter('model', function(essay) {
-        return (essay.get('parent_id') == 0);
-    }),
+    mergedEssays: function () {
+        return this.get('model').filter(function(essay) {
+            return (essay.get('parent_id') != 0);
+        })
+    }.property('@each.parent_id'),
+    unmergedEssays: function () {
+        return this.get('model').filter(function(essay) {
+            return (essay.get('parent_id') == 0);
+        })
+    }.property('@each.parent_id'),
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') != 'completed');
     }),
@@ -1197,6 +1199,17 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 		});
 	}.property('parentEssay', 'essays'),
 
+	reloadMergedEssays: function() {
+		var childrenEssay = this.get('parentEssay.merged_theme_essays');
+		childrenEssay.forEach(function(essay) {
+			essay.reload();
+		});
+	},
+
+	transitionBack: function() {
+
+	},
+
 	actions: {
 		closeModal: function() {
 			this.transitionToRoute('student.essays.show');
@@ -1205,21 +1218,21 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 		},
 		toggleMergeSelected: function(essay) {
 			var mergedEssays = this.get('parentEssay.merged_theme_essays');
-			var indexOf = mergedEssays.indexOf(essay.id);
+			var indexOf = mergedEssays.indexOf(essay);
 
 			if (indexOf === -1) {
 				// Strange but needed to fire listener events for now...
-				this.set('parentEssay.merged_theme_essays', mergedEssays.concat([essay.id]));
+				this.get('parentEssay.merged_theme_essays').pushObject(essay);
 			} else {
-				this.set('parentEssay.merged_theme_essays', mergedEssays.splice(indexOf + 1, 1));
+				this.get('parentEssay.merged_theme_essays').removeObject(essay);
 			}
-			console.log(this.get('parentEssay.merged_theme_essays'));
 		},
 		mergeEssays: function() {
 			var parentEssay = this.get('parentEssay'),
 				controller = this;
 			this.get('parentEssay').save().then(function() {
-				var childrenEssay = parentEssay.get('children_essays');
+				controller.reloadMergedEssays();
+				controller.transitionBack();
 			});
 		}
 	}
