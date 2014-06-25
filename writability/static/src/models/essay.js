@@ -30,6 +30,7 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
                 hash.unselected_essays.push(id);
             }
         });
+        hash.children_essays = hash.merged_theme_essays;
 
         return this._super(type, hash, prop);
     },
@@ -53,7 +54,7 @@ App.ThemeEssay = App.Essay.extend({
     unselected_essays: DS.attr('array'),
 
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
-    merged_theme_essays: DS.attr(null, {defaultValue: []}),
+    merged_theme_essays: DS.hasMany('themeEssay'),
 
     parent_id: DS.attr(null),
 

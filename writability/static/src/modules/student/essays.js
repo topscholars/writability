@@ -7,12 +7,16 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
-    mergedEssays: Ember.computed.filter('model', function(essay) {
-        return (essay.get('parent_id') != 0);
-    }),
-    unmergedEssays: Ember.computed.filter('model', function(essay) {
-        return (essay.get('parent_id') == 0);
-    }),
+    mergedEssays: function () {
+        return this.get('model').filter(function(essay) {
+            return (essay.get('parent_id') != 0);
+        })
+    }.property('@each.parent_id'),
+    unmergedEssays: function () {
+        return this.get('model').filter(function(essay) {
+            return (essay.get('parent_id') == 0);
+        })
+    }.property('@each.parent_id'),
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') != 'completed');
     }),
