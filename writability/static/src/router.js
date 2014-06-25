@@ -32,6 +32,14 @@ App.Router.map(function () {
 
 });
 
+App.LoadingRoute = Ember.Route.extend({
+    renderTemplate: function() {
+        this.send('openLoading');
+    },
+    deactivate: function() {
+        this.send('closeLoading');
+    }
+});
 
 /**
  * AuthenticatedRoute has access to a current user object.
@@ -105,7 +113,13 @@ App.ApplicationRoute = App.AuthenticatedRoute.extend({
         },
         openModal: function() {
             this.controllerFor('application').set('modalActive', true);
-        }
+        },
+        openLoading: function() {
+            this.controllerFor('application').set('loadingActive', true);
+        },
+        closeLoading: function() {
+            this.controllerFor('application').set('loadingActive', false);
+        },
     }
 });
 
