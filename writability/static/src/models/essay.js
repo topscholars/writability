@@ -32,6 +32,12 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         });
 
         return this._super(type, hash, prop);
+    },
+    serializeAttribute: function(record, json, key, attributes) {
+        if (record.get('parent_id') === 0) {
+            record.set('parent_id', null);
+        }
+        this._super(record, json, key, attributes);
     }
 });
 
@@ -49,7 +55,7 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
     merged_theme_essays: DS.attr(null, {defaultValue: []}),
 
-    parent_id: DS.attr(null, {readOnly: true}),
+    parent_id: DS.attr(null),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),

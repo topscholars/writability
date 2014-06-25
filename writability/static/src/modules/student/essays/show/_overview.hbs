@@ -37,4 +37,9 @@
         <button {{action 'update' model}}>Save Topics</button>
     {{/if}}
 {{/if}}
+
+{{#if parent_id}}
+<button {{action 'splitEssay' model}}>Unmerge Essay</button>
+{{else}}
 <button {{action 'mergeEssay' model}}>Merge Essay</button>
+{{/if}}

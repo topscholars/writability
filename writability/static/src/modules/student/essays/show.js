@@ -18,6 +18,10 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
         mergeEssay: function(model) {
             this.transitionToRoute('student.essays.show.merge');
         },
+        splitEssay: function(model) {
+            model.set('parent_id', null);
+            model.save();
+        },
         selectApplicationEssay: function(applicationEssay) {
             var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);
             this.set('model.selected_essays', newSelectedEssays);
