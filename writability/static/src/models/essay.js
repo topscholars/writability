@@ -32,6 +32,12 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         });
 
         return this._super(type, hash, prop);
+    },
+    serializeAttribute: function(record, json, key, attributes) {
+        if (record.get('parent_id') === 0) {
+            record.set('parent_id', null);
+        }
+        this._super(record, json, key, attributes);
     }
 });
 
