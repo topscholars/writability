@@ -19,7 +19,8 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 	},
 
 	transitionBack: function() {
-
+		this.transitionToRoute('student.essays.show');
+		this.send('closeModal');
 	},
 
 	actions: {
