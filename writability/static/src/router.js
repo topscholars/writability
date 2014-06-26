@@ -377,14 +377,14 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     _assert_teachers_review: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
-            route.get('currentTeacher').get('reviews'),
+            route.get('currentTeacher.reviews'),
             route.store.find('draft', id)
         ]).then(function (values) {
             var reviews = values[0];
             var draft = values[1];
-            var review_id = draft._data.review.id;
+            var review_id = draft.get('review.id');
 
-            if (!reviews.isAny('id', review_id)) {
+            if (review_id && !reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
             }
         });

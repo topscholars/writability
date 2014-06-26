@@ -1,4 +1,11 @@
 App.StudentEssaysShowController = Ember.ObjectController.extend({
+    currentDraft: function () {
+        return this.draftByMostCurrent(0);
+    }.property('drafts'),
+
+    recentDraft: Ember.computed.alias('model.drafts.lastObject'),
+    draft_ready_for_review: Ember.computed.equal('recentDraft.state', 'submitted'),
+
     approveAndSelectTopic: function(model, approvedTopicField) {
         model.set('state', 'in_progress');
         model.set('topic', model.get(approvedTopicField));
@@ -19,8 +26,16 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
             this.transitionToRoute('student.essays.show.merge');
         },
         splitEssay: function(model) {
-            model.set('parent_id', null);
-            model.save();
+            var oldParent = model.get('parent');
+            model.set('parent', null);
+
+            model.save().then(function() {
+                oldParent.reload();
+            });
+        },
+        reviewDraft: function() {
+            var draft = this.get('recentDraft');
+            this.transitionToRoute('draft', draft);
         },
         selectApplicationEssay: function(applicationEssay) {
             var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);

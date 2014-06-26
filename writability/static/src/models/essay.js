@@ -32,6 +32,8 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         });
         hash.children_essays = hash.merged_theme_essays;
 
+        hash.parent = hash.parent_id == 0 ? null : hash.parent_id;
+
         return this._super(type, hash, prop);
     },
     serializeAttribute: function(record, json, key, attributes) {
@@ -56,7 +58,7 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
     merged_theme_essays: DS.hasMany('themeEssay'),
 
-    parent_id: DS.attr(null),
+    parent: DS.belongsTo('themeEssay'),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),

@@ -329,6 +329,8 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         });
         hash.children_essays = hash.merged_theme_essays;
 
+        hash.parent = hash.parent_id == 0 ? null : hash.parent_id;
+
         return this._super(type, hash, prop);
     },
     serializeAttribute: function(record, json, key, attributes) {
@@ -353,7 +355,7 @@ App.ThemeEssay = App.Essay.extend({
     essay_template: DS.belongsTo('themeEssayTemplate', {async: true}),
     merged_theme_essays: DS.hasMany('themeEssay'),
 
-    parent_id: DS.attr(null),
+    parent: DS.belongsTo('themeEssay'),
 
     proposed_topic_0: App.computed.aliasArrayObject('proposed_topics', 0),
     proposed_topic_1: App.computed.aliasArrayObject('proposed_topics', 1),
@@ -457,6 +459,16 @@ App.User = DS.Model.extend({
     }.property('roles')
 });
 
+App.TeacherSerializer = App.ApplicationSerializer.extend({
+    normalize: function(type, hash, prop) {
+        hash.reviews = hash.reviews.filter(function(value) {
+            return value !== null;
+        });
+
+        return this._super(type, hash, prop);
+    }
+});
+
 App.Teacher = App.User.extend({
     // properties
     // relationships
@@ -557,21 +569,29 @@ App.StudentDraftController = App.DraftController.extend({
         }
     }.observes('model'),
 
+    refreshAndTransitionEssay: function (draft) {
+        var controller = this,
+            essay = draft.get('essay');
+
+        essay.reload().then(function () {
+            controller.transitionToRoute('essay', essay);
+        });
+    },
+
     actions: {
         /**
          * Respond to next by submitting draft.
          */
         next: function () {
-            // TODO XXX: Add modal confirmation dialog with callbacks.
-            // Change draft state to "submitted"
-            var draft = this.get('model');
-            draft.set('state', 'submitted');
-            // Save draft
-            draft.save().then(function (draft) {
-                var essay_id = draft._data.essay.id;
-                // Transition to essays page
-                this.transitionToRoute('essay', essay_id);
-            }.bind(this));
+            if (confirm('Are you sure you want to submit this draft?')) {
+                var draft = this.get('model');
+                draft.set('state', 'submitted');
+
+                // Save draft
+                draft.save().then(
+                    this.refreshAndTransitionEssay.bind(this)
+                );
+            }
         },
 
         back: function () {
@@ -1016,14 +1036,14 @@ App.StudentEssaysController = Ember.ArrayController.extend({
     student: Ember.computed.alias('controllers.student.model'),
     mergedEssays: function () {
         return this.get('model').filter(function(essay) {
-            return (essay.get('parent_id') != 0);
+            return (essay.get('parent'));
         })
-    }.property('@each.parent_id'),
+    }.property('@each.parent'),
     unmergedEssays: function () {
         return this.get('model').filter(function(essay) {
-            return (essay.get('parent_id') == 0);
+            return (!essay.get('parent'));
         })
-    }.property('@each.parent_id'),
+    }.property('@each.parent'),
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') != 'completed');
     }),
@@ -1077,6 +1097,13 @@ App.StudentEssaysView = App.ListView.extend({
 });
 
 App.StudentEssaysShowController = Ember.ObjectController.extend({
+    currentDraft: function () {
+        return this.draftByMostCurrent(0);
+    }.property('drafts'),
+
+    recentDraft: Ember.computed.alias('model.drafts.lastObject'),
+    draft_ready_for_review: Ember.computed.equal('recentDraft.state', 'submitted'),
+
     approveAndSelectTopic: function(model, approvedTopicField) {
         model.set('state', 'in_progress');
         model.set('topic', model.get(approvedTopicField));
@@ -1097,8 +1124,16 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
             this.transitionToRoute('student.essays.show.merge');
         },
         splitEssay: function(model) {
-            model.set('parent_id', null);
-            model.save();
+            var oldParent = model.get('parent');
+            model.set('parent', null);
+
+            model.save().then(function() {
+                oldParent.reload();
+            });
+        },
+        reviewDraft: function() {
+            var draft = this.get('recentDraft');
+            this.transitionToRoute('draft', draft);
         },
         selectApplicationEssay: function(applicationEssay) {
             var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);
@@ -1236,10 +1271,9 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 			var indexOf = mergedEssays.indexOf(essay);
 
 			if (indexOf === -1) {
-				// Strange but needed to fire listener events for now...
-				this.get('parentEssay.merged_theme_essays').pushObject(essay);
+				mergedEssays.pushObject(essay);
 			} else {
-				this.get('parentEssay.merged_theme_essays').removeObject(essay);
+				mergedEssays.removeObject(essay);
 			}
 		},
 		mergeEssays: function() {
@@ -1967,21 +2001,21 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     _assert_teachers_review: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
-            route.get('currentTeacher').get('reviews'),
+            route.get('currentTeacher.reviews'),
             route.store.find('draft', id)
         ]).then(function (values) {
             var reviews = values[0];
             var draft = values[1];
-            var review_id = draft._data.review.id;
+            var review_id = draft.get('review.id');
 
-            if (!reviews.isAny('id', review_id)) {
+            if (review_id && !reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
             }
         });
     }
 });
 
-Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray}}\n");
+Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray disabled=true}}\n");
 
 Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\" {{bind-attr class=\"modalActive:active\"}}>\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n<div id=\"loading-container\" {{bind-attr class=\"loadingActive:active\"}}>\n\t<section id=\"loading-spinner\"></section>\n</div>\n");
 
@@ -2041,7 +2075,7 @@ Ember.TEMPLATES["modules/student/essays/show/_app-item"] = Ember.Handlebars.comp
 
 Ember.TEMPLATES["modules/student/essays/show/_details-list"] = Ember.Handlebars.compile("<p>{{view.summaryText}}</p>\n\n{{#each application_essay in application_essays}}\n    {{render 'modules/student/essays/show/_app-item' application_essay}}\n{{/each}}\n");
 
-Ember.TEMPLATES["modules/student/essays/show/_overview"] = Ember.Handlebars.compile("<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if is_in_progress}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopic' model 'proposed_topic_0'}}>Approve Topic 1</button>\n    {{/if}}\n\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopic' model 'proposed_topic_1'}}>Approve Topic 2</button>\n    {{else}}\n        <button {{action 'update' model}}>Save Topics</button>\n    {{/if}}\n{{/if}}\n\n{{#if parent_id}}\n<button {{action 'splitEssay' model}}>Unmerge Essay</button>\n{{else}}\n<button {{action 'mergeEssay' model}}>Merge Essay</button>\n{{/if}}\n");
+Ember.TEMPLATES["modules/student/essays/show/_overview"] = Ember.Handlebars.compile("{{#if parent}}\n<div class=\"details-field\">\n    <div class=\"key\">Merged into Essay:</div>\n    <div class=\"value app-text\">{{parent.theme.name}}</div>\n</div>\n{{/if}}\n\n<div class=\"details-field\">\n    <div class=\"key\">Prompt:</div>\n    <div class=\"value app-text\">{{essay_prompt}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Audience:</div>\n    <div class=\"value app-text\">{{audience}}</div>\n</div>\n<div class=\"details-field\">\n    <div class=\"key\">Context:</div>\n    <div class=\"value app-text\">{{context}}</div>\n</div>\n\n{{#if merged_theme_essays}}\n<div class=\"details-field\">\n    <div class=\"key\">Merged into Essay:</div>\n    <ul>\n        {{#each mergedEssay in merged_theme_essays}}\n            <li>{{mergedEssay.theme.name}}</li>\n        {{/each}}\n    </ul>\n    <div class=\"value app-text\">{{parent.theme.name}}</div>\n</div>\n{{/if}}\n\n{{#if is_in_progress}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic:</div>\n        <div class=\"value student-text\">{{topic}}</div>\n    </div>\n{{else}}\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 1:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_0\"}}\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopic' model 'proposed_topic_0'}}>Approve Topic 1</button>\n    {{/if}}\n\n    <div class=\"details-field\">\n        <div class=\"key\">Topic 2:</div>\n        {{textarea class=\"value student-text\" valueBinding=\"controller.proposed_topic_1\"}}\n    </div>\n\n    {{#if topicsReadyForApproval}}\n        <button {{action 'approveProposedTopic' model 'proposed_topic_1'}}>Approve Topic 2</button>\n    {{else}}\n        <button {{action 'update' model}}>Save Topics</button>\n    {{/if}}\n{{/if}}\n\n{{#if draft_ready_for_review}}\n    <button {{action 'reviewDraft' recentDraft}}>Review Draft</button>\n{{/if}}\n\n{{#if parent}}\n<button {{action 'splitEssay' model}}>Unmerge Essay</button>\n{{else}}\n<button {{action 'mergeEssay' model}}>Merge Essay</button>\n{{/if}}\n");
 
 Ember.TEMPLATES["modules/student/essays/show/merge"] = Ember.Handlebars.compile("<div class=\"modal-content\">\n  <button class=\"close-button\" {{action 'closeModal'}}>X</button>\n  <div class=\"modal-title\">Merge Essays</div>\n  <div class=\"instructions\">\n  \t<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>\n  \t<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>\n  </div>\n  <ul class=\"modal-list\">\n  \t{{#each essay in mergeEssays}}\n  \t\t<li {{action 'toggleMergeSelected' essay}}>\n        {{is-in-array-checkbox list=parentEssay.merged_theme_essays target=essay}}\n  \t\t\t{{essay.theme.name}}\n  \t\t</li>\n  \t{{/each}}\n  </ul>\n  <div class=\"modal-actions\">\n    <button class=\"double-column\" {{action 'mergeEssays' parentEssay}}>Merge &gt;</button>\n  </div>\n</div>\n");
 

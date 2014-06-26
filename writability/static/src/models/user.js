@@ -21,6 +21,16 @@ App.User = DS.Model.extend({
     }.property('roles')
 });
 
+App.TeacherSerializer = App.ApplicationSerializer.extend({
+    normalize: function(type, hash, prop) {
+        hash.reviews = hash.reviews.filter(function(value) {
+            return value !== null;
+        });
+
+        return this._super(type, hash, prop);
+    }
+});
+
 App.Teacher = App.User.extend({
     // properties
     // relationships

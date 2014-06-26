@@ -1,3 +1,10 @@
+{{#if parent}}
+<div class="details-field">
+    <div class="key">Merged into Essay:</div>
+    <div class="value app-text">{{parent.theme.name}}</div>
+</div>
+{{/if}}
+
 <div class="details-field">
     <div class="key">Prompt:</div>
     <div class="value app-text">{{essay_prompt}}</div>
@@ -10,6 +17,18 @@
     <div class="key">Context:</div>
     <div class="value app-text">{{context}}</div>
 </div>
+
+{{#if merged_theme_essays}}
+<div class="details-field">
+    <div class="key">Merged into Essay:</div>
+    <ul>
+        {{#each mergedEssay in merged_theme_essays}}
+            <li>{{mergedEssay.theme.name}}</li>
+        {{/each}}
+    </ul>
+    <div class="value app-text">{{parent.theme.name}}</div>
+</div>
+{{/if}}
 
 {{#if is_in_progress}}
     <div class="details-field">
@@ -38,7 +57,11 @@
     {{/if}}
 {{/if}}
 
-{{#if parent_id}}
+{{#if draft_ready_for_review}}
+    <button {{action 'reviewDraft' recentDraft}}>Review Draft</button>
+{{/if}}
+
+{{#if parent}}
 <button {{action 'splitEssay' model}}>Unmerge Essay</button>
 {{else}}
 <button {{action 'mergeEssay' model}}>Merge Essay</button>

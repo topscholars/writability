@@ -34,10 +34,9 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 			var indexOf = mergedEssays.indexOf(essay);
 
 			if (indexOf === -1) {
-				// Strange but needed to fire listener events for now...
-				this.get('parentEssay.merged_theme_essays').pushObject(essay);
+				mergedEssays.pushObject(essay);
 			} else {
-				this.get('parentEssay.merged_theme_essays').removeObject(essay);
+				mergedEssays.removeObject(essay);
 			}
 		},
 		mergeEssays: function() {
