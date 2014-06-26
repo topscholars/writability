@@ -1,4 +1,11 @@
 App.StudentEssaysShowController = Ember.ObjectController.extend({
+    currentDraft: function () {
+        return this.draftByMostCurrent(0);
+    }.property('drafts'),
+
+    recentDraft: Ember.computed.alias('model.drafts.lastObject'),
+    draft_ready_for_review: Ember.computed.equal('recentDraft.state', 'submitted'),
+
     approveAndSelectTopic: function(model, approvedTopicField) {
         model.set('state', 'in_progress');
         model.set('topic', model.get(approvedTopicField));
