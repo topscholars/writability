@@ -1271,10 +1271,9 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 			var indexOf = mergedEssays.indexOf(essay);
 
 			if (indexOf === -1) {
-				// Strange but needed to fire listener events for now...
-				this.get('parentEssay.merged_theme_essays').pushObject(essay);
+				mergedEssays.pushObject(essay);
 			} else {
-				this.get('parentEssay.merged_theme_essays').removeObject(essay);
+				mergedEssays.removeObject(essay);
 			}
 		},
 		mergeEssays: function() {
@@ -2016,7 +2015,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray}}\n");
+Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray disabled=true}}\n");
 
 Ember.TEMPLATES["core/application"] = Ember.Handlebars.compile("{{outlet header}}\n<div id=\"layout-container\">{{outlet}}</div>\n<div id=\"modal-container\" {{bind-attr class=\"modalActive:active\"}}>\n    <section id=\"modal-module\" class=\"module\">{{outlet modal-module}}</section>\n</div>\n<div id=\"loading-container\" {{bind-attr class=\"loadingActive:active\"}}>\n\t<section id=\"loading-spinner\"></section>\n</div>\n");
 
