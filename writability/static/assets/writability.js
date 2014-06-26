@@ -557,21 +557,29 @@ App.StudentDraftController = App.DraftController.extend({
         }
     }.observes('model'),
 
+    refreshAndTransitionEssay: function (draft) {
+        var controller = this,
+            essay = draft.get('essay');
+
+        essay.reload().then(function () {
+            controller.transitionToRoute('essay', essay);
+        });
+    },
+
     actions: {
         /**
          * Respond to next by submitting draft.
          */
         next: function () {
-            // TODO XXX: Add modal confirmation dialog with callbacks.
-            // Change draft state to "submitted"
-            var draft = this.get('model');
-            draft.set('state', 'submitted');
-            // Save draft
-            draft.save().then(function (draft) {
-                var essay_id = draft._data.essay.id;
-                // Transition to essays page
-                this.transitionToRoute('essay', essay_id);
-            }.bind(this));
+            if (confirm('Are you sure you want to submit this draft?')) {
+                var draft = this.get('model');
+                draft.set('state', 'submitted');
+
+                // Save draft
+                draft.save().then(
+                    this.refreshAndTransitionEssay.bind(this)
+                );
+            }
         },
 
         back: function () {
