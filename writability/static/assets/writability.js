@@ -329,6 +329,8 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         });
         hash.children_essays = hash.merged_theme_essays;
 
+        // hash.parent = hash.parent_id;
+
         return this._super(type, hash, prop);
     },
     serializeAttribute: function(record, json, key, attributes) {
@@ -455,6 +457,16 @@ App.User = DS.Model.extend({
     isStudent: function () {
         return this.get('roles').isAny('name', 'student');
     }.property('roles')
+});
+
+App.TeacherSerializer = App.ApplicationSerializer.extend({
+    normalize: function(type, hash, prop) {
+        hash.reviews = hash.reviews.filter(function(value) {
+            return value !== null;
+        });
+
+        return this._super(type, hash, prop);
+    }
 });
 
 App.Teacher = App.User.extend({
@@ -1986,12 +1998,12 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     _assert_teachers_review: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
-            route.get('currentTeacher').get('reviews'),
+            route.get('currentTeacher.reviews'),
             route.store.find('draft', id)
         ]).then(function (values) {
             var reviews = values[0];
             var draft = values[1];
-            var review_id = draft._data.review.id;
+            var review_id = draft.get('review.id');
 
             if (!reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');

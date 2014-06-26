@@ -32,6 +32,8 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         });
         hash.children_essays = hash.merged_theme_essays;
 
+        // hash.parent = hash.parent_id;
+
         return this._super(type, hash, prop);
     },
     serializeAttribute: function(record, json, key, attributes) {
