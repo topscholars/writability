@@ -26,8 +26,12 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
             this.transitionToRoute('student.essays.show.merge');
         },
         splitEssay: function(model) {
-            model.set('parent_id', null);
-            model.save();
+            var oldParent = model.get('parent');
+            model.set('parent', null);
+
+            model.save().then(function() {
+                oldParent.reload();
+            });
         },
         reviewDraft: function() {
             var draft = this.get('recentDraft');
