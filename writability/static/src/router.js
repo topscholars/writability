@@ -384,7 +384,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
             var draft = values[1];
             var review_id = draft.get('review.id');
 
-            if (!reviews.isAny('id', review_id)) {
+            if (review_id && !reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
             }
         });
