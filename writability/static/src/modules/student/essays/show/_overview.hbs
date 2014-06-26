@@ -39,7 +39,7 @@
 {{/if}}
 
 {{#if draft_ready_for_review}}
-    <button {{action 'reviewDraft'}}>Review Draft</button>
+    <button {{action 'reviewDraft' recentDraft}}>Review Draft</button>
 {{/if}}
 
 {{#if parent_id}}

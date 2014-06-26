@@ -29,6 +29,10 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
             model.set('parent_id', null);
             model.save();
         },
+        reviewDraft: function() {
+            var draft = this.get('recentDraft');
+            this.transitionToRoute('draft', draft);
+        },
         selectApplicationEssay: function(applicationEssay) {
             var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);
             this.set('model.selected_essays', newSelectedEssays);
