@@ -42,7 +42,7 @@
     <button {{action 'reviewDraft' recentDraft}}>Review Draft</button>
 {{/if}}
 
-{{#if parent_id}}
+{{#if parent}}
 <button {{action 'splitEssay' model}}>Unmerge Essay</button>
 {{else}}
 <button {{action 'mergeEssay' model}}>Merge Essay</button>
