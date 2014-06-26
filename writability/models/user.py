@@ -133,3 +133,14 @@ class Invitation(BaseModel):
 
     # relationships
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        super(Invitation, self).process_before_create()
+        try:
+            existing_user = User.read_by_filter({'email':self.email})[0]
+        except:
+            existing_user = None
+        if existing_user and not existing_user.teacher_id:
+            existing_user.teacher_id = self.teacher.id
+            self.is_registered = True

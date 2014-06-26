@@ -213,7 +213,6 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
         inviteStudent: function (studentEmail) {
             var invitation = this.store.createRecord('invitation', {
                 email: studentEmail,
-                is_registered: false,
                 teacher: this.get('currentTeacher')
             });
             this.get('currentTeacher').get('invitations').then(function(invitations) {
