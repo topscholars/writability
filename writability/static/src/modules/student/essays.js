@@ -21,9 +21,11 @@ App.StudentEssaysController = Ember.ArrayController.extend({
         return (essay.get('state') != 'completed');
     }),
     actions: {
-        selectEssay: function(model) {
+        selectEssay: function(model, noTransition) {
             this.set('selectedEssay', model);
-            this.transitionToRoute('student.essays.show', model);
+            if (!noTransition) {
+                this.transitionToRoute('student.essays.show', model);
+            }
         },
         toggleMergedEssays: function() {
             this.set('showMergedEssays', !this.get('showMergedEssays'));
