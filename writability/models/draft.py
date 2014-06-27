@@ -36,14 +36,15 @@ class Draft(StatefulModel):
         """Change any related objects before commit."""
         super(Draft, self).change_related_objects()
 
-        if self.state == "submitted" and self.review is None:
+
+        if self.state == "submitted" and self.reviews is None:
             new_review_params = {
                 "teacher": self.essay.student.teacher,
                 "draft": self,
                 "review_type": "TEXT_REVIEW"
             }
 
-            self.review = review.Review(**new_review_params)
+            self.review = review.Review(**new_review_params)  ####********* This is likely obsolete.  ****#######
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
