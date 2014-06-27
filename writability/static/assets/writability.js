@@ -1536,6 +1536,9 @@ App.TextEditor = Ember.TextArea.extend({
     },
 
     _setupInlineEditor: function () {
+        var context = {
+            controller: this
+        };
         var id = this.get('elementId');
         var config = this._getEditorConfig();
 
@@ -1544,13 +1547,21 @@ App.TextEditor = Ember.TextArea.extend({
 
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
+            context.editor = editor;
             this.set ('editor', editor);
 
             editor.setReadOnly(this.get('isReadOnly'));
 
+            editor.document.on('mouseup', this.checkForSelection, context);
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);
         }, this);
+    },
+
+    checkForSelection: function() {
+        var editor = this.editor,
+            controller = this.controller;
+        alert('text may be selected on this mouse up');
     },
 
     _onChange: function () {
