@@ -9,7 +9,10 @@
   	{{#each essay in mergeEssays}}
   		<li {{action 'toggleMergeSelected' essay}}>
         {{is-in-array-checkbox list=parentEssay.merged_theme_essays target=essay}}
-  			{{essay.theme.name}}
+  			<div class="main-group">
+          <div class="main-line">{{essay.theme.name}}</div>
+          <div class="sub-line">{{essay.theme.category}}</div>
+        </div>
   		</li>
   	{{/each}}
   </ul>
