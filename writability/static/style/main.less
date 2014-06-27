@@ -802,7 +802,7 @@ button, input[type="checkbox"] {
         border-right: @thinBorder @greyLight solid;
         height: 100%;
         left: 28%;
-        position: relative;
+        position: fixed; /* changed from relative to make right column (annotations) work */
         text-align: center;
         width: 44%;
         z-index: 12;
@@ -827,7 +827,8 @@ button, input[type="checkbox"] {
     .annotations-column {
         height: 100%;
         position: relative;
-        width: 25%;
+        width: 27%;
+        left: 72%;
     }
 }
 
