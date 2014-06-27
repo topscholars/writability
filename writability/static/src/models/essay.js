@@ -37,6 +37,7 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         return this._super(type, hash, prop);
     },
     serializeAttribute: function(record, json, key, attributes) {
+        json.parent_id = record.get('parent');
         if (record.get('parent_id') === 0) {
             record.set('parent_id', null);
         }

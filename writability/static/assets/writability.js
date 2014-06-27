@@ -334,6 +334,7 @@ App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
         return this._super(type, hash, prop);
     },
     serializeAttribute: function(record, json, key, attributes) {
+        json.parent_id = record.get('parent');
         if (record.get('parent_id') === 0) {
             record.set('parent_id', null);
         }
@@ -946,7 +947,7 @@ App.EssaysController = Ember.ArrayController.extend({
     selectedEssay: null,
 
     unmergedEssays: Ember.computed.filter('model', function(essay) {
-        return (essay.get('parent_id') == 0);
+        return (essay.get('parent'));
     }),
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') != 'completed');
