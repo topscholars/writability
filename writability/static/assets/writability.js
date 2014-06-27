@@ -855,6 +855,7 @@ App.EssayController = Ember.ObjectController.extend({
             var that = this;
             this.getMostRecentDraft().then(function (draft) {
                 draft.set('state', 'in_progress');
+                draft.save();
                 that.transitionToRoute('draft', draft);
             });
         },
