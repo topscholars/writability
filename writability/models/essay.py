@@ -15,7 +15,8 @@ import draft
 from .db import db
 from .base import BaseModel, StatefulModel
 from .fields import SerializableStringList
-from .relationships import essay_associations
+# from .relationships import essay_associations
+from sqlalchemy.ext.associationproxy import association_proxy
 
 
 class Essay(BaseModel):
@@ -75,6 +76,8 @@ class Essay(BaseModel):
 
 class ThemeEssay(StatefulModel, Essay):
 
+    __tablename__ = "theme_essay"
+
     _STATES = ["new", "added_topics", "in_progress", "completed"]
 
     # inheritance
@@ -100,8 +103,7 @@ class ThemeEssay(StatefulModel, Essay):
     parent_id = db.Column(db.Integer, db.ForeignKey("theme_essay.id"))
 
     _application_essays = db.relationship(
-        "ApplicationEssay",
-        secondary=essay_associations,
+        "EssayStateAssociations",
         backref=db.backref("theme_essays", lazy="dynamic"))
 
     ## Commented from Master for merging merge-backend
@@ -238,6 +240,7 @@ class ThemeEssay(StatefulModel, Essay):
 class ApplicationEssay(Essay):
 
     # inheritance
+    __tablename__ = "application_essay"
     __mapper_args__ = {'polymorphic_identity': 'application_essay'}
 
     # required fields
@@ -264,3 +267,29 @@ class ApplicationEssay(Essay):
         self.max_words = app_essay_template.max_words
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
+
+class EssayStateAssociations(BaseModel):
+    __tablename__ = 'essay_associations'
+
+    ALLOWED_APP_ESSAY_STATES = ["selected","not_selected","pending"]
+
+    @validates('state')
+    def validate_app_essay_states(self, key, state):
+        assert state in self.ALLOWED_APP_ESSAY_STATES
+        return state
+
+    application_essays = db.relationship(
+        "ApplicationEssay",
+        backref=db.backref("essay_associations", lazy="dynamic"))
+    # theme_essays: don't explicitly declare it but it's here'
+
+    # this needs to be a list?
+    application_essay_id = db.Column(
+        db.Integer,
+        db.ForeignKey("application_essay.id"),
+        primary_key=True),
+    theme_essay_id = db.Column(
+        db.Integer,
+        db.ForeignKey("theme_essay.id"),
+        primary_key=True),
+    state = db.Column(db.String, default="pending")
