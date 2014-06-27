@@ -1,0 +1,30 @@
+.modal-list li {
+    .list-module .list-item();
+    display: table;
+    padding-top: @smallPadding;
+    padding-bottom: @smallPadding;
+
+    &:hover {
+        background: #545454;
+    }
+
+    .checkbox {
+        display: table-cell;
+        width: 8%;
+    }
+
+    .main-group {
+        display: table-cell;
+        width: 92%;
+        font-size: 40px;
+
+        .main-line {
+            margin-bottom: @smallPadding;
+            font-size: .98em;  /*To fit 'Accomplishment'*/
+        }
+
+        .sub-line {
+            .bodyText();
+        }
+    }
+}
