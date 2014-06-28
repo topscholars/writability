@@ -1516,6 +1516,22 @@ function initializeTagBox() {
 }
 
 /* globals App, Ember, CKEDITOR */
+
+function addTag () {
+    var tag_box =   '<div id="tag_box">'
+                   +'    <input placeholder="Tag it   (to demo on Monday)" class="tag_input">'
+                   +'</div>';
+    $('.annotations-column').append(tag_box);
+} 
+function removeTagBoxes () {
+    $('#tag_box').remove();
+} 
+function addDemoTag (floatFromTopInPX) {
+    var tag_box =   '<div style="top:' +floatFromTopInPX+ 'px" class="existing_tag">'
+                   +'    <p class="">Run-on Sentence</p>'
+                   +'</div>';
+    $('.annotations-column').append(tag_box);
+}
 App.TextEditor = Ember.TextArea.extend({
 
     actions: {
@@ -1552,17 +1568,42 @@ App.TextEditor = Ember.TextArea.extend({
 
             editor.setReadOnly(this.get('isReadOnly'));
 
-            editor.document.on('mouseup', this.checkForSelection, context);
+            // This fires for all 3 cols
+            var text_column = editor.document.on("mouseup", this.checkForSelection, context );
+            //works  // $(text_column).on("click", function () { alert('hey'); });
+            //doesnt // $(text_column).on("mouseup", context, this.checkForSelection );
+            //doesnt // $(text_column).on('mouseup', this.checkForSelection, context); 
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);
+            
+            // Test UI
+            addDemoTag(100);
+
         }, this);
     },
 
     checkForSelection: function() {
         var editor = this.editor,
             controller = this.controller;
-        alert('text may be selected on this mouse up');
+        var selectedText = editor.getSelection().getSelectedText();
+
+        if (selectedText) {
+
+            alert('You selected: ' + selectedText);
+
+            // Insert UI on right column
+            removeTagBoxes();  
+            addTag(200);
+            
+            //this.displayTagEntry();   // This isn't able to call the method in this class
+                                        //  displayTagEntry, this.displayTagEntry, App.TextEditor.displayTagEntry() also fail
+        }
     },
+    //displayTagEntry: function () {
+    //    alert('displayTagEntry');
+    //    // pass in height of selected text to a function for displaying 
+    //},
+
 
     _onChange: function () {
         // use timer to make sure that change event handling is throttled
@@ -2092,7 +2133,7 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n    <p> \n        Here be annotation column \n    </p>\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n</div>\n");
 
 Ember.TEMPLATES["modules/essay/_app-item"] = Ember.Handlebars.compile("<li {{bind-attr class=\":tab-list-item selected unselected\"}}>\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 
