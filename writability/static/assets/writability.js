@@ -2201,4 +2201,4 @@ Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
 
 Ember.TEMPLATES["partials/tags"] = Ember.Handlebars.compile("<div id=\"tag-box\">\n<input id=\"tag-search\">\n<div id=\"tag-menu\"></div>\n</div>\n");
 
-Ember.TEMPLATES["test/select"] = Ember.Handlebars.compile("{{autosuggest-tag style=\"width: 100%;\" data=this}}\n");
+Ember.TEMPLATES["test/select"] = Ember.Handlebars.compile("{{autosuggest-tag data=this}}\n");
