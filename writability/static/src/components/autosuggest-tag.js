@@ -1,7 +1,7 @@
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
-		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.category),
-			nameEl = $('<span>').addClass('tag-result-name').html(tag.name)
+		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(categoryEl);
@@ -10,8 +10,8 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	},
 
 	formatResult: function (tag) {
-		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.category),
-			nameEl = $('<span>').addClass('tag-result-name').html(tag.name)
+		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(categoryEl);
@@ -19,27 +19,24 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 		return $result;
 	},
 
-	select2Options: {
-		data: {
-			results: [],
-			text: 'category'
-		},
-		formatResult: this.formatResult,
-		formatSelection: this.formatSelection
-	},
-
 	prompt: 'Tag it.',
 
 	didInsertElement: function () {
-		this.select2Options.data.results = this.get('data');
+		this.setupSelect2Options();
+		this.$().width('100%');
 		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
 	},
 
-	processChildElements: function () {
-		this.$().select2(this.get('select2Options'));
-	},
-
-	willDestroyElement: function () {
-		this.$().select2("destroy");
+	setupSelect2Options: function() {
+		this.select2Options = {
+			data: {
+				results: this.get('data').toArray(),
+				text: function(tag) {
+					return tag.get('category');
+				}
+			},
+			formatResult: this.formatResult,
+			formatSelection: this.formatSelection
+		}
 	}
 });

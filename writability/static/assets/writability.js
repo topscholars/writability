@@ -210,8 +210,8 @@ App.FormSelect2Component = Ember.TextField.extend({
 
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
-		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.category),
-			nameEl = $('<span>').addClass('tag-result-name').html(tag.name)
+		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(categoryEl);
@@ -220,8 +220,8 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	},
 
 	formatResult: function (tag) {
-		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.category),
-			nameEl = $('<span>').addClass('tag-result-name').html(tag.name)
+		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(categoryEl);
@@ -229,28 +229,25 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 		return $result;
 	},
 
-	select2Options: {
-		data: {
-			results: [],
-			text: 'category'
-		},
-		formatResult: this.formatResult,
-		formatSelection: this.formatSelection
-	},
-
 	prompt: 'Tag it.',
 
 	didInsertElement: function () {
-		this.select2Options.data.results = this.get('data');
+		this.setupSelect2Options();
+		this.$().width('100%');
 		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
 	},
 
-	processChildElements: function () {
-		this.$().select2(this.get('select2Options'));
-	},
-
-	willDestroyElement: function () {
-		this.$().select2("destroy");
+	setupSelect2Options: function() {
+		this.select2Options = {
+			data: {
+				results: this.get('data').toArray(),
+				text: function(tag) {
+					return tag.get('category');
+				}
+			},
+			formatResult: this.formatResult,
+			formatSelection: this.formatSelection
+		}
 	}
 });
 
@@ -487,6 +484,11 @@ App.Review = DS.Model.extend({
 App.Role = DS.Model.extend({
     // properties
     name: DS.attr('string')
+});
+
+App.Tag = DS.Model.extend({
+	category: DS.attr(),
+	name: DS.attr(),
 });
 
 /* globals App, DS */
@@ -1741,6 +1743,9 @@ App.Router.map(function () {
 });
 
 App.Select2TestRoute = Ember.Route.extend({
+    model: function() {
+        return this.store.find('tag');
+    },
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'});
@@ -2196,4 +2201,4 @@ Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
 
 Ember.TEMPLATES["partials/tags"] = Ember.Handlebars.compile("<div id=\"tag-box\">\n<input id=\"tag-search\">\n<div id=\"tag-menu\"></div>\n</div>\n");
 
-Ember.TEMPLATES["test/select"] = Ember.Handlebars.compile("{{autosuggest-tag}}\n");
+Ember.TEMPLATES["test/select"] = Ember.Handlebars.compile("{{autosuggest-tag style=\"width: 100%;\" data=this}}\n");

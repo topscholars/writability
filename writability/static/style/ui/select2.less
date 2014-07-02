@@ -32,7 +32,12 @@ Version: 3.5.0 Timestamp: Mon Jun 16 19:29:44 EDT 2014
     overflow: hidden;
     position: relative;
 
-    border: 1px solid #aaa;
+    border-left: none;
+    border-right: none;
+    border-top: #777 dashed 1px;
+    border-bottom: #777 dashed 1px;
+    border-radius: 0;
+
     white-space: nowrap;
     line-height: 26px;
     color: #444;
@@ -46,12 +51,7 @@ Version: 3.5.0 Timestamp: Mon Jun 16 19:29:44 EDT 2014
           -ms-user-select: none;
               user-select: none;
 
-    background-color: #fff;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
-    background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
-    background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
-    background-image: linear-gradient(to top, #eee 0%, #fff 50%);
+    background: #fff;
 }
 
 html[dir="rtl"] .select2-container .select2-choice {
@@ -154,10 +154,6 @@ html[dir="rtl"] .select2-container .select2-choice > .select2-chosen {
     border-top: none;
 }
 
-.select2-drop.select2-drop-above.select2-drop-active {
-    border-top: 1px solid #5897fb;
-}
-
 .select2-drop-auto-width {
     border-top: 1px solid #aaa;
     width: auto;
@@ -234,7 +230,6 @@ html[dir="rtl"] .select2-search input {
 
 .select2-container-active .select2-choice,
 .select2-container-active .select2-choices {
-    border: 1px solid #5897fb;
     outline: none;
 
     -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, .3);
@@ -259,7 +254,6 @@ html[dir="rtl"] .select2-search input {
 
 .select2-dropdown-open.select2-drop-above .select2-choice,
 .select2-dropdown-open.select2-drop-above .select2-choices {
-    border: 1px solid #5897fb;
     border-top-color: transparent;
 
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fff), color-stop(0.5, #eee));
@@ -373,7 +367,7 @@ html[dir="rtl"] .select2-results {
 .select2-results .select2-no-results,
 .select2-results .select2-searching,
 .select2-results .select2-selection-limit {
-    background: #f4f4f4;
+    background: #fff;
     display: list-item;
     padding-left: 5px;
 }
@@ -383,12 +377,12 @@ disabled look for disabled choices in the results dropdown
 */
 .select2-results .select2-disabled.select2-highlighted {
     color: #666;
-    background: #f4f4f4;
+    background: #fff;
     display: list-item;
     cursor: default;
 }
 .select2-results .select2-disabled {
-  background: #f4f4f4;
+  background: #fff;
   display: list-item;
   cursor: default;
 }
@@ -398,25 +392,25 @@ disabled look for disabled choices in the results dropdown
 }
 
 .select2-more-results.select2-active {
-    background: #f4f4f4 url('select2-spinner.gif') no-repeat 100%;
+    background: #fff url('select2-spinner.gif') no-repeat 100%;
 }
 
 .select2-more-results {
-    background: #f4f4f4;
+    background: #fff;
     display: list-item;
 }
 
 /* disabled styles */
 
 .select2-container.select2-container-disabled .select2-choice {
-    background-color: #f4f4f4;
+    background-color: #fff;
     background-image: none;
     border: 1px solid #ddd;
     cursor: default;
 }
 
 .select2-container.select2-container-disabled .select2-choice .select2-arrow {
-    background-color: #f4f4f4;
+    background-color: #fff;
     background-image: none;
     border-left: 0;
 }
@@ -459,7 +453,6 @@ html[dir="rtl"] .select2-container-multi .select2-choices {
 }
 
 .select2-container-multi.select2-container-active .select2-choices {
-    border: 1px solid #5897fb;
     outline: none;
 
     -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, .3);
@@ -524,11 +517,11 @@ html[dir="rtl"] .select2-container-multi .select2-choices li
               user-select: none;
 
     background-color: #e4e4e4;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#f4f4f4', GradientType=0);
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(20%, #f4f4f4), color-stop(50%, #f0f0f0), color-stop(52%, #e8e8e8), color-stop(100%, #eee));
-    background-image: -webkit-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
-    background-image: -moz-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
-    background-image: linear-gradient(to top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#fff', GradientType=0);
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(20%, #fff), color-stop(50%, #f0f0f0), color-stop(52%, #e8e8e8), color-stop(100%, #eee));
+    background-image: -webkit-linear-gradient(top, #fff 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+    background-image: -moz-linear-gradient(top, #fff 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+    background-image: linear-gradient(to top, #fff 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
 }
 html[dir="rtl"] .select2-container-multi .select2-choices .select2-search-choice
 {
@@ -577,7 +570,7 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
 
 /* disabled styles */
 .select2-container-multi.select2-container-disabled .select2-choices {
-    background-color: #f4f4f4;
+    background-color: #fff;
     background-image: none;
     border: 1px solid #ddd;
     cursor: default;
@@ -587,7 +580,7 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
     padding: 3px 5px 3px 5px;
     border: 1px solid #ddd;
     background-image: none;
-    background-color: #f4f4f4;
+    background-color: #fff;
 }
 
 .select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice .select2-search-choice-close {    display: none;

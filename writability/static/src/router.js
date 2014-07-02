@@ -35,6 +35,9 @@ App.Router.map(function () {
 });
 
 App.Select2TestRoute = Ember.Route.extend({
+    model: function() {
+        return this.store.find('tag');
+    },
     renderTemplate: function () {
         this.render('core/layouts/main');
         this.render('NavHeader', {outlet: 'header'});
