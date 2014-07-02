@@ -10,7 +10,8 @@ App.TextEditor = Ember.TextArea.extend({
     attributeBindings: ['contenteditable'],
     contenteditable: 'true',
     editor: null,
-    isReadOnly: false,
+    isReadOnly: false,  // This is obsolete if we use reviewMode
+    reviewMode: false,
     _suspendValueChange: false,
     _minimumChangeMilliseconds: 1000,
 
@@ -23,18 +24,10 @@ App.TextEditor = Ember.TextArea.extend({
             controller: this
         };
 
-        // Use this for instance dupe errors. Leaving in temporarily
-        //var instance = CKEDITOR.instances[id];
-        //if (instance) {
-        //    CKEDITOR.remove(instance);
-        //}
-        //CKEDITOR.config.customConfig;
-
         var id = this.get('elementId');
-
-        var config = this._getEditorConfig();  // This function returns config options
+        
+        var config = this._getEditorConfig();   // This function returns config options
                                                 // It thus isn't using config file...
-
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
         
@@ -46,6 +39,12 @@ App.TextEditor = Ember.TextArea.extend({
 
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);
+
+            // Prevents all typing, deleting, pasting in editor. (blocks keypresses)
+            // TODO this should include a serverside block for non-plugin insertions as well. 
+            if (this.get('reviewMode')) {
+                $('#'+id).next().attr('onkeydown', 'return false;'); //This grabs the textarea, then nexts onto inline editor
+            }
         }, this);
     },
 
@@ -81,8 +80,8 @@ App.TextEditor = Ember.TextArea.extend({
         });
     },
 
-    _getEditorConfig: function () {
-        return {
+    _getEditorConfig: function () {     // This replace CKEditor config files
+        config = {
             removePlugins: 'magicline,scayt',
             extraPlugins: 'sharedspace,comment',
             startupFocus: true,
@@ -97,6 +96,14 @@ App.TextEditor = Ember.TextArea.extend({
             },
             title: false, // hide hover title
         };
+
+        // Remove toolbar option for Review Mode
+        reviewMode = this.get('reviewMode');
+        if (reviewMode) {
+            config.toolbar = [ ['Comment'], [] ]
+        }
+
+        return config;
     },
 
     suspendValueChange: function(cb) {
