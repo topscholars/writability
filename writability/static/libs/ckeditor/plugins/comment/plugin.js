@@ -9,10 +9,28 @@ CKEDITOR.plugins.add( 'comment', {
 
         editor.addCommand( 'insertComment', {
             exec: function( editor ) {
-                //alert('button clicked!');
-                console.log('hey');
-                var now = new Date();
-                editor.insertHtml( 'The current date and time is: <em>' + now.toString() + '</em>' );
+
+                // TODO -> check that something is already selected, or show a popup.
+
+                // This applies a style to the current selection.
+                var style = new CKEDITOR.style({attributes: {name:"changed", style:"border-bottom:1px solid red;"}});
+                editor.applyStyle(style);
+
+                //Should be moved out..
+                function getSelectionHtml(editor) {
+                    var sel = editor.getSelection();
+                    var ranges = sel.getRanges();
+                    var el = new CKEDITOR.dom.element("div");
+                    for (var i = 0, len = ranges.length; i < len; ++i) {
+                        el.append(ranges[i].cloneContents());
+                    }
+                    return el.getHtml();
+                }
+
+                //alert( 'DEMO: You selected this text: ' + getSelectionHtml(editor) );
+
+                //var now = new Date();
+                //editor.insertHtml( 'The current date and time is: <em>' + now.toString() + '</em>' );
             }
         });
 
