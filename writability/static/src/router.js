@@ -30,6 +30,16 @@ App.Router.map(function () {
         this.route('unauthorized');
     });
 
+    this.route('select2-test');
+
+});
+
+App.Select2TestRoute = Ember.Route.extend({
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('NavHeader', {outlet: 'header'});
+        this.render('test/select', {into: 'core/layouts/main', outlet: 'left-side-outlet'});
+    }
 });
 
 App.LoadingRoute = Ember.Route.extend({
