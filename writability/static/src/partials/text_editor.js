@@ -19,12 +19,26 @@ App.TextEditor = Ember.TextArea.extend({
     },
 
     _setupInlineEditor: function () {
+        var context = {
+            controller: this
+        };
+
+        // Use this for instance dupe errors. Leaving in temporarily
+        //var instance = CKEDITOR.instances[id];
+        //if (instance) {
+        //    CKEDITOR.remove(instance);
+        //}
+        //CKEDITOR.config.customConfig;
+
         var id = this.get('elementId');
-        var config = this._getEditorConfig();
+
+        // this works but the file isn't actually read into CKEditor.config.extraPlugins
+        var config = this._getEditorConfig();  // This function returns config options
+                                                // It thus isn't using config file...
 
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
-
+        
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             this.set ('editor', editor);
@@ -71,12 +85,13 @@ App.TextEditor = Ember.TextArea.extend({
     _getEditorConfig: function () {
         return {
             removePlugins: 'magicline,scayt',
-            extraPlugins: 'sharedspace',
+            extraPlugins: 'sharedspace,comment',
             startupFocus: true,
             toolbar: [
                 ['Undo', 'Redo'],
                 ['Bold', 'Italic', 'Underline'],
-                ['NumberedList', 'BulletedList']
+                ['NumberedList', 'BulletedList'],
+                ['Comment']
             ],
             sharedSpaces: {
                 top: "editor-toolbar",
