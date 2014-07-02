@@ -190,6 +190,67 @@ Ember.Handlebars.registerHelper('eachIndexed', function eachHelper(path, options
     }
 });
 
+App.FormSelect2Component = Ember.TextField.extend({
+	type: 'hidden',
+	select2Options: {},
+	prompt: 'Please select...',
+
+	didInsertElement: function () {
+		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
+	},
+
+	processChildElements: function () {
+		this.$().select2(this.get('select2Options'));
+	},
+
+	willDestroyElement: function () {
+		this.$().select2("destroy");
+	}
+});
+
+App.AutosuggestTagComponent = App.FormSelect2Component.extend({
+	formatSelection: function (tag) {
+		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
+			$result = $('<div>');
+
+		$result.append(categoryEl);
+		$result.append(nameEl);
+		return $result;
+	},
+
+	formatResult: function (tag) {
+		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
+			$result = $('<div>');
+
+		$result.append(categoryEl);
+		$result.append(nameEl);
+		return $result;
+	},
+
+	prompt: 'Tag it.',
+
+	didInsertElement: function () {
+		this.setupSelect2Options();
+		this.$().width('100%');
+		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
+	},
+
+	setupSelect2Options: function() {
+		this.select2Options = {
+			data: {
+				results: this.get('data').toArray(),
+				text: function(tag) {
+					return tag.get('category');
+				}
+			},
+			formatResult: this.formatResult,
+			formatSelection: this.formatSelection
+		}
+	}
+});
+
 App.IsInArrayCheckboxComponent = Ember.Component.extend({
 	target: null,
 	list: [],
@@ -423,6 +484,11 @@ App.Review = DS.Model.extend({
 App.Role = DS.Model.extend({
     // properties
     name: DS.attr('string')
+});
+
+App.Tag = DS.Model.extend({
+	category: DS.attr(),
+	name: DS.attr(),
 });
 
 /* globals App, DS */
@@ -1713,6 +1779,19 @@ App.Router.map(function () {
         this.route('unauthorized');
     });
 
+    this.route('select2-test');
+
+});
+
+App.Select2TestRoute = Ember.Route.extend({
+    model: function() {
+        return this.store.find('tag');
+    },
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('NavHeader', {outlet: 'header'});
+        this.render('test/select', {into: 'core/layouts/main', outlet: 'left-side-outlet'});
+    }
 });
 
 App.LoadingRoute = Ember.Route.extend({
@@ -2162,3 +2241,5 @@ Ember.TEMPLATES["partials/_details-list"] = Ember.Handlebars.compile("<p>{{view.
 Ember.TEMPLATES["partials/button"] = Ember.Handlebars.compile("{{view.text}}");
 
 Ember.TEMPLATES["partials/tags"] = Ember.Handlebars.compile("<div id=\"tag-box\">\n<input id=\"tag-search\">\n<div id=\"tag-menu\"></div>\n</div>\n");
+
+Ember.TEMPLATES["test/select"] = Ember.Handlebars.compile("{{autosuggest-tag data=this}}\n");
