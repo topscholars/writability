@@ -1547,7 +1547,6 @@ App.TextEditor = Ember.TextArea.extend({
 
         var id = this.get('elementId');
 
-        // this works but the file isn't actually read into CKEditor.config.extraPlugins
         var config = this._getEditorConfig();  // This function returns config options
                                                 // It thus isn't using config file...
 
@@ -1605,8 +1604,8 @@ App.TextEditor = Ember.TextArea.extend({
             toolbar: [
                 ['Undo', 'Redo'],
                 ['Bold', 'Italic', 'Underline'],
-                ['NumberedList', 'BulletedList'],
-                ['Comment']
+                ['NumberedList', 'BulletedList', 'Comment']
+                //['Comment']
             ],
             sharedSpaces: {
                 top: "editor-toolbar",
