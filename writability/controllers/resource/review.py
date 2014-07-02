@@ -11,7 +11,7 @@ from models.review import Review
 
 from .base import StatefulResourceManager, ItemResource, ListResource
 from .fields import ResourceField
-import draft, user
+import draft, user, annotation
 
 
 class ReviewResourceManager(StatefulResourceManager):
@@ -32,7 +32,10 @@ class ReviewResourceManager(StatefulResourceManager):
                 absolute=True),
             "teacher": ResourceField(
                 user.TeacherResourceManager.item_resource_name,
-                absolute=True)
+                absolute=True),
+            "annotations": fields.List(ResourceField(
+                annotation.AnnotationResourceManager.item_resource_name,
+                absolute=True))
         })
 
 class ReviewResource(ItemResource):

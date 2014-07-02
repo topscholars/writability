@@ -64,7 +64,7 @@ class AnnotationListResource(ListResource):
         items = {resource_name: models}
         return marshal(items, list_field)
 
-    def post(self, review_id):
+    def post(self):
         return super(AnnotationListResource, self).post()
 
 
