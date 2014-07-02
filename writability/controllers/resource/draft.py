@@ -30,6 +30,9 @@ class DraftResourceManager(StatefulResourceManager):
             "is_final_draft": fields.Boolean,
             "essay": ResourceField(
                 essay.EssayResourceManager.item_resource_name,
+                absolute=True),
+            "review": ResourceField(
+                review.ReviewResourceManager.item_resource_name,
                 absolute=True)
         })
 
