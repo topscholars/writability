@@ -10,6 +10,13 @@ CKEDITOR.plugins.add( 'comment', {
         editor.addCommand( 'insertComment', {
             exec: function( editor ) {
 
+                selectedText = getSelectionHtml(editor);
+                console.log('selected text: ' + selectedText);
+                //if (selectedText.length < 1) {
+                //    alert('Comments require a selected text area. <br />'
+                //        + 'Please select text to comment on, then hit the Comment button.');
+                //    return;
+                //}
                 // TODO -> check that something is already selected, or show a popup.
 
                 // This applies a style to the current selection.

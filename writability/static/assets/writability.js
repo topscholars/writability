@@ -1558,8 +1558,13 @@ App.TextEditor = Ember.TextArea.extend({
 
             // Prevents all typing, deleting, pasting in editor. (blocks keypresses)
             // TODO this should include a serverside block for non-plugin insertions as well. 
-            if (this.get('reviewMode')) {
+            if ( this.get('reviewMode') ) {
                 $('#'+id).next().attr('onkeydown', 'return false;'); //This grabs the textarea, then nexts onto inline editor
+                
+                //$('#'+id).next().bind('keypress', function(e) {
+                //  //if (e.which == '13') { //enter pressed
+                //     return false;
+                //});
             }
         }, this);
     },
@@ -1601,6 +1606,7 @@ App.TextEditor = Ember.TextArea.extend({
             removePlugins: 'magicline,scayt',
             extraPlugins: 'sharedspace,comment',
             startupFocus: true,
+            enterMode: CKEDITOR.ENTER_BR,
             toolbar: [
                 ['Undo', 'Redo'],
                 ['Bold', 'Italic', 'Underline'],
@@ -1608,7 +1614,7 @@ App.TextEditor = Ember.TextArea.extend({
                 //['Comment']
             ],
             // {styles e.g. text-align}(class)(!requiredclass) [attr e.g. href]
-            allowedContent: 'span[*](*){*}', // 'span[!data-commentID,name](*){*}', //Requires data-commentID, any class/style allowed
+            allowedContent: 'span[name,*](*){*}', // 'span[!data-commentID,name](*){*}', //Requires data-commentID, any class/style allowed
             sharedSpaces: {
                 top: "editor-toolbar",
             },
@@ -1618,7 +1624,9 @@ App.TextEditor = Ember.TextArea.extend({
         // Remove toolbar option for Review Mode
         reviewMode = this.get('reviewMode');
         if (reviewMode) {
-            config.toolbar = [ ['Comment'], [] ]
+            config.toolbar = [ ['Comment'], [] ];
+            config.keystrokes = [ [ 13 /*Enter*/, 'doNothing'] ];    //This uses blank plugin.
+            //config.blockedKeystrokes = [13, CKEDITOR.SHIFT + 13];  // Doesn't work
         }
 
         return config;
