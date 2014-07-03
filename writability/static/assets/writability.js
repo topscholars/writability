@@ -214,6 +214,7 @@ App.AnnotationContainerComponent = Ember.Component.extend({
 });
 
 App.AnnotationCreateboxComponent = Ember.Component.extend({
+	tagId: Ember.computed.alias('annotation.annotation.tagId'),
 	didInsertElement: function() {
 		this.$().offset({top: this.get('annotation.offset.top')});
 	}
@@ -350,6 +351,24 @@ App.computed.aliasArrayObject = function (dependentKey, index) {
 	  }
 	});
 }
+
+App.Annotation = DS.Model.extend({
+	original: DS.attr(),
+	comment: DS.attr(),
+	state: DS.attr(),
+	tag: DS.belongsTo('tag'),
+
+	tagId: '',
+
+	changeTagObserver: function() {
+		var model = this;
+
+		this.store.find('tag', this.get('tagId'))
+			.then(function(tag) {
+				model.set('tag', tag);
+			});
+	}.observes('tagId')
+});
 
 App.DomAnnotation = Ember.Object.extend({
 	offset: null,
@@ -758,18 +777,17 @@ App.TeacherDraftController = App.DraftController.extend({
         createNewAnnotation: function () {
             var newAnnotationSpan = $('#annotation-in-progress');
             var annotationText = newAnnotationSpan.html(),
-                annotationOffset = newAnnotationSpan.offset();
+                annotationOffset = newAnnotationSpan.offset(),
+                newAnnotation = this.store.createRecord('annotation', {
+                    original: annotationText
+                });
 
-            var newAnnotation = App.DomAnnotation.create({
+            var newDomAnnotation = App.DomAnnotation.create({
                 offset: annotationOffset,
-                annotation: {
-                    original: annotationText,
-                    comment: null,
-                    tag_id: null
-                }
+                annotation: newAnnotation
             });
 
-            this.set('newAnnotation', newAnnotation);
+            this.set('newAnnotation', newDomAnnotation);
         }
     }
 });
@@ -2199,7 +2217,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
 
 Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{autosuggest-tag data=tags}}\n");
+Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{autosuggest-tag data=tags value=tagId}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray disabled=true}}\n");
 
