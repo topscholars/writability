@@ -1,3 +1,35 @@
 .annotation {
     border-bottom:1px solid red;
 }
+
+.annotation-create {
+	padding-left:  @innerPadding;
+	padding-top:  @innerPadding;
+	padding-right:  @innerPadding;
+	padding-bottom:  @innerPadding;
+
+	border-top: 1px solid @grey;
+	border-bottom: 1px solid @grey;
+}
+
+.annotation-create-tag-selected {
+	display: block;
+	width: 100%;
+    color: #b95d01;
+    border-top: 1px solid @grey;
+    font-size: @bigBodyFontSize;
+    line-height: 24px;
+    margin-bottom: 6px;
+    margin-right: -@innerPadding;
+}
+
+.annotation-create-comment {
+    margin-right: @innerPadding;
+    width: 100%;
+    padding: 10px;
+    height: 6em;
+}
+
+.annotation-create-button {
+    margin-top: @innerPadding;
+}

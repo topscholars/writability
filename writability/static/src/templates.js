@@ -1,6 +1,6 @@
 Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\">Tag It</button>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\">Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray disabled=true}}\n");
 

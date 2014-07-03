@@ -1,9 +1,11 @@
 {{#if tag}}
-	<span class="annotation-create-tag-selected">{{tag.name}} <i class="icon-info"></i></span>
+<div class="annotation-create">
+	<span class="annotation-create-tag-selected">{{tag.name}} <i class="icon-info-circled"></i></span>
 
 	{{textarea value=comment class="annotation-create-comment"}}
 
 	<button class="annotation-create-button">Tag It</button>
+</div>
 {{else}}
 	{{autosuggest-tag data=tags value=tagId}}
 {{/if}}
