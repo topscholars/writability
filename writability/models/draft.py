@@ -29,15 +29,14 @@ class Draft(StatefulModel):
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
 
     #non_tag master 
-    #review = db.relationship("Review", backref="draft", uselist=False)
-    reviews = db.relationship("Review", backref="draft", order_by="Review.id")
-
+    review = db.relationship("Review", backref="draft", uselist=False)
+    
     def change_related_objects(self):
         """Change any related objects before commit."""
         super(Draft, self).change_related_objects()
 
 
-        if self.state == "submitted" and self.reviews is None:
+        if self.state == "submitted" and self.review is None:
             new_review_params = {
                 "teacher": self.essay.student.teacher,
                 "draft": self,

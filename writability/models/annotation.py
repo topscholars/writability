@@ -46,7 +46,20 @@ class Annotation(StatefulModel):
 
     def _get_initial_states(self):
         """Get the allowed initial states."""
-        return ["new"]
+        return ["new","resolved"]
+
+    def create_copy(self):
+        """Creates a new annotation as a copy of self."""
+        params = {
+                "comment": self.comment,
+                "original": self.original,
+                "start_index": self.start_index,
+                "end_index": self.end_index,
+                "state": self.state,
+                "tag_id": self.tag_id,
+                }
+        new_anno = Annotation(**params)
+        return new_anno
 
 class Tag(BaseModel):
 

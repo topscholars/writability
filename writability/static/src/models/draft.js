@@ -11,5 +11,5 @@ App.Draft = DS.Model.extend({
 
     // relationships
     essay: DS.belongsTo('themeEssay'), // TODO: need this for essay.theme
-    reviews: DS.hasMany('review', {async: true})
+    review: DS.belongsTo('review', {async: true})
 });

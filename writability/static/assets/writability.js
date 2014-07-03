@@ -368,7 +368,7 @@ App.Draft = DS.Model.extend({
 
     // relationships
     essay: DS.belongsTo('themeEssay'), // TODO: need this for essay.theme
-    reviews: DS.hasMany('review', {async: true})
+    review: DS.belongsTo('review', {async: true})
 });
 
 /* globals App, DS */
@@ -2170,27 +2170,12 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
             route.get('currentTeacher.reviews'),
             route.store.find('draft', id)
         ]).then(function (values) {
-            var teacher_reviews = values[0];
+            var reviews = values[0];
             var draft = values[1];
+            var review_id = draft.get('review.id');
 
-            if(!draft) {
-                console.log('Could not find draft with ID = ' + id.toString());
+            if (review_id && !reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
-            } else {
-                Ember.RSVP.Promise.all([
-                    draft.get('reviews')
-                ]).then(function(values) {
-                    var draft_reviews = values[0];
-                    var review = draft_reviews.toArray()[0];
-                    if(!review) {
-                        console.log('Could not find review for draft');
-                        route.transitionTo('error.unauthorized');
-                    } else {
-                        if (!teacher_reviews.isAny('id', review.id)) {
-                            route.transitionTo('error.unauthorized');
-                        }
-                    }
-                });
             }
         });
     }
