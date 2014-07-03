@@ -24,7 +24,8 @@
         {{view App.TextEditor
             action="startedWriting"
             valueBinding="formatted_text"
-            isReadOnly=true
+            isReadOnly=false
+            reviewMode=true
         }}
     {{else}}
         {{view App.TextEditor
@@ -35,4 +36,5 @@
 </div>
 
 <div class="editor-column annotations-column">
+    {{annotation-container newAnnotation=newAnnotation annotations=annotations}}
 </div>

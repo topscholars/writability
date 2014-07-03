@@ -1,4 +1,20 @@
 /* globals App, Ember, CKEDITOR */
+
+function addTag () {
+    var tag_box =   '<div id="tag_box">'
+                   +'    <input placeholder="Tag it   (to demo on Monday)" class="tag_input">'
+                   +'</div>';
+    $('.annotations-column').append(tag_box);
+} 
+function removeTagBoxes () {
+    $('#tag_box').remove();
+} 
+function addDemoTag (floatFromTopInPX) {
+    var tag_box =   '<div style="top:' +floatFromTopInPX+ 'px" class="existing_tag">'
+                   +'    <p class="">Run-on Sentence</p>'
+                   +'</div>';
+    $('.annotations-column').append(tag_box);
+}
 App.TextEditor = Ember.TextArea.extend({
 
     actions: {
@@ -23,36 +39,80 @@ App.TextEditor = Ember.TextArea.extend({
         var context = {
             controller: this
         };
+<<<<<<< HEAD
+        var id = this.get('elementId');
+        var config = this._getEditorConfig();
+=======
+>>>>>>> origin/cke_plugin
 
         var id = this.get('elementId');
-
+        
         var config = this._getEditorConfig();   // This function returns config options
                                                 // It thus isn't using config file...
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
-
+        
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
+<<<<<<< HEAD
+            context.editor = editor;
+=======
             console.log(editor.filter.allowedContent);
+>>>>>>> origin/cke_plugin
             this.set ('editor', editor);
 
             editor.setReadOnly(this.get('isReadOnly'));
 
+            // This fires for all 3 cols
+            var text_column = editor.document.on("mouseup", this.checkForSelection, context );
+            //works  // $(text_column).on("click", function () { alert('hey'); });
+            //doesnt // $(text_column).on("mouseup", context, this.checkForSelection );
+            //doesnt // $(text_column).on('mouseup', this.checkForSelection, context); 
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);
+<<<<<<< HEAD
+            
+            // Test UI
+            addDemoTag(100);
+
+=======
 
             // Prevents all typing, deleting, pasting in editor. (blocks keypresses)
-            // TODO this should include a serverside block for non-plugin insertions as well.
+            // TODO this should include a serverside block for non-plugin insertions as well. 
             if ( this.get('reviewMode') ) {
                 $('#'+id).next().attr('onkeydown', 'return false;'); //This grabs the textarea, then nexts onto inline editor
-
+                
                 //$('#'+id).next().bind('keypress', function(e) {
                 //  //if (e.which == '13') { //enter pressed
                 //     return false;
                 //});
             }
+>>>>>>> origin/cke_plugin
         }, this);
     },
+
+    checkForSelection: function() {
+        var editor = this.editor,
+            controller = this.controller;
+        var selectedText = editor.getSelection().getSelectedText();
+
+        if (selectedText) {
+
+            alert('You selected: ' + selectedText);
+
+            // Insert UI on right column
+            removeTagBoxes();  
+            addTag(200);
+            
+            //this.displayTagEntry();   // This isn't able to call the method in this class
+                                        //  displayTagEntry, this.displayTagEntry, App.TextEditor.displayTagEntry() also fail
+        }
+    },
+    //displayTagEntry: function () {
+    //    alert('displayTagEntry');
+    //    // pass in height of selected text to a function for displaying 
+    //},
+
 
     _onChange: function () {
         // use timer to make sure that change event handling is throttled

@@ -97,6 +97,15 @@ App.StudentDraftController = App.DraftController.extend({
 
 App.TeacherDraftController = App.DraftController.extend({
 
+    formattedTextObserver: function () {
+        if (this.get('formatted_text').match(/id="annotation-in-progress"/)) {
+            this.send('createNewAnnotation');
+        } else {
+            // this._super();
+        }
+        // Ember.run.debounce(this, this.saveDraft, 10000);
+    }.observes('formatted_text'),
+
     reviewMode: true,
 
     _onReviewChange: function () {
@@ -138,6 +147,14 @@ App.TeacherDraftController = App.DraftController.extend({
                     // TODO: convert this to essays once it's complete
                     this.transitionToRoute('students');
                 }.bind(this));
+        },
+
+        createNewAnnotation: function () {
+            var newAnnotationSpan = $('#annotation-in-progress');
+            var annotationText = newAnnotationSpan.html(),
+                annotationOffset = newAnnotationSpan.offset();
+
+            debugger;
         }
     }
 });
