@@ -1,10 +1,9 @@
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
-		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+		var
 			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
 			$result = $('<div>');
 
-		$result.append(categoryEl);
 		$result.append(nameEl);
 		return $result;
 	},

@@ -215,6 +215,7 @@ App.AnnotationContainerComponent = Ember.Component.extend({
 
 App.AnnotationCreateboxComponent = Ember.Component.extend({
 	tagId: Ember.computed.alias('annotation.annotation.tagId'),
+	tag: Ember.computed.alias('annotation.annotation.tag'),
 	didInsertElement: function() {
 		this.$().offset({top: this.get('annotation.offset.top')});
 	}
@@ -222,11 +223,10 @@ App.AnnotationCreateboxComponent = Ember.Component.extend({
 
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
-		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+		var
 			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
 			$result = $('<div>');
 
-		$result.append(categoryEl);
 		$result.append(nameEl);
 		return $result;
 	},
@@ -2217,7 +2217,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
 
 Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{autosuggest-tag data=tags value=tagId}}\n");
+Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\">Tag It</button>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray disabled=true}}\n");
 
