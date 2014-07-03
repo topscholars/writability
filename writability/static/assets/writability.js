@@ -215,9 +215,20 @@ App.AnnotationContainerComponent = Ember.Component.extend({
 
 App.AnnotationCreateboxComponent = Ember.Component.extend({
 	tagId: Ember.computed.alias('annotation.annotation.tagId'),
+
 	tag: Ember.computed.alias('annotation.annotation.tag'),
+
 	didInsertElement: function() {
 		this.$().offset({top: this.get('annotation.offset.top')});
+	},
+
+	actions: {
+		saveAnnotation: function() {
+			var component = this;
+			this.get('annotation.annotation').save().then(function(annotation) {
+				component.sendAction('hasSavedAnnotation', annotation);
+			});
+		}
 	}
 });
 
@@ -357,6 +368,7 @@ App.Annotation = DS.Model.extend({
 	comment: DS.attr(),
 	state: DS.attr(),
 	tag: DS.belongsTo('tag'),
+	draft: DS.belongsTo('draft'),
 
 	tagId: '',
 
@@ -2217,7 +2229,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
 
 Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\">Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray disabled=true}}\n");
 

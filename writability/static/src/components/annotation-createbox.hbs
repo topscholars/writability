@@ -4,7 +4,7 @@
 
 	{{textarea value=comment class="annotation-create-comment"}}
 
-	<button class="annotation-create-button">Tag It</button>
+	<button class="annotation-create-button" {{action "saveAnnotation"}}>Tag It</button>
 </div>
 {{else}}
 	{{autosuggest-tag data=tags value=tagId}}
