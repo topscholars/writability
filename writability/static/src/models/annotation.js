@@ -3,7 +3,7 @@ App.Annotation = DS.Model.extend({
 	comment: DS.attr(),
 	state: DS.attr(),
 	tag: DS.belongsTo('tag'),
-	draft: DS.belongsTo('draft'),
+	review: DS.belongsTo('review'),
 
 	tagId: '',
 

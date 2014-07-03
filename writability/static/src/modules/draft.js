@@ -157,19 +157,22 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         createNewAnnotation: function () {
-            var newAnnotationSpan = $('#annotation-in-progress');
-            var annotationText = newAnnotationSpan.html(),
-                annotationOffset = newAnnotationSpan.offset(),
-                newAnnotation = this.store.createRecord('annotation', {
-                    original: annotationText
+            this.get('review').then(function (review) {
+                var newAnnotationSpan = $('#annotation-in-progress');
+                var annotationText = newAnnotationSpan.html(),
+                    annotationOffset = newAnnotationSpan.offset(),
+                    newAnnotation = this.store.createRecord('annotation', {
+                        original: annotationText,
+                        review: review
+                    });
+
+                var newDomAnnotation = App.DomAnnotation.create({
+                    offset: annotationOffset,
+                    annotation: newAnnotation
                 });
 
-            var newDomAnnotation = App.DomAnnotation.create({
-                offset: annotationOffset,
-                annotation: newAnnotation
-            });
-
-            this.set('newAnnotation', newDomAnnotation);
+                this.set('newAnnotation', newDomAnnotation);
+            }.bind(this));
         }
     }
 });
