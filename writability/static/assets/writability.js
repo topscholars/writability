@@ -1786,11 +1786,11 @@ App.TextEditor = Ember.TextArea.extend({
             toolbar: [
                 ['Undo', 'Redo'],
                 ['Bold', 'Italic', 'Underline'],
-                ['NumberedList', 'BulletedList', 'Comment']
+                ['NumberedList', 'BulletedList']
                 //['Comment']
             ],
             // {styles e.g. text-align}(class)(!requiredclass) [attr e.g. href]
-            allowedContent: 'span[name,*](*){*}', // 'span[!data-commentID,name](*){*}', //Requires data-commentID, any class/style allowed
+            allowedContent: 'em strong u ol li ul; span[name,*](*){*}', // 'span[!data-commentID,name](*){*}', //Requires data-commentID, any class/style allowed
             sharedSpaces: {
                 top: "editor-toolbar",
             },
