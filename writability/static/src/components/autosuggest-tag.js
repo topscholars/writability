@@ -24,7 +24,7 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	didInsertElement: function () {
 		this.setupSelect2Options();
 		this.$().width('100%');
-		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
+		this._super();
 	},
 
 	setupSelect2Options: function() {
