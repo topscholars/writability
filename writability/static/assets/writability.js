@@ -653,11 +653,7 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-<<<<<<< HEAD
-        Ember.run.debounce(this, this.saveDraft, 10000, true);
-=======
-        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout);
->>>>>>> origin/master
+        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -772,7 +768,7 @@ App.TeacherDraftController = App.DraftController.extend({
 
     _onReviewChange: function () {
         if (this.get('review.isDirty')) {
-            Ember.run.debounce(this, this.saveReview, App.autosaveTimout);
+            Ember.run.debounce(this, this.saveReview, App.autosaveTimout, true);
         }
     }.observes('review.text'),
 
@@ -834,7 +830,7 @@ App.TeacherDraftController = App.DraftController.extend({
             var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', 'annotation-' + annotation.id);
 
             this.set('formatted_text', newFormattedText);
-            Ember.run.debounce(this, this.saveDraft, 10000, true);
+            Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
 
             this.set('newAnnotation', null);
         }
