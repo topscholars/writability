@@ -1548,6 +1548,7 @@ App.TextEditor = Ember.TextArea.extend({
         
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
+            console.log(editor.filter.allowedContent);
             this.set ('editor', editor);
 
             editor.setReadOnly(this.get('isReadOnly'));
@@ -1606,6 +1607,8 @@ App.TextEditor = Ember.TextArea.extend({
                 ['NumberedList', 'BulletedList', 'Comment']
                 //['Comment']
             ],
+            // {styles e.g. text-align}(class)(!requiredclass) [attr e.g. href]
+            allowedContent: 'span[*](*){*}', // 'span[!data-commentID,name](*){*}', //Requires data-commentID, any class/style allowed
             sharedSpaces: {
                 top: "editor-toolbar",
             },
