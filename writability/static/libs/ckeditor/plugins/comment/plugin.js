@@ -19,7 +19,7 @@ CKEDITOR.plugins.add( 'comment', {
                 // TODO -> check that something is already selected, or show a popup.
 
                 // This applies a style to the current selection.
-                var style = new CKEDITOR.style({attributes: {name:"changed", style:"border-bottom:1px solid red;"}});
+                var style = new CKEDITOR.style({attributes: {class: "annotation", id: "annotation-in-progress"}});
                 editor.applyStyle(style);
 
                 //Should be moved out..
@@ -48,7 +48,7 @@ CKEDITOR.plugins.add( 'comment', {
         editor.ui.addButton( 'Comment', {
             label: 'Insert Comment YAY!',
             command: 'insertComment'
-            //toolbar: 'insert'           // This is a toolbar group the button is inserted into 
+            //toolbar: 'insert'           // This is a toolbar group the button is inserted into
         });
     }
 });

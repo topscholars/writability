@@ -11,6 +11,8 @@
 /* @import "../../libs/bootstrap/less/bootstrap"; */
 @import "functions";
 @import "components";
+@import "ui/select2";
+@import "ui/annotations";
 /*@import "modules";
 @import "partials"; */
 
@@ -802,7 +804,7 @@ button, input[type="checkbox"] {
         border-right: @thinBorder @greyLight solid;
         height: 100%;
         left: 28%;
-        position: relative;
+        position: fixed; /* changed from relative to make right column (annotations) work */
         text-align: center;
         width: 44%;
         z-index: 12;
@@ -827,7 +829,9 @@ button, input[type="checkbox"] {
     .annotations-column {
         height: 100%;
         position: relative;
-        width: 25%;
+        width: 27%;
+        left: 72%;
+
     }
 }
 
@@ -1003,58 +1007,80 @@ button, input[type="checkbox"] {
 * Tag Selector
 ************************************************************/
 
-#tag-box {
-    border: 1px solid gray;
-    height: 270px;
-    width: 320px;
+
+.annotations-column {
+    .existing_tag {
+        position: relative;
+        p {
+            color: @green;
+        }
+    }
+
+
+    #tag_box {
+        border: 1px solid grey;
+        height: 80px;
+        /* width: 320px; */
+
+        .tag_input{
+            border: none;
+            border-bottom: dashed grey;
+            border-top: dashed grey;
+            position:relative;
+            height:33%;
+            top: 33%;
+            width: 100%;
+        }
+    }
+
+    #tag-search {
+        margin-left: 0px;
+        margin-top: 30px;
+        border-top: 1px dashed black;
+        border-bottom: 1px dashed black;
+        border-left: none;
+        border-right: none;
+        width: 318px;   /* tag-box width -2 */
+        font-size: 14px;
+        line-height: 30px;
+        outline: none;
+    }
+
+    #tag-menu .ui-autocomplete {
+        border-width: 0px;
+        overflow: scroll;
+        width: 300px;
+        height: 200px;
+        list-style-type: none;
+        padding-left: 10px;
+        margin-top: 0px;
+    }
+
+    .ui-helper-hidden-accessible {
+        display: none;
+    }
+
+    #tag-menu .ui-autocomplete-category {
+        margin-top: 20px;
+    }
+
+    #tag-menu .ui-menu-item a {
+        margin-left: 30px;
+    }
+
+    #tag-menu .ui-menu-item a.tag-positive {
+        color: lightseagreen;
+    }
+
+    #tag-menu .ui-menu-item a.tag-negative {
+        color: orange;
+    }
+
+    #tag-menu .ui-menu-item a.tag-neutral {
+        color: gray;
+    }
 }
 
-#tag-search {
-    margin-left: 0px;
-    margin-top: 30px;
-    border-top: 1px dashed black;
-    border-bottom: 1px dashed black;
-    border-left: none;
-    border-right: none;
-    width: 318px;   /* tag-box width -2 */
-    font-size: 14px;
-    line-height: 30px;
-    outline: none;
-}
-
-#tag-menu .ui-autocomplete {
-    border-width: 0px;
-    overflow: scroll;
-    width: 300px;
-    height: 200px;
-    list-style-type: none;
-    padding-left: 10px;
-    margin-top: 0px;
-}
-
-.ui-helper-hidden-accessible {
-    display: none;
-}
-
-#tag-menu .ui-autocomplete-category {
-    margin-top: 20px;
-}
-
-#tag-menu .ui-menu-item a {
-    margin-left: 30px;
-}
-
-#tag-menu .ui-menu-item a.tag-positive {
-    color: lightseagreen;
-}
-
-#tag-menu .ui-menu-item a.tag-negative {
-    color: orange;
-}
-
-#tag-menu .ui-menu-item a.tag-neutral {
-    color: gray;
-}
 
 /***********************************************************
 * Miscellaneous

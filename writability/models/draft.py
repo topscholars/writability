@@ -27,8 +27,10 @@ class Draft(StatefulModel):
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
-    review = db.relationship("Review", backref="draft", uselist=False)
 
+    #non_tag master 
+    review = db.relationship("Review", backref="draft", uselist=False)
+    
     def change_related_objects(self):
         """Change any related objects before commit."""
         super(Draft, self).change_related_objects()
@@ -45,6 +47,7 @@ class Draft(StatefulModel):
             # annotations that are not marked "complete" by the teacher
 
             # if there were no previous drafts, create a new empty review
+
             new_review_params = {
                 "teacher": self.essay.student.teacher,
                 "draft": self,
@@ -52,7 +55,7 @@ class Draft(StatefulModel):
                 "annotations": ann_list
             }
 
-            self.review = review.Review(**new_review_params)
+            self.review = review.Review(**new_review_params)  ####********* This is likely obsolete.  ****#######
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""

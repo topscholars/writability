@@ -79,7 +79,7 @@ def initialize(app, api_prefix):
     add_resource_with_endpoint(api, ReviewResource, "/reviews/<int:id>")
 
     # annotation
-    add_resource_with_endpoint(api, AnnotationListResource, "/reviews/<int:review_id>/annotations")
+    add_resource_with_endpoint(api, AnnotationListResource, "/annotations")
     add_resource_with_endpoint(api, AnnotationResource, "/annotations/<int:id>")
 
     # tags

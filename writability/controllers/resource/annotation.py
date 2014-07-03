@@ -44,28 +44,28 @@ class AnnotationListResource(ListResource):
 
     resource_manager_class = AnnotationResourceManager
 
-    def get(self, review_id):
-        resource_name = self.resource_manager.list_resource_name
-        model_class = self.resource_manager.model_class
-        list_field = self.resource_manager.list_field
+    # def get(self):
+    #     resource_name = self.resource_manager.list_resource_name
+    #     model_class = self.resource_manager.model_class
+    #     list_field = self.resource_manager.list_field
 
-        ids = self._get_ids_from_query_params()
-        models = []
-        # if sent multiple ids then grab the list
-        if ids:
-            models = model_class.read_many(ids)
-        # or do a filter
-        else:
-            query_filters = self._get_query_filters()
-            if review_id:
-                query_filters.update({"review": review_id})
-            models = model_class.read_by_filter(query_filters)
+    #     ids = self._get_ids_from_query_params()
+    #     models = []
+    #     # if sent multiple ids then grab the list
+    #     if ids:
+    #         models = model_class.read_many(ids)
+    #     # or do a filter
+    #     else:
+    #         query_filters = self._get_query_filters()
+    #         if review_id:
+    #             query_filters.update({"review": review_id})
+    #         models = model_class.read_by_filter(query_filters)
 
-        items = {resource_name: models}
-        return marshal(items, list_field)
+    #     items = {resource_name: models}
+    #     return marshal(items, list_field)
 
-    def post(self, review_id):
-        return super(AnnotationListResource, self).post()
+    # def post(self, review_id):
+    #     return super(AnnotationListResource, self).post()
 
 
 class TagResourceManager(StatefulResourceManager):

@@ -28,6 +28,9 @@ class DraftResourceManager(StatefulResourceManager):
             "word_count": fields.Integer,
             "due_date": fields.String,
             "is_final_draft": fields.Boolean,
+            "review": ResourceField(
+                review.ReviewResourceManager.item_resource_name,
+                absolute=True),
             "essay": ResourceField(
                 essay.EssayResourceManager.item_resource_name,
                 absolute=True),

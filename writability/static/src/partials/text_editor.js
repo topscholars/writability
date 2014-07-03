@@ -25,12 +25,12 @@ App.TextEditor = Ember.TextArea.extend({
         };
 
         var id = this.get('elementId');
-        
+
         var config = this._getEditorConfig();   // This function returns config options
                                                 // It thus isn't using config file...
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
-        
+
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             console.log(editor.filter.allowedContent);
@@ -42,10 +42,10 @@ App.TextEditor = Ember.TextArea.extend({
             editor.on('focus', this._onFocus, this);
 
             // Prevents all typing, deleting, pasting in editor. (blocks keypresses)
-            // TODO this should include a serverside block for non-plugin insertions as well. 
+            // TODO this should include a serverside block for non-plugin insertions as well.
             if ( this.get('reviewMode') ) {
                 $('#'+id).next().attr('onkeydown', 'return false;'); //This grabs the textarea, then nexts onto inline editor
-                
+
                 //$('#'+id).next().bind('keypress', function(e) {
                 //  //if (e.which == '13') { //enter pressed
                 //     return false;
