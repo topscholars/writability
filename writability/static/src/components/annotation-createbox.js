@@ -1,5 +1,26 @@
 App.AnnotationCreateboxComponent = Ember.Component.extend({
+	tagId: Ember.computed.alias('annotation.annotation.tagId'),
+
+	tag: Ember.computed.alias('annotation.annotation.tag'),
+
+	offsetHasChanged: function() {
+		this.setElementOffset();
+	}.observes('annotation.offset'),
+
 	didInsertElement: function() {
+		this.setElementOffset();
+	},
+
+	setElementOffset: function() {
 		this.$().offset({top: this.get('annotation.offset.top')});
+	},
+
+	actions: {
+		saveAnnotation: function() {
+			var component = this;
+			this.get('annotation.annotation').save().then(function(annotation) {
+				component.sendAction('hasSavedAnnotation', annotation);
+			});
+		}
 	}
 });

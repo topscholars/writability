@@ -11,7 +11,7 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout);
+        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -99,6 +99,7 @@ App.StudentDraftController = App.DraftController.extend({
 
 App.TeacherDraftController = App.DraftController.extend({
 
+    annotationSelector: null,
     newAnnotation: null,
     annotations: [],
 
@@ -107,12 +108,12 @@ App.TeacherDraftController = App.DraftController.extend({
     }.property(),
 
     formattedTextObserver: function () {
-        if (this.get('formatted_text').match(/id="annotation-in-progress"/)) {
+        console.log(this.get('formatted_text').indexOf('id="annotation-in-progress"'));
+        if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {
             this.send('createNewAnnotation');
         } else {
-            // this._super();
+            this._super();
         }
-        // Ember.run.debounce(this, this.saveDraft, 10000);
     }.observes('formatted_text'),
 
     reviewMode: true,
@@ -125,7 +126,7 @@ App.TeacherDraftController = App.DraftController.extend({
 
     _onReviewChange: function () {
         if (this.get('review.isDirty')) {
-            Ember.run.debounce(this, this.saveReview, App.autosaveTimout);
+            Ember.run.debounce(this, this.saveReview, App.autosaveTimout, true);
         }
     }.observes('review.text'),
 
@@ -163,20 +164,33 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         createNewAnnotation: function () {
-            var newAnnotationSpan = $('#annotation-in-progress');
-            var annotationText = newAnnotationSpan.html(),
-                annotationOffset = newAnnotationSpan.offset();
+            this.get('review').then(function (review) {
+                var newAnnotationSpan = $('#annotation-in-progress');
 
-            var newAnnotation = App.DomAnnotation.create({
-                offset: annotationOffset,
-                annotation: {
-                    original: annotationText,
-                    comment: null,
-                    tag_id: null
-                }
-            });
+                var annotationText = newAnnotationSpan.html(),
+                    annotationOffset = newAnnotationSpan.offset(),
+                    newAnnotation = this.store.createRecord('annotation', {
+                        original: annotationText,
+                        review: review
+                    });
 
-            this.set('newAnnotation', newAnnotation);
+                var newDomAnnotation = App.DomAnnotation.create({
+                    offset: annotationOffset,
+                    annotation: newAnnotation
+                });
+
+                this.set('newAnnotation', newDomAnnotation);
+                this.set('annotationSelector', newAnnotationSpan);
+            }.bind(this));
+        },
+
+        hasSavedAnnotation: function(annotation) {
+            var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', 'annotation-' + annotation.id);
+
+            this.set('formatted_text', newFormattedText);
+            Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
+
+            this.set('newAnnotation', null);
         }
     }
 });

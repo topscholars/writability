@@ -196,6 +196,7 @@ App.FormSelect2Component = Ember.TextField.extend({
 	prompt: 'Please select...',
 
 	didInsertElement: function () {
+		this.$().attr('placeholder', this.get('prompt'));
 		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
 	},
 
@@ -209,22 +210,46 @@ App.FormSelect2Component = Ember.TextField.extend({
 });
 
 App.AnnotationContainerComponent = Ember.Component.extend({
-
+	actions: {
+		hasSavedAnnotation: function(annotation) {
+			this.sendAction('hasSavedAnnotation', annotation);
+		}
+	}
 });
 
 App.AnnotationCreateboxComponent = Ember.Component.extend({
+	tagId: Ember.computed.alias('annotation.annotation.tagId'),
+
+	tag: Ember.computed.alias('annotation.annotation.tag'),
+
+	offsetHasChanged: function() {
+		this.setElementOffset();
+	}.observes('annotation.offset'),
+
 	didInsertElement: function() {
+		this.setElementOffset();
+	},
+
+	setElementOffset: function() {
 		this.$().offset({top: this.get('annotation.offset.top')});
+	},
+
+	actions: {
+		saveAnnotation: function() {
+			var component = this;
+			this.get('annotation.annotation').save().then(function(annotation) {
+				component.sendAction('hasSavedAnnotation', annotation);
+			});
+		}
 	}
 });
 
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
-		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
+		var
 			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
 			$result = $('<div>');
 
-		$result.append(categoryEl);
 		$result.append(nameEl);
 		return $result;
 	},
@@ -244,7 +269,7 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	didInsertElement: function () {
 		this.setupSelect2Options();
 		this.$().width('100%');
-		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
+		this._super();
 	},
 
 	setupSelect2Options: function() {
@@ -349,6 +374,25 @@ App.computed.aliasArrayObject = function (dependentKey, index) {
 	  }
 	});
 }
+
+App.Annotation = DS.Model.extend({
+	original: DS.attr(),
+	comment: DS.attr(),
+	state: DS.attr(),
+	tag: DS.belongsTo('tag'),
+	review: DS.belongsTo('review'),
+
+	tagId: '',
+
+	changeTagObserver: function() {
+		var model = this;
+
+		this.store.find('tag', this.get('tagId'))
+			.then(function(tag) {
+				model.set('tag', tag);
+			});
+	}.observes('tagId')
+});
 
 App.DomAnnotation = Ember.Object.extend({
 	offset: null,
@@ -609,7 +653,7 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout);
+        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -697,6 +741,7 @@ App.StudentDraftController = App.DraftController.extend({
 
 App.TeacherDraftController = App.DraftController.extend({
 
+    annotationSelector: null,
     newAnnotation: null,
     annotations: [],
 
@@ -705,12 +750,12 @@ App.TeacherDraftController = App.DraftController.extend({
     }.property(),
 
     formattedTextObserver: function () {
-        if (this.get('formatted_text').match(/id="annotation-in-progress"/)) {
+        console.log(this.get('formatted_text').indexOf('id="annotation-in-progress"'));
+        if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {
             this.send('createNewAnnotation');
         } else {
-            // this._super();
+            this._super();
         }
-        // Ember.run.debounce(this, this.saveDraft, 10000);
     }.observes('formatted_text'),
 
     reviewMode: true,
@@ -723,7 +768,7 @@ App.TeacherDraftController = App.DraftController.extend({
 
     _onReviewChange: function () {
         if (this.get('review.isDirty')) {
-            Ember.run.debounce(this, this.saveReview, App.autosaveTimout);
+            Ember.run.debounce(this, this.saveReview, App.autosaveTimout, true);
         }
     }.observes('review.text'),
 
@@ -761,20 +806,33 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         createNewAnnotation: function () {
-            var newAnnotationSpan = $('#annotation-in-progress');
-            var annotationText = newAnnotationSpan.html(),
-                annotationOffset = newAnnotationSpan.offset();
+            this.get('review').then(function (review) {
+                var newAnnotationSpan = $('#annotation-in-progress');
 
-            var newAnnotation = App.DomAnnotation.create({
-                offset: annotationOffset,
-                annotation: {
-                    original: annotationText,
-                    comment: null,
-                    tag_id: null
-                }
-            });
+                var annotationText = newAnnotationSpan.html(),
+                    annotationOffset = newAnnotationSpan.offset(),
+                    newAnnotation = this.store.createRecord('annotation', {
+                        original: annotationText,
+                        review: review
+                    });
 
-            this.set('newAnnotation', newAnnotation);
+                var newDomAnnotation = App.DomAnnotation.create({
+                    offset: annotationOffset,
+                    annotation: newAnnotation
+                });
+
+                this.set('newAnnotation', newDomAnnotation);
+                this.set('annotationSelector', newAnnotationSpan);
+            }.bind(this));
+        },
+
+        hasSavedAnnotation: function(annotation) {
+            var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', 'annotation-' + annotation.id);
+
+            this.set('formatted_text', newFormattedText);
+            Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
+
+            this.set('newAnnotation', null);
         }
     }
 });
@@ -2190,9 +2248,9 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{autosuggest-tag data=tags}}\n");
+Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("<div class=\"checkbox\">\n\t{{#if isInArray}}\n\t\t<i class=\"icon-check\"></i>\n\t{{else}}\n\t\t<i class=\"icon-check inactive\"></i>\n\t{{/if}}\n</div>\n");
 
@@ -2238,7 +2296,7 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=false\n            reviewMode=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n    {{annotation-container newAnnotation=newAnnotation annotations=annotations tags=tags}}\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=false\n            reviewMode=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n    {{annotation-container newAnnotation=newAnnotation annotations=annotations tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n</div>\n");
 
 Ember.TEMPLATES["modules/essay/_app-item"] = Ember.Handlebars.compile("<li {{bind-attr class=\":tab-list-item selected unselected\"}}>\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 

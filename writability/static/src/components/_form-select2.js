@@ -4,6 +4,7 @@ App.FormSelect2Component = Ember.TextField.extend({
 	prompt: 'Please select...',
 
 	didInsertElement: function () {
+		this.$().attr('placeholder', this.get('prompt'));
 		Ember.run.scheduleOnce('afterRender', this, 'processChildElements');
 	},
 
