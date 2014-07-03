@@ -8,6 +8,7 @@ App.Review = DS.Model.extend({
 
     next_states: DS.attr('array', {readOnly: true}),
     state: DS.attr('string'),
+    annotations: DS.hasMany('annotation', {async: true}),
 
     // relationships
     draft: DS.belongsTo('draft'),

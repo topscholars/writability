@@ -533,6 +533,7 @@ App.Review = DS.Model.extend({
 
     next_states: DS.attr('array', {readOnly: true}),
     state: DS.attr('string'),
+    annotations: DS.hasMany('annotation', {async: true}),
 
     // relationships
     draft: DS.belongsTo('draft'),
@@ -749,8 +750,31 @@ App.TeacherDraftController = App.DraftController.extend({
         return this.store.find('tag');
     }.property(),
 
+    domAnnotations: function() {
+        var controller = this;
+        return this.get('review.annotations').then(function(annotations) {
+            return annotations.map(function(annotation) {
+                return controller.createDomAnnotation(annotation);
+            });
+        });
+    }.property('review.annotations'),
+
+    createDomAnnotation: function(annotation) {
+        var annotationEl = $('#annotation-' + annotation.id),
+            annotationOffset = {top: 0, left: 0};
+
+
+        if (annotationEl.length > 0) {
+            annotationOffset = $(annotationEl).offset();
+        }
+
+        return App.DomAnnotation.create({
+            offset: annotationOffset,
+            annotation: annotation
+        });
+    },
+
     formattedTextObserver: function () {
-        console.log(this.get('formatted_text').indexOf('id="annotation-in-progress"'));
         if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {
             this.send('createNewAnnotation');
         } else {
@@ -2296,7 +2320,7 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=false\n            reviewMode=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n    {{annotation-container newAnnotation=newAnnotation annotations=annotations tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=false\n            reviewMode=true\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n    {{annotation-container newAnnotation=newAnnotation annotations=domAnnotations tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n</div>\n");
 
 Ember.TEMPLATES["modules/essay/_app-item"] = Ember.Handlebars.compile("<li {{bind-attr class=\":tab-list-item selected unselected\"}}>\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 

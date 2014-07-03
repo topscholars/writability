@@ -107,8 +107,31 @@ App.TeacherDraftController = App.DraftController.extend({
         return this.store.find('tag');
     }.property(),
 
+    domAnnotations: function() {
+        var controller = this;
+        return this.get('review.annotations').then(function(annotations) {
+            return annotations.map(function(annotation) {
+                return controller.createDomAnnotation(annotation);
+            });
+        });
+    }.property('review.annotations'),
+
+    createDomAnnotation: function(annotation) {
+        var annotationEl = $('#annotation-' + annotation.id),
+            annotationOffset = {top: 0, left: 0};
+
+
+        if (annotationEl.length > 0) {
+            annotationOffset = $(annotationEl).offset();
+        }
+
+        return App.DomAnnotation.create({
+            offset: annotationOffset,
+            annotation: annotation
+        });
+    },
+
     formattedTextObserver: function () {
-        console.log(this.get('formatted_text').indexOf('id="annotation-in-progress"'));
         if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {
             this.send('createNewAnnotation');
         } else {
