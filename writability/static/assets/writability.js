@@ -517,6 +517,8 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
 
 /* globals Ember, App */
 
+App.autosaveTimout = 5000;
+
 App.DraftController = Ember.ObjectController.extend({
     saveDraft: function() {
         var draft = this.get('model');
@@ -526,7 +528,7 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-        Ember.run.debounce(this, this.saveDraft, 10000);
+        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout);
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -616,11 +618,15 @@ App.TeacherDraftController = App.DraftController.extend({
 
     reviewMode: true,
 
+    saveReview: function () {
+        this.get('review').then(function (review) {
+            review.save();
+        });
+    },
+
     _onReviewChange: function () {
         if (this.get('review.isDirty')) {
-            this.get('review').then(function (review) {
-                review.save();
-            });
+            Ember.run.debounce(this, this.saveReview, App.autosaveTimout);
         }
     }.observes('review.text'),
 
