@@ -344,6 +344,11 @@ App.computed.aliasArrayObject = function (dependentKey, index) {
 	});
 }
 
+App.DomAnnotation = Ember.Object.extend({
+	offset: null,
+	annotation: null
+});
+
 /* globals App, DS */
 App.Draft = DS.Model.extend({
     // properties
@@ -684,6 +689,9 @@ App.StudentDraftController = App.DraftController.extend({
 
 App.TeacherDraftController = App.DraftController.extend({
 
+    newAnnotation: null,
+    annotations: [],
+
     formattedTextObserver: function () {
         if (this.get('formatted_text').match(/id="annotation-in-progress"/)) {
             this.send('createNewAnnotation');
@@ -741,7 +749,16 @@ App.TeacherDraftController = App.DraftController.extend({
             var annotationText = newAnnotationSpan.html(),
                 annotationOffset = newAnnotationSpan.offset();
 
-            debugger;
+            var newAnnotation = App.DomAnnotation.create({
+                offset: annotationOffset,
+                annotation: {
+                    original: annotationText,
+                    comment: null,
+                    tag_id: null
+                }
+            });
+
+            this.set('newAnnotation', newAnnotation);
         }
     }
 });
