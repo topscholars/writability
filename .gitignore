@@ -2,6 +2,10 @@
 .env
 node_modules/
 
+#kirk local scripts
+refresh_db.sh
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
