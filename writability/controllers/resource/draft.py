@@ -33,6 +33,9 @@ class DraftResourceManager(StatefulResourceManager):
                 absolute=True),
             "essay": ResourceField(
                 essay.EssayResourceManager.item_resource_name,
+                absolute=True),
+            "review": ResourceField(
+                review.ReviewResourceManager.item_resource_name,
                 absolute=True)
         })
 

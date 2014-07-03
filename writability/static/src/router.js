@@ -290,7 +290,7 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
 
 App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
-        this.controllerFor('student.essays').send('selectEssay', this.currentModel);
+        this.controllerFor('student.essays').send('selectEssay', this.currentModel, true);
         this.render({outlet: 'right-side-outlet'});
     }
 });

@@ -12,6 +12,7 @@
     "momentjs": "~2.6.0",
     "ckeditor": "~4.4.0",
     "validatorjs": "~1.0",
-    "select2": "*"
+    "select2": "*",
+    "entypo": "*"
   }
 }
