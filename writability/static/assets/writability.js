@@ -642,6 +642,8 @@ App.ApplicationEssayTemplatesView = App.ListView.extend({
 
 /* globals Ember, App */
 
+App.autosaveTimout = 5000;
+
 App.DraftController = Ember.ObjectController.extend({
     saveDraft: function() {
         var draft = this.get('model');
@@ -651,7 +653,11 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
+<<<<<<< HEAD
         Ember.run.debounce(this, this.saveDraft, 10000, true);
+=======
+        Ember.run.debounce(this, this.saveDraft, App.autosaveTimout);
+>>>>>>> origin/master
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -758,11 +764,15 @@ App.TeacherDraftController = App.DraftController.extend({
 
     reviewMode: true,
 
+    saveReview: function () {
+        this.get('review').then(function (review) {
+            review.save();
+        });
+    },
+
     _onReviewChange: function () {
         if (this.get('review.isDirty')) {
-            this.get('review').then(function (review) {
-                review.save();
-            });
+            Ember.run.debounce(this, this.saveReview, App.autosaveTimout);
         }
     }.observes('review.text'),
 
@@ -2065,7 +2075,6 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
         inviteStudent: function (studentEmail) {
             var invitation = this.store.createRecord('invitation', {
                 email: studentEmail,
-                is_registered: false,
                 teacher: this.get('currentTeacher')
             });
             this.get('currentTeacher').get('invitations').then(function(invitations) {
