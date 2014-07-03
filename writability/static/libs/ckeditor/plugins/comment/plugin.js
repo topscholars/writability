@@ -10,8 +10,7 @@ CKEDITOR.plugins.add( 'comment', {
         editor.addCommand( 'insertComment', {
             exec: function( editor ) {
 
-                selectedText = getSelectionHtml(editor);
-                console.log('selected text: ' + selectedText);
+
                 //if (selectedText.length < 1) {
                 //    alert('Comments require a selected text area. <br />'
                 //        + 'Please select text to comment on, then hit the Comment button.');
@@ -33,6 +32,9 @@ CKEDITOR.plugins.add( 'comment', {
                     }
                     return el.getHtml();
                 }
+
+                //selectedText = getSelectionHtml(editor);   // Breaks addcomment if called above function definition
+                //console.log('selected text: ' + selectedText);
 
                 //alert( 'DEMO: You selected this text: ' + getSelectionHtml(editor) );
 
