@@ -100,6 +100,10 @@ App.TeacherDraftController = App.DraftController.extend({
     newAnnotation: null,
     annotations: [],
 
+    tags: function() {
+        return this.store.find('tag');
+    }.property(),
+
     formattedTextObserver: function () {
         if (this.get('formatted_text').match(/id="annotation-in-progress"/)) {
             this.send('createNewAnnotation');
