@@ -651,7 +651,7 @@ App.DraftController = Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-        Ember.run.debounce(this, this.saveDraft, 10000);
+        Ember.run.debounce(this, this.saveDraft, 10000, true);
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -824,6 +824,8 @@ App.TeacherDraftController = App.DraftController.extend({
             var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', 'annotation-' + annotation.id);
 
             this.set('formatted_text', newFormattedText);
+            Ember.run.debounce(this, this.saveDraft, 10000, true);
+
             this.set('newAnnotation', null);
         }
     }
