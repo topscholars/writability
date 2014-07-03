@@ -212,6 +212,12 @@ App.AnnotationContainerComponent = Ember.Component.extend({
 
 });
 
+App.AnnotationCreateboxComponent = Ember.Component.extend({
+	didInsertElement: function() {
+		this.$().offset({top: this.get('annotation.offset.top')});
+	}
+});
+
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
 		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
@@ -2186,7 +2192,9 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\tYup\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation}}\n{{/if}}\n");
+
+Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("HEY\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("{{input type=\"checkbox\" checked=isInArray disabled=true}}\n");
 
