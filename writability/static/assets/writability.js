@@ -210,6 +210,25 @@ App.FormSelect2Component = Ember.TextField.extend({
 });
 
 App.AnnotationContainerComponent = Ember.Component.extend({
+	existingAnnotationGroups: function() {
+		var groups = Ember.ArrayProxy.create({content:[]});
+
+		this.get('annotations').forEach(function (domAnnotation) {
+			var top = domAnnotation.get('offset.top'),
+				group = groups.findBy('top', top);
+
+			if (group) {
+				group.annotations.pushObject(domAnnotation.get('annotation'))
+			} else {
+				groups.pushObject({
+					top: top,
+					annotations: [domAnnotation.get('annotation')]
+				});
+			}
+		});
+
+		return groups;
+	}.property('annotations.@each'),
 	actions: {
 		hasSavedAnnotation: function(annotation) {
 			this.sendAction('hasSavedAnnotation', annotation);
@@ -750,23 +769,17 @@ App.TeacherDraftController = App.DraftController.extend({
         return this.store.find('tag');
     }.property(),
 
+    annotations: Ember.computed.alias('review.annotations'),
+
     domAnnotations: function() {
         var controller = this;
-        return this.get('review.annotations').then(function(annotations) {
-            return annotations.map(function(annotation) {
-                return controller.createDomAnnotation(annotation);
-            });
+        return this.get('annotations').forEach(function(annotation) {
+            return controller.createDomAnnotation(annotation);
         });
-    }.property('review.annotations'),
+    }.property('annotations'),
 
     createDomAnnotation: function(annotation) {
-        var annotationEl = $('#annotation-' + annotation.id),
-            annotationOffset = {top: 0, left: 0};
-
-
-        if (annotationEl.length > 0) {
-            annotationOffset = $(annotationEl).offset();
-        }
+        var annotationOffset = {top: 0, left: 0};
 
         return App.DomAnnotation.create({
             offset: annotationOffset,
@@ -2272,7 +2285,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{/if}}\n\n{{#each annotationGroup in existingAnnotationGroups}}\n\t{{annotation-groupcontainer group=annotationGroup}}\n{{/each}}\n");
 
 Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 

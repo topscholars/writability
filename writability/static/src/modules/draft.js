@@ -107,23 +107,17 @@ App.TeacherDraftController = App.DraftController.extend({
         return this.store.find('tag');
     }.property(),
 
+    annotations: Ember.computed.alias('review.annotations'),
+
     domAnnotations: function() {
         var controller = this;
-        return this.get('review.annotations').then(function(annotations) {
-            return annotations.map(function(annotation) {
-                return controller.createDomAnnotation(annotation);
-            });
+        return this.get('annotations').forEach(function(annotation) {
+            return controller.createDomAnnotation(annotation);
         });
-    }.property('review.annotations'),
+    }.property('annotations'),
 
     createDomAnnotation: function(annotation) {
-        var annotationEl = $('#annotation-' + annotation.id),
-            annotationOffset = {top: 0, left: 0};
-
-
-        if (annotationEl.length > 0) {
-            annotationOffset = $(annotationEl).offset();
-        }
+        var annotationOffset = {top: 0, left: 0};
 
         return App.DomAnnotation.create({
             offset: annotationOffset,
