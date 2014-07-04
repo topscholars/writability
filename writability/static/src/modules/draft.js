@@ -111,13 +111,14 @@ App.TeacherDraftController = App.DraftController.extend({
 
     domAnnotations: function() {
         var controller = this;
-        return this.get('annotations').forEach(function(annotation) {
+
+        return this.get('annotations').map(function(annotation) {
             return controller.createDomAnnotation(annotation);
         });
-    }.property('annotations'),
+    }.property('annotations.@each'),
 
     createDomAnnotation: function(annotation) {
-        var annotationOffset = {top: 0, left: 0};
+        var annotationOffset = {top: 159, left: 0};
 
         return App.DomAnnotation.create({
             offset: annotationOffset,
