@@ -2,4 +2,8 @@
 
 <p class="annotation-details-comment">{{annotation.comment}}</p>
 
-<button class="annotation-details-button" {{action "saveAnnotation"}}>Tag It</button>
+<p class="annotation-details-comment">Original: "{{annotation.original}}"</p>
+
+{{#if isStudent}}
+	<button class="annotation-details-button" {{action "resolveAnnotation"}}>Resolve</button>
+{{/if}}
