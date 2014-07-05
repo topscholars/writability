@@ -2395,7 +2395,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{else}}\n\t{{#each annotationGroup in existingAnnotationGroups}}\n\t\t{{annotation-groupcontainer group=annotationGroup isStudent=isStudent}}\n\t{{/each}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#each annotationGroup in existingAnnotationGroups}}\n\t{{annotation-groupcontainer group=annotationGroup isStudent=isStudent}}\n{{/each}}\n\n{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n\t{{#general-collapse isActive=collapseActive}}\n\t\t{{annotation.tag.description}}\n\t{{/general-collapse}}\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
