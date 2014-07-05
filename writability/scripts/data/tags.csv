@@ -1,12 +1,185 @@
-accurate	POSITIVE	accuracy of statement		
-inaccurate	NEGATIVE	accuracy of statement	text is factually incorrect	“blah, blablah bl blahbl's blah.”
-incomplete	NEGATIVE	accuracy of statement	text inadequately reflects the whole situation	“blah, blablah bl blahbl's blah.”
-missing or unclear	NEGATIVE	antecedent	the reference (a pronoun or other) is unclear because it lacks a clear antecedent	“blah, blablah bl blahbl's blah.”
-relation clearly stated	POSITIVE	cause–effect		
-untrue	NEGATIVE	cause–effect	a cause–effect relation does not apply in this case; your text must be revised accordingly	“blah, blablah bl blahbl's blah.”
-partially so	NEUTRAL	cause–effect	the cause–effect relation cited here is only partially true; the real extent of this relationship must be specified	“blah, blablah bl blahbl's blah.”
-reasoning flawed	NEGATIVE	cause–effect	your reasoning in this case is faulty or invalid; your text must be revised accordingly	“blah, blablah bl blahbl's blah.”
-out of sequence	NEGATIVE	chronology	text does not reflect the actual sequence of events and must be revised accordingly	“blah, blablah bl blahbl's blah.”
-inconsistent development of case history	NEGATIVE	chronology	text does not reflect elements of historical case in proper proportion	“blah, blablah bl blahbl's blah.”
-examples well chosen	POSITIVE	comparison/contrast		
-lacks agreement between terms	NEGATIVE	comparison/contrast	you are using terms that are not grammatically or conceptually consistent; revise your	“blah, blablah bl blahbl's blah.”
+accurate	POSITIVE	accuracy of statement		Style
+inaccurate	NEGATIVE	accuracy of statement	text is factually incorrect	Style
+incomplete	NEGATIVE	accuracy of statement	text inadequately reflects the whole situation	Style
+missing or unclear	NEGATIVE	antecedent	the reference (a pronoun or other) is unclear because it lacks a clear antecedent	Style
+relation clearly stated	POSITIVE	cause–effect		Style
+untrue	NEGATIVE	cause–effect	a cause–effect relation does not apply in this case; your text must be revised accordingly	Style
+partially so	NEGATIVE	cause–effect	the cause–effect relation cited here is only partially true; the real extent of this relationship must be specified	Style
+reasoning flawed	NEGATIVE	cause–effect	your reasoning in this case is NEGATIVEy or invalid; your text must be revised accordingly	Style
+out of sequence	NEGATIVE	chronology	text does not reflect the actual sequence of events and must be revised accordingly	Style
+inconsistent development of case history	NEGATIVE	chronology	text does not reflect elements of historical case in proper proportion	Style
+examples well chosen	POSITIVE	comparison/contrast		Style
+lacks agreement between terms	NEGATIVE	comparison/contrast	you are using terms that are not grammatically or conceptually consistent; revise your	Style
+terms not parallel	NEGATIVE	comparison/contrast	you are mixing apples with oranges in this case; you need to reconsider the point you are trying to make	Style
+text missing from this version	NEGATIVE	completeness of statement	you have deleted, dropped or otherwise omitted text from earlier version	Style
+item(s) missing from content or process	NEGATIVE	completeness of statement	gaps are evident in this account that you need to close by recovering missing information	Style
+terms clearly defined	POSITIVE	definition of terms		Style
+unclear terms	NEGATIVE	definition of terms	meaning of your text is unclear because you have yet to define your terms	Style
+partial definition	NEGATIVE	definition of terms	you restrict your exposition unnecessarily by using too narrow a definition of the term; look it up in the dictionary and expand your scope	Style
+terms too broad	NEGATIVE	definition of terms	review the definition of your term and revise your statement accordingly	Style
+appropriate emphasis given	POSITIVE	emphasis		Style
+overkill	NEGATIVE	emphasis	you have overstated the case; you need to show a more balanced understanding of the situation with a more even-minded characterization	Style
+underplayed	NEGATIVE	emphasis	you have understated the case; you need to show a more realistic appreciation of the situation with a stronger characterization	Style
+sufficient supporting evidence	POSITIVE	evidence		Style
+insufficient	NEGATIVE	evidence	you have not yet made your case with evidence you have given; you need to add pertinent material to support your views	Style
+excessive	NEGATIVE	evidence	you have already made your case with evidence you have given; you don't need other material	Style
+useful insights, conclusions	POSITIVE	impact		Style
+cliché	NEGATIVE	impact	your phrasing sounds dull and unoriginal; you need to make original observations	Style
+big deal	NEGATIVE	impact	your conclusions are not as significant as you would have us believe	Style
+so what?	NEGATIVE	impact	your conclusions sound ordinary and not worth the time spent in producing them	Style
+counterproductive	NEGATIVE	impact	your conclusions produce the opposite of their intended effect	Style
+clear, effective	POSITIVE	logic		Style
+argument unclear	NEGATIVE	logic	the issues in your argument are not clearly defined	Style
+argument forced	NEGATIVE	logic	your argument sounds artificial, the issues contrived	Style
+argument sketchy	NEGATIVE	logic	the issues in your argument are not adequately developed	Style
+argument weak	NEGATIVE	logic	the issues you present do not yield a strong argument	Style
+argument unnecessary	NEGATIVE	logic	there is no need to develop an argument here	Style
+issues in your argument are not equivalent	NEGATIVE	logic	you are arguing about issues that are not comparable or related	Style
+good hook, sparks reader interest	POSITIVE	narrative flow, development		Style
+opening inadequate	NEGATIVE	narrative flow, development	your introduction does not indicate the full scope of the narrative	Style
+non sequitur	NEGATIVE	narrative flow, development	the elements in your discussion do not logically follow one after the other	Style
+effective transition	POSITIVE	narrative flow, development		Style
+transition awkward	NEGATIVE	narrative flow, development	the awkwardness of this transition in your narrative is distracting	Style
+wordy	NEGATIVE	narrative flow, development	your verbiage causes readers to lose interest in the discussion	Style
+sketchy	NEGATIVE	narrative flow, development	you do not present enough material for a credible discussion	Style
+off track	NEGATIVE	narrative flow, development	you diverge from the line of discussion you have set	Style
+compelling, well-reasoned discussion	POSITIVE	narrative flow, development		Style
+unnecessary discussion	NEGATIVE	narrative flow, development	this element in your discussion is superfluous	Style
+sound, persuasive conclusion	POSITIVE	narrative flow, development		Style
+inadequate conclusion(s)	NEGATIVE	narrative flow, development	your conclusion(s) do not fulfill expectations that have been built up by your narrative	Style
+run-on paragraphs	NEGATIVE	paragraphing	flow of discussion is disrupted by this overly complex paragraph	Style
+incomplete, fragmentary paragraphs	NEGATIVE	paragraphing	development of story suffers from insufficient material in this paragraph	Style
+jumbled paragraph order	NEGATIVE	paragraphing	story line is confusing because paragraphs are presented in wrong order	Style
+effectively described	POSITIVE	phrasing/word choice		Style
+awkward wording	NEGATIVE	phrasing/word choice	does not fit elegantly in your discussion	Style
+inappropriate word(s)	NEGATIVE	phrasing/word choice	does not convey the meaning you want here	Style
+unnecessary word(s)	NEGATIVE	phrasing/word choice	serves no purpose in your discussion	Style
+good choice of source material	POSITIVE	reference, citation		Style
+poor choice of source material	NEGATIVE	reference, citation		Style
+source should be identified	NEGATIVE	reference, citation	the source of this material should be mentioned here	Style
+source is incorrectly cited	NEGATIVE	reference, citation	this citation is wrong and must be corrected	Style
+reference is incorrect	NEGATIVE	reference, citation	the information given in this reference is wrong and must be corrected	Style
+effective use of repetition	POSITIVE	repetition		Style
+unnecessary repetition	NEGATIVE	repetition	delete this repetition which is pointless and undesirable	Style
+excessive repetition	NEGATIVE	repetition	similar references can be combined rather than presented serially	Style
+good use of syntax, well-formed sentence	POSITIVE	sentence structure		Style
+inconsistent sentence style	NEGATIVE	sentence structure	sentence structure differs stylistically from the established pattern, so should be reworked to read harmoniously with the rest of the story	Style
+inadequate exposition	NEGATIVE	sentence structure	problems with sentence structure weaken your exposition	Style
+word misspelled	NEGATIVE	spelling	misspellings can be fatal mistakes for a college application	Style
+inconsistent with established standard	NEGATIVE	spelling	inconsistency in use of a spelling convention is tantamount to misspelling	Style
+effective use of tone to make your point	POSITIVE	tone/viewpoint		Style
+too abstract	NEGATIVE	tone/viewpoint	your abstract tone here is inappropriate in the context of your whole discussion	Style
+too idealistic	NEGATIVE	tone/viewpoint	your idealistic tone here is inappropriate in the context of your whole discussion	Style
+too cynical	NEGATIVE	tone/viewpoint	your cynical tone here is inappropriate for the subject and for a college application in general	Style
+too mundane	NEGATIVE	tone/viewpoint	your mundane tone here works against the interesting parts of your discussion	Style
+too formal, overbearing	NEGATIVE	tone/viewpoint	the formality in your discussion here is off-putting	Style
+too casual	NEGATIVE	tone/viewpoint	your casual tone here works against the more disciplined parts of your discussion	Style
+too biased	NEGATIVE	tone/viewpoint	the bias that emerges here goes against views expressed in other parts of your discussion and is undesirable in a college application	Style
+too impersonal	NEGATIVE	tone/viewpoint	your impersonal tone here detracts from the personality of your writing in other parts of this essay	Style
+too personal	NEGATIVE	tone/viewpoint	your personal tone here is inappropriate to the nature of the discussion	Style
+good choice of topic, original thinking	POSITIVE	topic		Style
+potentially good topic, needs tweaking	POSITIVE	topic		Style
+cliché	NEGATIVE	topic	your current topic is ordinary and does not impress; you need to show imagination and originality in your choice of essay topic	Style
+mundane material	NEGATIVE	topic	your current topic does not excite reader interest; you need to strive for a compellingly imaginative and important choice of essay topic	Style
+unfocused, confused thinking	NEGATIVE	topic	your current topic reflects poor preparation; you must define your ideas clearly and outline your discussion before you begin writing	Style
+incorrect verb	NEGATIVE	verb	incorrect/wrong choice	Usage
+missing verb	NEGATIVE	verb	missing/needed in this context	Usage
+subject verb agreement	NEGATIVE	verb	does not agree with subject	Usage
+form	NEGATIVE	verb	wrong person/conjugation	Usage
+tense	NEGATIVE	verb	incorrect/inconsistent in context with other verbs	Usage
+participle	NEGATIVE	verb	incorrect form	Usage
+gerund	NEGATIVE	verb	inappropriate here	Usage
+active voice	NEGATIVE	verb	passive voice may be more effective here; try converting	Usage
+passive voice	NEGATIVE	verb	active voice may be more effective here; try converting	Usage
+indicative mood	NEGATIVE	verb		Usage
+interrogative mood	NEGATIVE	verb		Usage
+imperative mood	NEGATIVE	verb		Usage
+optative mood (wish)	NEGATIVE	verb		Usage
+incorrect noun	NEGATIVE	noun	incorrect/wrong choice	Usage
+form: singular	NEGATIVE	noun	incorrect/context does not call for singular form	Usage
+form: plural	NEGATIVE	noun	incorrect/context does not call for plural form	Usage
+choice of word	NEGATIVE	noun	wrong/inappropriate	Usage
+ambiguous pronoun	NEGATIVE	pronoun	unclear to what noun this refers	Usage
+pronoun agreement	NEGATIVE	pronoun	lack of agreement: singular or plural	Usage
+gender agreement	NEGATIVE	pronoun	lack of agreement regarding the pronoun corresponding to the correct gender of the noun	Usage
+incorrect adjective	NEGATIVE	adjective	incorrect/wrong choice	Usage
+missing adjective	NEGATIVE	adjective	missing/needed in this context	Usage
+unnecessary adjective	NEGATIVE	adjective	unnecessary/not needed in this context	Usage
+incorrect adverb	NEGATIVE	adverb	incorrect/wrong choice	Usage
+missing adverb	NEGATIVE	adverb	missing/needed in this context	Usage
+unnecessary adverb	NEGATIVE	adverb	unnecessary/not needed in this context	Usage
+incorrect determiner	NEGATIVE	determiner (article, possessive, pronoun)	incorrect/wrong choice	Usage
+missing determiner	NEGATIVE	determiner (article, possessive, pronoun)	missing/needed in this context	Usage
+unnecessary determiner	NEGATIVE	determiner (article, possessive, pronoun)	unnecessary/not needed in this context	Usage
+modifier order	NEGATIVE	modifier	wrong word order	Usage
+unclear modifier	NEGATIVE	modifier	reference unclear	Usage
+adjective	NEGATIVE	modifier	incorrect/wrong choice	Usage
+adjective	NEGATIVE	modifier	missing/needed in this context	Usage
+adjective	NEGATIVE	modifier	unnecessary/not needed in this context	Usage
+adverb	NEGATIVE	modifier	incorrect/wrong choice	Usage
+adverb	NEGATIVE	modifier	missing/needed in this context	Usage
+adverb	NEGATIVE	modifier	unnecessary/not needed in this context	Usage
+noun	NEGATIVE	modifier	incorrect/wrong choice	Usage
+noun	NEGATIVE	modifier	missing/needed in this context	Usage
+noun	NEGATIVE	modifier	unnecessary/not needed in this context	Usage
+determiner	NEGATIVE	modifier	incorrect/wrong choice	Usage
+determiner	NEGATIVE	modifier	missing/needed in this context	Usage
+determiner	NEGATIVE	modifier	unnecessary/not needed in this context	Usage
+incorrect punctuation	NEGATIVE	punctuation	incorrect/wrong choice	Usage
+missing punctuation	NEGATIVE	punctuation	missing/needed in this context	Usage
+unnecessary punctuation	NEGATIVE	punctuation	unnecessary/not needed in this context	Usage
+misplaced punctuation	NEGATIVE	punctuation	misplaced in this position in sentence	Usage
+period/full stop	NEGATIVE	punctuation	incorrect/wrong choice	Usage
+period/full stop	NEGATIVE	punctuation	missing/needed in this context	Usage
+period/full stop	NEGATIVE	punctuation	unnecessary/not needed in this context	Usage
+period/full stop	NEGATIVE	punctuation	misplaced in this position in sentence	Usage
+comma	NEGATIVE	punctuation	incorrect/wrong choice	Usage
+comma	NEGATIVE	punctuation	missing/needed in this context	Usage
+comma	NEGATIVE	punctuation	unnecessary/not needed in this context	Usage
+comma	NEGATIVE	punctuation	misplaced in this position in sentence	Usage
+quotation marks	NEGATIVE	punctuation	missing/needed in quoting a source, reporting direct speech or coining new words	Usage
+quotation marks	NEGATIVE	punctuation	unnecessary/not needed in this context	Usage
+quotation marks	NEGATIVE	punctuation	misplaced in this position in sentence	Usage
+parentheses	NEGATIVE	punctuation	"used incorrectly here/""square brackets"" are preferable"	Usage
+parentheses	NEGATIVE	punctuation	unnecessary/other punctuation preferable in setting off a comment, such as commas	Usage
+parentheses	NEGATIVE	punctuation	misplaced in this position in sentence	Usage
+apostrophe	NEGATIVE	punctuation	missing/needed in this context	Usage
+apostrophe	NEGATIVE	punctuation	unnecessary/not needed in this context	Usage
+apostrophe	NEGATIVE	punctuation	misplaced in this position in the word	Usage
+hyphen	NEGATIVE	punctuation	replace hyphen with a dash	Usage
+hyphen	NEGATIVE	punctuation	missing/needed to link these two words	Usage
+hyphen	NEGATIVE	punctuation	unnecessary/not needed in this context	Usage
+hyphen	NEGATIVE	punctuation	misplaced in this position in sentence	Usage
+dash	NEGATIVE	punctuation	replace dash with a hyphen	Usage
+dash	NEGATIVE	punctuation	missing/needed for separating two distinct thoughts or phrases	Usage
+dash	NEGATIVE	punctuation	unnecessary/use other punctuation instead	Usage
+dash	NEGATIVE	punctuation	misplaced in this position in sentence	Usage
+incorrect preposition	NEGATIVE	preposition	incorrect/wrong choice	Usage
+missing preposition	NEGATIVE	preposition	missing/needed in prepositional phrase or as part of phrasal verb	Usage
+unnecesary preposition	NEGATIVE	preposition	unnecessary/not needed in this context	Usage
+misplaced preposition	NEGATIVE	preposition	misplaced in this position in sentence	Usage
+incorrect conjunction	NEGATIVE	conjunction	incorrect/wrong choice	Usage
+missing conjunction	NEGATIVE	conjunction	missing/needed in this sentence for linking words, phrases or thoughts	Usage
+unnecessary conjunction	NEGATIVE	conjunction	unnecessary/not needed in this context	Usage
+misplaced conjunction	NEGATIVE	conjunction	misplaced in this position in sentence	Usage
+double negative	NEGATIVE	grammar	double negative in this sense not allowed	Usage
+non-standard grammar	NEGATIVE	grammar	unconventional usage/use standard grammar	Usage
+mispelled	NEGATIVE	spelling	misspelled	Usage
+requires capital	NEGATIVE	spelling	capital letter required here	Usage
+requires lower case	NEGATIVE	spelling	lower-case letter required here	Usage
+wrong word order	NEGATIVE	word order	wrong word order	Usage
+word misplaced	NEGATIVE	word position	word misplaced in this position in the sentence	Usage
+sentence too complex	NEGATIVE	sentence structure	sentence too complex; simplify your statement	Usage
+ideas too simple	NEGATIVE	sentence structure	ideas presented too simplistically; reformulate sentences to reflect true complexity	Usage
+subject	NEGATIVE	sentence structure	incorrect/wrong choice	Usage
+subject	NEGATIVE	sentence structure	missing/needed in this context	Usage
+subject	NEGATIVE	sentence structure	unnecessary/not needed in this context	Usage
+object	NEGATIVE	sentence structure	incorrect/wrong choice	Usage
+object	NEGATIVE	sentence structure	missing/needed in this context	Usage
+object	NEGATIVE	sentence structure	unnecessary/not needed in this context	Usage
+fragment	NEGATIVE	sentence structure	not a complete sentence; check grammar to identify missing parts	Usage
+run-on sentence	NEGATIVE	sentence structure	more than one complete sentence/idea here; use punctuation to separate complete thoughts	Usage
+clause (dependent/independent)	NEGATIVE	sentence structure	incorrect placement in sentence or configuration of sentence; rephrase statement	Usage
+parallel structure	NEGATIVE	sentence structure	incorrect/inconsistent parallel structure; terms of discussion not parallel	Usage
+comparison	NEGATIVE	sentence structure	comparison incorrect/inadequately described	Usage
+comparison	NEGATIVE	sentence structure	point of comparison missing/insufficient	Usage
