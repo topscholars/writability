@@ -28,6 +28,9 @@
         padding-bottom:  @innerPadding;
         border-bottom: 1px solid @grey;
     }
+
+    z-index: 10;
+    overflow: auto;
 }
 
 .annotation-create-tag-selected, .annotation-details-tag-selected {
@@ -68,4 +71,10 @@
     margin-right: @innerPadding;
     width: 100%;
     padding: 10px;
+}
+
+.annotaion-close {
+    position: absolute;
+    top: 5px;
+    right: 20px;
 }
