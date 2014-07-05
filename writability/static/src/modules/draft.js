@@ -196,6 +196,7 @@ App.TeacherDraftController = App.DraftController.extend({
 
             if (existingNewAnnotation) {
                 existingNewAnnotation.get('annotation').destroyRecord();
+                existingNewAnnotation.destroy();
             }
 
             this.get('review').then(function (review) {
