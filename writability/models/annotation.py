@@ -70,6 +70,8 @@ class Tag(BaseModel):
     name = db.Column(db.String, nullable=False)
     tag_type = db.Column(db.String, nullable=False, default="NEUTRAL")
     category = db.Column(db.String, nullable=False)
+    # super_category is [Usage, Style]
+    super_category = db.Column(db.String, nullable=False)
 
     # optional fields
     description = db.Column(db.String)
