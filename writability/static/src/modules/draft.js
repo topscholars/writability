@@ -8,6 +8,8 @@ App.DraftController = Ember.ObjectController.extend({
 
     annotations: Ember.computed.alias('review.annotations'),
 
+    formatted_text_buffer: '',
+
     domAnnotations: function() {
         var controller = this;
 
@@ -223,6 +225,7 @@ App.TeacherDraftController = App.DraftController.extend({
             var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', 'annotation-' + annotation.id);
 
             this.set('formatted_text', newFormattedText);
+            this.set('formatted_text_buffer', newFormattedText);
             Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
 
             this.set('newAnnotation', null);

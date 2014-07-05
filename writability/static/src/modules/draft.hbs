@@ -26,11 +26,13 @@
             valueBinding="formatted_text"
             isReadOnly=false
             reviewMode=true
+            valueBuffer=formatted_text_buffer
         }}
     {{else}}
         {{view App.TextEditor
             action="startedWriting"
             valueBinding="formatted_text"
+            valueBuffer=formatted_text_buffer
         }}
     {{/if}}
 </div>
