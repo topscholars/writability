@@ -22,6 +22,15 @@ App.DraftController = Ember.ObjectController.extend({
         }
     }.property('annotations.@each'),
 
+    createDomAnnotation: function(annotation) {
+        var annotationOffset = {top: 159, left: 0};
+
+        return App.DomAnnotation.create({
+            offset: annotationOffset,
+            annotation: annotation
+        });
+    },
+
     saveDraft: function() {
         var draft = this.get('model');
         if (draft.get('isDirty')) {
@@ -126,15 +135,6 @@ App.TeacherDraftController = App.DraftController.extend({
     tags: function() {
         return this.store.find('tag');
     }.property(),
-
-    createDomAnnotation: function(annotation) {
-        var annotationOffset = {top: 159, left: 0};
-
-        return App.DomAnnotation.create({
-            offset: annotationOffset,
-            annotation: annotation
-        });
-    },
 
     formattedTextObserver: function () {
         if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {

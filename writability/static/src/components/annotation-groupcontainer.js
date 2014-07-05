@@ -9,6 +9,9 @@ App.AnnotationGroupcontainerComponent = Ember.Component.extend({
 	actions: {
 		selectAnnotation: function (annotation) {
 			this.set('selectedAnnotation', annotation);
+		},
+		closeAnnotation: function () {
+			this.set('selectedAnnotation', null);
 		}
 	}
 });

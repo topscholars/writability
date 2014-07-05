@@ -282,6 +282,18 @@ App.AnnotationDetailComponent = Ember.Component.extend(App.Collapsable, {
 
 	didInsertElement: function() {
 		this.$().offset({top: this.get('top')});
+	},
+
+	actions: {
+		resolveAnnotation: function () {
+			var annotation = this.get('annotation'),
+				component = this;
+
+			annotation.set('state', 'resolved');
+			annotation.save().then(function() {
+				component.sendAction('closeAnnotation');
+			});
+		}
 	}
 
 });
@@ -297,6 +309,9 @@ App.AnnotationGroupcontainerComponent = Ember.Component.extend({
 	actions: {
 		selectAnnotation: function (annotation) {
 			this.set('selectedAnnotation', annotation);
+		},
+		closeAnnotation: function () {
+			this.set('selectedAnnotation', null);
 		}
 	}
 });
@@ -742,6 +757,15 @@ App.DraftController = Ember.ObjectController.extend({
         }
     }.property('annotations.@each'),
 
+    createDomAnnotation: function(annotation) {
+        var annotationOffset = {top: 159, left: 0};
+
+        return App.DomAnnotation.create({
+            offset: annotationOffset,
+            annotation: annotation
+        });
+    },
+
     saveDraft: function() {
         var draft = this.get('model');
         if (draft.get('isDirty')) {
@@ -846,15 +870,6 @@ App.TeacherDraftController = App.DraftController.extend({
     tags: function() {
         return this.store.find('tag');
     }.property(),
-
-    createDomAnnotation: function(annotation) {
-        var annotationOffset = {top: 159, left: 0};
-
-        return App.DomAnnotation.create({
-            offset: annotationOffset,
-            annotation: annotation
-        });
-    },
 
     formattedTextObserver: function () {
         if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {
@@ -2367,7 +2382,7 @@ Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{
 
 Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotation-details-tag-selected\">{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n\t<button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div class=\"annotation-title\" {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div class=\"annotation-title\" {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 
