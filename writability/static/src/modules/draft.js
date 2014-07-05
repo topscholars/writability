@@ -192,6 +192,12 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         createNewAnnotation: function () {
+            var existingNewAnnotation = this.get('newAnnotation');
+
+            if (existingNewAnnotation) {
+                existingNewAnnotation.get('annotation').destroyRecord();
+            }
+
             this.get('review').then(function (review) {
                 var newAnnotationSpan = $('#annotation-in-progress');
 
