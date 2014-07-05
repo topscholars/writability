@@ -471,7 +471,7 @@ App.Annotation = DS.Model.extend({
 	comment: DS.attr(),
 	state: DS.attr(),
 	tag: DS.belongsTo('tag'),
-	review: DS.belongsTo('review'),
+	review: DS.belongsTo('review', {async: true}),
 
 	tagId: '',
 
@@ -482,7 +482,15 @@ App.Annotation = DS.Model.extend({
 			.then(function(tag) {
 				model.set('tag', tag);
 			});
-	}.observes('tagId')
+	}.observes('tagId'),
+
+	didCreate: function() {
+	    var model = this;
+
+	    this.get('review').then(function (review) {
+	    	review.get('annotations').pushObject(model);
+	    })
+	}
 });
 
 App.DomAnnotation = Ember.Object.extend({
