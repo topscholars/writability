@@ -2,5 +2,5 @@
 	<div class="annotation-title" {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>
 {{/each}}
 {{#if selectedAnnotation}}
-	{{annotation-detail annotation=selectedAnnotation isStudent=isStudent}}
+	{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent}}
 {{/if}}

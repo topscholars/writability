@@ -3,6 +3,8 @@ App.AnnotationCreateboxComponent = Ember.Component.extend({
 
 	tag: Ember.computed.alias('annotation.annotation.tag'),
 
+	comment: Ember.computed.alias('annotation.annotation.comment'),
+
 	offsetHasChanged: function() {
 		this.setElementOffset();
 	}.observes('annotation.offset'),
