@@ -4,6 +4,8 @@ App.autosaveTimout = 5000;
 
 App.DraftController = Ember.ObjectController.extend({
 
+    isStudent: false,
+
     annotations: Ember.computed.alias('review.annotations'),
 
     domAnnotations: function() {
@@ -58,6 +60,8 @@ App.StudentDraftController = App.DraftController.extend({
     reviewMode: false,
 
     currentReview: null,
+
+    isStudent: true,
 
     getCurrentReview: function () {
         var essay = this.get('essay');
