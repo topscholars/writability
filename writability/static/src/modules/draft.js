@@ -3,6 +3,36 @@
 App.autosaveTimout = 5000;
 
 App.DraftController = Ember.ObjectController.extend({
+
+    isStudent: false,
+
+    annotations: Ember.computed.alias('review.annotations'),
+
+    formatted_text_buffer: '',
+
+    domAnnotations: function() {
+        var controller = this;
+
+        if (this.get('annotations')) {
+            return this.get('annotations').map(function(annotation) {
+                return controller.createDomAnnotation(annotation);
+            });
+        }
+
+        else {
+            return [];
+        }
+    }.property('annotations.@each'),
+
+    createDomAnnotation: function(annotation) {
+        var annotationOffset = {top: 159, left: 0};
+
+        return App.DomAnnotation.create({
+            offset: annotationOffset,
+            annotation: annotation
+        });
+    },
+
     saveDraft: function() {
         var draft = this.get('model');
         if (draft.get('isDirty')) {
@@ -41,6 +71,8 @@ App.StudentDraftController = App.DraftController.extend({
     reviewMode: false,
 
     currentReview: null,
+
+    isStudent: true,
 
     getCurrentReview: function () {
         var essay = this.get('essay');
@@ -101,14 +133,12 @@ App.TeacherDraftController = App.DraftController.extend({
 
     annotationSelector: null,
     newAnnotation: null,
-    annotations: [],
 
     tags: function() {
         return this.store.find('tag');
     }.property(),
 
     formattedTextObserver: function () {
-        console.log(this.get('formatted_text').indexOf('id="annotation-in-progress"'));
         if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {
             this.send('createNewAnnotation');
         } else {
@@ -164,6 +194,13 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         createNewAnnotation: function () {
+            var existingNewAnnotation = this.get('newAnnotation');
+
+            if (existingNewAnnotation) {
+                existingNewAnnotation.get('annotation').destroyRecord();
+                existingNewAnnotation.destroy();
+            }
+
             this.get('review').then(function (review) {
                 var newAnnotationSpan = $('#annotation-in-progress');
 
@@ -185,9 +222,18 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         hasSavedAnnotation: function(annotation) {
-            var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', 'annotation-' + annotation.id);
+            var tag_type = annotation.get('tag.tag_type'); // 'POSITIVE' or 'NEGATIVE'
+
+            // Update comment's span to include the annotation's DB ID
+            var anno_id = 'annotation-' + annotation.id;
+
+            var stuff = $('<div>').html(this.get('formatted_text'));
+            var workingAnnotation = stuff.find('#annotation-in-progress');
+            workingAnnotation.attr('id', anno_id).addClass(tag_type);
+            var newFormattedText = stuff.html();
 
             this.set('formatted_text', newFormattedText);
+            this.set('formatted_text_buffer', newFormattedText);
             Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
 
             this.set('newAnnotation', null);

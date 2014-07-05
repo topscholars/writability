@@ -2,7 +2,15 @@
     border-bottom:1px solid red;
 }
 
-.annotation-create {
+.POSITIVE {
+    border-bottom:1px solid @green;
+}
+.NEGATIVE {
+    border-bottom:1px solid @orange;
+}
+
+.annotation-create, .annotation-detail {
+    background: #fff;
 	padding-left:  @innerPadding;
 	padding-top:  @innerPadding;
 	padding-right:  @innerPadding;
@@ -10,9 +18,22 @@
 
 	border-top: 1px solid @grey;
 	border-bottom: 1px solid @grey;
+
+    i {
+        cursor: pointer;
+    }
+
+    .collapse {
+        padding-top:  @innerPadding;
+        padding-bottom:  @innerPadding;
+        border-bottom: 1px solid @grey;
+    }
+
+    z-index: 10;
+    overflow: auto;
 }
 
-.annotation-create-tag-selected {
+.annotation-create-tag-selected, .annotation-details-tag-selected {
 	display: block;
 	width: 100%;
     color: #b95d01;
@@ -32,4 +53,28 @@
 
 .annotation-create-button {
     margin-top: @innerPadding;
+}
+
+.annotation-group {
+    border-top: 1px solid @grey;
+    margin-left: @innerPadding;
+
+    .annotation-title {
+        color: #b95d01;
+        font-size: @bigBodyFontSize;
+        line-height: 24px;
+        cursor: pointer;
+    }
+}
+
+.annotation-details-comment {
+    margin-right: @innerPadding;
+    width: 100%;
+    padding: 10px;
+}
+
+.annotaion-close {
+    position: absolute;
+    top: 5px;
+    right: 20px;
 }
