@@ -1,6 +1,10 @@
 {{#if tag}}
 <div class="annotation-create">
-	<span class="annotation-create-tag-selected">{{tag.name}} <i class="icon-info-circled"></i></span>
+	<span class="annotation-create-tag-selected">{{tag.name}} <i class="icon-info-circled" {{action "toggleCollapse"}}></i></span>
+
+	{{#general-collapse isActive=collapseActive}}
+		{{annotation.tag.description}}
+	{{/general-collapse}}
 
 	{{textarea value=comment class="annotation-create-comment"}}
 

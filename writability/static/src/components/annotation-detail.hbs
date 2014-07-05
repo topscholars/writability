@@ -1,4 +1,8 @@
-<span class="annotation-details-tag-selected">{{annotation.tag.name}} <i class="icon-info-circled"></i></span>
+<span class="annotation-details-tag-selected">{{annotation.tag.name}} <i class="icon-info-circled" {{action "toggleCollapse"}}></i></span>
+
+{{#general-collapse isActive=collapseActive}}
+	{{annotation.tag.description}}
+{{/general-collapse}}
 
 <p class="annotation-details-comment">{{annotation.comment}}</p>
 

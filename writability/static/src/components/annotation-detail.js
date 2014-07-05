@@ -1,4 +1,4 @@
-App.AnnotationDetailComponent = Ember.Component.extend({
+App.AnnotationDetailComponent = Ember.Component.extend(App.Collapsable, {
 
 	classNames: ['annotation-detail'],
 

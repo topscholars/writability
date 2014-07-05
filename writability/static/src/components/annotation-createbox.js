@@ -1,4 +1,4 @@
-App.AnnotationCreateboxComponent = Ember.Component.extend({
+App.AnnotationCreateboxComponent = Ember.Component.extend(App.Collapsable, {
 	tagId: Ember.computed.alias('annotation.annotation.tagId'),
 
 	tag: Ember.computed.alias('annotation.annotation.tag'),

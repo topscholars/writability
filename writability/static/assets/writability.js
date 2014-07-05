@@ -190,6 +190,17 @@ Ember.Handlebars.registerHelper('eachIndexed', function eachHelper(path, options
     }
 });
 
+App.Collapsable = Ember.Mixin.create({
+	collapseActive: false,
+
+	actions: {
+		toggleCollapse: function() {
+			this.set('collapseActive', !this.get('collapseActive'));
+			console.log(this.get('collapseActive'))
+		}
+	}
+});
+
 App.FormSelect2Component = Ember.TextField.extend({
 	type: 'hidden',
 	select2Options: {},
@@ -236,7 +247,7 @@ App.AnnotationContainerComponent = Ember.Component.extend({
 	}
 });
 
-App.AnnotationCreateboxComponent = Ember.Component.extend({
+App.AnnotationCreateboxComponent = Ember.Component.extend(App.Collapsable, {
 	tagId: Ember.computed.alias('annotation.annotation.tagId'),
 
 	tag: Ember.computed.alias('annotation.annotation.tag'),
@@ -265,7 +276,7 @@ App.AnnotationCreateboxComponent = Ember.Component.extend({
 	}
 });
 
-App.AnnotationDetailComponent = Ember.Component.extend({
+App.AnnotationDetailComponent = Ember.Component.extend(App.Collapsable, {
 
 	classNames: ['annotation-detail'],
 
@@ -331,6 +342,25 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 		}
 	}
 });
+
+App.GeneralCollapseComponent = Ember.Component.extend({
+	classNames: ['collapse'],
+	classNameBindings: ['isActive'],
+
+	didInsertElement: function () {
+		if (!this.get('isActive')) {
+			this.$().hide();
+		}
+	},
+
+	toggleCollapse: function() {
+		if (!this.get('isActive')) {
+			this.$().slideUp();
+		} else {
+			this.$().slideDown();
+		}
+	}.observes('isActive')
+})
 
 App.IsInArrayCheckboxComponent = Ember.Component.extend({
 	target: null,
@@ -595,6 +625,7 @@ App.Role = DS.Model.extend({
 App.Tag = DS.Model.extend({
 	category: DS.attr(),
 	name: DS.attr(),
+	description: DS.attr(),
 });
 
 /* globals App, DS */
@@ -2325,11 +2356,13 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
 
 Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{/if}}\n\n{{#each annotationGroup in existingAnnotationGroups}}\n\t{{annotation-groupcontainer group=annotationGroup isStudent=isStudent}}\n{{/each}}\n");
 
-Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n\t{{#general-collapse isActive=collapseActive}}\n\t\t{{annotation.tag.description}}\n\t{{/general-collapse}}\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotation-details-tag-selected\">{{annotation.tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n\t<button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotation-details-tag-selected\">{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n\t<button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n{{/if}}\n");
 
 Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div class=\"annotation-title\" {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent}}\n{{/if}}\n");
+
+Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("<div class=\"checkbox\">\n\t{{#if isInArray}}\n\t\t<i class=\"icon-check\"></i>\n\t{{else}}\n\t\t<i class=\"icon-check inactive\"></i>\n\t{{/if}}\n</div>\n");
 
