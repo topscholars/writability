@@ -230,6 +230,7 @@ App.TeacherDraftController = App.DraftController.extend({
             var stuff = $('<div>').html(this.get('formatted_text'));
             var workingAnnotation = stuff.find('#annotation-in-progress');
             workingAnnotation.attr('id', anno_id).addClass(tag_type);
+            var newFormattedText = stuff.html();
 
             this.set('formatted_text', newFormattedText);
             this.set('formatted_text_buffer', newFormattedText);
