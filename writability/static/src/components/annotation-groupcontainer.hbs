@@ -1,3 +1,6 @@
 {{#each annotation in group.annotations}}
-	<div class="annotation-title">{{annotation.tag.name}}</div>
+	<div class="annotation-title" {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>
 {{/each}}
+{{#if selectedAnnotation}}
+	{{annotation-detail annotation=selectedAnnotation isStudent=isStudent}}
+{{/if}}

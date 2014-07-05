@@ -264,10 +264,17 @@ App.AnnotationCreateboxComponent = Ember.Component.extend({
 });
 
 App.AnnotationGroupcontainerComponent = Ember.Component.extend({
+
 	classNames: ['annotation-group'],
+
 	didInsertElement: function() {
-		console.log(this.get('group'));
 		this.$().offset({top: this.get('group.top')});
+	},
+
+	actions: {
+		selectAnnotation: function (annotation) {
+			this.set('selectedAnnotation', annotation);
+		}
 	}
 });
 
@@ -679,9 +686,15 @@ App.DraftController = Ember.ObjectController.extend({
     domAnnotations: function() {
         var controller = this;
 
-        return this.get('annotations').map(function(annotation) {
-            return controller.createDomAnnotation(annotation);
-        });
+        if (this.get('annotations')) {
+            return this.get('annotations').map(function(annotation) {
+                return controller.createDomAnnotation(annotation);
+            });
+        }
+
+        else {
+            return [];
+        }
     }.property('annotations.@each'),
 
     saveDraft: function() {
@@ -2298,7 +2311,7 @@ Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{
 
 Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\"></i></span>\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div class=\"annotation-title\">{{annotation.tag.name}}</div>\n{{/each}}\n");
+Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div class=\"annotation-title\" {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation isStudent=isStudent}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("<div class=\"checkbox\">\n\t{{#if isInArray}}\n\t\t<i class=\"icon-check\"></i>\n\t{{else}}\n\t\t<i class=\"icon-check inactive\"></i>\n\t{{/if}}\n</div>\n");
 

@@ -9,9 +9,15 @@ App.DraftController = Ember.ObjectController.extend({
     domAnnotations: function() {
         var controller = this;
 
-        return this.get('annotations').map(function(annotation) {
-            return controller.createDomAnnotation(annotation);
-        });
+        if (this.get('annotations')) {
+            return this.get('annotations').map(function(annotation) {
+                return controller.createDomAnnotation(annotation);
+            });
+        }
+
+        else {
+            return [];
+        }
     }.property('annotations.@each'),
 
     saveDraft: function() {
