@@ -3,6 +3,17 @@
 App.autosaveTimout = 5000;
 
 App.DraftController = Ember.ObjectController.extend({
+
+    annotations: Ember.computed.alias('review.annotations'),
+
+    domAnnotations: function() {
+        var controller = this;
+
+        return this.get('annotations').map(function(annotation) {
+            return controller.createDomAnnotation(annotation);
+        });
+    }.property('annotations.@each'),
+
     saveDraft: function() {
         var draft = this.get('model');
         if (draft.get('isDirty')) {
@@ -101,21 +112,10 @@ App.TeacherDraftController = App.DraftController.extend({
 
     annotationSelector: null,
     newAnnotation: null,
-    annotations: [],
 
     tags: function() {
         return this.store.find('tag');
     }.property(),
-
-    annotations: Ember.computed.alias('review.annotations'),
-
-    domAnnotations: function() {
-        var controller = this;
-
-        return this.get('annotations').map(function(annotation) {
-            return controller.createDomAnnotation(annotation);
-        });
-    }.property('annotations.@each'),
 
     createDomAnnotation: function(annotation) {
         var annotationOffset = {top: 159, left: 0};
