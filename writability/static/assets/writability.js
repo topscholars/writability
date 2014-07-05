@@ -967,21 +967,16 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         hasSavedAnnotation: function(annotation) {
-            var tag_type = annotation.get('tag').get('tag_type'); // 'POSITIVE' or 'NEGATIVE'
-            
+            var tag_type = annotation.get('tag.tag_type'); // 'POSITIVE' or 'NEGATIVE'
+
             // Update comment's span to include the annotation's DB ID
             var anno_id = 'annotation-' + annotation.id;
-            var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', anno_id);
 
-            // Loops through all elements in HTML object and add tag_type as class
-            newFormattedText = $(newFormattedText).each(function() {
-                if (this.id == anno_id) {
-                    $(this).addClass(tag_type);
-                }
-            });
-            debugger
+            var stuff = $('<div>').html(this.get('formatted_text'));
+            var workingAnnotation = stuff.find('#annotation-in-progress');
+            workingAnnotation.attr('id', anno_id).addClass(tag_type);
 
-            this.set('formatted_text', newFormattedText);
+            this.set('formatted_text', stuff.html());
             Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
 
             this.set('newAnnotation', null);
@@ -2400,7 +2395,7 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     }
 });
 
-Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{/if}}\n\n{{#each annotationGroup in existingAnnotationGroups}}\n\t{{annotation-groupcontainer group=annotationGroup isStudent=isStudent}}\n{{/each}}\n");
+Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{{#if newAnnotation}}\n\t{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation=\"hasSavedAnnotation\"}}\n{{else}}\n\t{{#each annotationGroup in existingAnnotationGroups}}\n\t\t{{annotation-groupcontainer group=annotationGroup isStudent=isStudent}}\n\t{{/each}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n\t{{#general-collapse isActive=collapseActive}}\n\t\t{{annotation.tag.description}}\n\t{{/general-collapse}}\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 

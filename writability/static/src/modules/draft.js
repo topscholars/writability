@@ -220,21 +220,16 @@ App.TeacherDraftController = App.DraftController.extend({
         },
 
         hasSavedAnnotation: function(annotation) {
-            var tag_type = annotation.get('tag').get('tag_type'); // 'POSITIVE' or 'NEGATIVE'
-            
+            var tag_type = annotation.get('tag.tag_type'); // 'POSITIVE' or 'NEGATIVE'
+
             // Update comment's span to include the annotation's DB ID
             var anno_id = 'annotation-' + annotation.id;
-            var newFormattedText = this.get('formatted_text').replace('annotation-in-progress', anno_id);
 
-            // Loops through all elements in HTML object and add tag_type as class
-            newFormattedText = $(newFormattedText).each(function() {
-                if (this.id == anno_id) {
-                    $(this).addClass(tag_type);
-                }
-            });
-            debugger
+            var stuff = $('<div>').html(this.get('formatted_text'));
+            var workingAnnotation = stuff.find('#annotation-in-progress');
+            workingAnnotation.attr('id', anno_id).addClass(tag_type);
 
-            this.set('formatted_text', newFormattedText);
+            this.set('formatted_text', stuff.html());
             Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
 
             this.set('newAnnotation', null);
