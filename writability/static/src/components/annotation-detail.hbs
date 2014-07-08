@@ -11,5 +11,7 @@
 <p class="annotation-details-comment">Original: "{{annotation.original}}"</p>
 
 {{#if isStudent}}
-	<button class="annotation-details-button" {{action "resolveAnnotation"}}>Resolve</button>
+  {{#unless annotation.isResolved}}
+	  <button class="annotation-details-button" {{action "resolveAnnotation"}}>Resolve</button>
+  {{/unless}}
 {{/if}}
