@@ -485,12 +485,18 @@ App.Annotation = DS.Model.extend({
 
 	review: DS.belongsTo('review', {async: true}),
 
-	isPositive: function() {
+	isPositive: function() { // Required because handlebar template can't use an attr's value..
 		var model = this;
 		var tag_type = model.get('tag.tag_type'); 
 		var result = (tag_type == "POSITIVE" ? true : false);
     return result;
   }.property('tag.tag_type'),
+
+	isResolved: function() { // Required because handlebar template can't use an attr's value..
+		var state = this.get('state'); 
+		var result = (state == "resolved" ? true : false);
+    return result;
+  }.property('state'),
 
 	changeTagObserver: function() {
 		var model = this;
@@ -2436,7 +2442,7 @@ Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{
 
 Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotaion-close\" {{action 'closeAnnotation'}}><i class=\"icon-cancel-circled\"></i></span>\n\n<span {{bind-attr class=\":annotation-details-tag-selected annotation.isPositive:tag-positive:tag-negative\"}}>{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n\t<button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative annotation.isResolved:tag-resolved\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 

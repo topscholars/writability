@@ -6,12 +6,18 @@ App.Annotation = DS.Model.extend({
 
 	review: DS.belongsTo('review', {async: true}),
 
-	isPositive: function() {
+	isPositive: function() { // Required because handlebar template can't use an attr's value..
 		var model = this;
 		var tag_type = model.get('tag.tag_type'); 
 		var result = (tag_type == "POSITIVE" ? true : false);
     return result;
   }.property('tag.tag_type'),
+
+	isResolved: function() { // Required because handlebar template can't use an attr's value..
+		var state = this.get('state'); 
+		var result = (state == "resolved" ? true : false);
+    return result;
+  }.property('state'),
 
 	changeTagObserver: function() {
 		var model = this;
