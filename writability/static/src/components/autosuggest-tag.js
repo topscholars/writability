@@ -1,6 +1,7 @@
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
 		console.log('formatSelection');
+		var tag_type = tag.get('tag_type').toLowerCase();
 
 		var
 			nameEl = $('<span>').addClass('tag-result-name tag-'+tag_type).html(tag.get('name'))
