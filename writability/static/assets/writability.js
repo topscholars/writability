@@ -321,12 +321,10 @@ App.AnnotationGroupcontainerComponent = Ember.Component.extend({
 
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
-
-
 		console.log('formatSelection');
 
 		var
-			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
+			nameEl = $('<span>').addClass('tag-result-name tag-'+tag_type).html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(nameEl);
@@ -336,11 +334,10 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatResult: function (tag) { //Fired on clicking into the tag input field
 
 		console.log('formatResult');
-		//debugger
 		var tag_type = tag.get('tag_type').toLowerCase();
 
 		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
-			nameEl = $('<span>').addClass('tag-result-name tr-'+tag_type).html(tag.get('name'))
+			nameEl = $('<span>').addClass('tag-result-name tag-'+tag_type).html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(categoryEl);
@@ -484,9 +481,15 @@ App.Annotation = DS.Model.extend({
 	comment: DS.attr(),
 	state: DS.attr(),
 	tag: DS.belongsTo('tag'),
+
 	review: DS.belongsTo('review', {async: true}),
 
-	tagId: '',
+	isPositive: function() {
+		var model = this;
+		var tag_type = model.get('tag.tag_type'); 
+		var result = (tag_type == "POSITIVE" ? true : false);
+    return result;
+  }.property('tag.tag_type'),
 
 	changeTagObserver: function() {
 		var model = this;
@@ -2422,9 +2425,9 @@ Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{
 
 Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span class=\"annotation-create-tag-selected\">{{tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n\t{{#general-collapse isActive=collapseActive}}\n\t\t{{annotation.tag.description}}\n\t{{/general-collapse}}\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotaion-close\" {{action 'closeAnnotation'}}><i class=\"icon-cancel-circled\"></i></span>\n\n<span class=\"annotation-details-tag-selected\">{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n\t<button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotaion-close\" {{action 'closeAnnotation'}}><i class=\"icon-cancel-circled\"></i></span>\n\n<span {{bind-attr class=\":annotation-details-tag-selected annotation.isPositive:tag-positive:tag-negative\"}}>{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n\t<button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div class=\"annotation-title\" {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 

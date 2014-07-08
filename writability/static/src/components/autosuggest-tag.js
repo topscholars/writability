@@ -1,11 +1,9 @@
 App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatSelection: function (tag) {
-
-
 		console.log('formatSelection');
 
 		var
-			nameEl = $('<span>').addClass('tag-result-name').html(tag.get('name'))
+			nameEl = $('<span>').addClass('tag-result-name tag-'+tag_type).html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(nameEl);
@@ -15,11 +13,10 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 	formatResult: function (tag) { //Fired on clicking into the tag input field
 
 		console.log('formatResult');
-		//debugger
 		var tag_type = tag.get('tag_type').toLowerCase();
 
 		var categoryEl = $('<span>').addClass('tag-result-category').html(tag.get('category')),
-			nameEl = $('<span>').addClass('tag-result-name tr-'+tag_type).html(tag.get('name'))
+			nameEl = $('<span>').addClass('tag-result-name tag-'+tag_type).html(tag.get('name'))
 			$result = $('<div>');
 
 		$result.append(categoryEl);

@@ -1,6 +1,6 @@
 <span class="annotaion-close" {{action 'closeAnnotation'}}><i class="icon-cancel-circled"></i></span>
 
-<span class="annotation-details-tag-selected">{{annotation.tag.name}} <i class="icon-info-circled" {{action "toggleCollapse"}}></i></span>
+<span {{bind-attr class=":annotation-details-tag-selected annotation.isPositive:tag-positive:tag-negative"}}>{{annotation.tag.name}} <i class="icon-info-circled" {{action "toggleCollapse"}}></i></span>
 
 {{#general-collapse isActive=collapseActive}}
 	{{annotation.tag.description}}

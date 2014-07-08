@@ -3,9 +3,15 @@ App.Annotation = DS.Model.extend({
 	comment: DS.attr(),
 	state: DS.attr(),
 	tag: DS.belongsTo('tag'),
+
 	review: DS.belongsTo('review', {async: true}),
 
-	tagId: '',
+	isPositive: function() {
+		var model = this;
+		var tag_type = model.get('tag.tag_type'); 
+		var result = (tag_type == "POSITIVE" ? true : false);
+    return result;
+  }.property('tag.tag_type'),
 
 	changeTagObserver: function() {
 		var model = this;
