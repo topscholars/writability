@@ -19,6 +19,12 @@ App.Annotation = DS.Model.extend({
     return result;
   }.property('state'),
 
+  isApproved: function() { // Required because handlebar template can't use an attr's value..
+		var state = this.get('state'); 
+		var result = (state == "approved" ? true : false);
+    return result;
+  }.property('state'),
+
 	changeTagObserver: function() {
 		var model = this;
 

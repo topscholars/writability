@@ -13,5 +13,13 @@
 {{#if isStudent}}
   {{#unless annotation.isResolved}}
 	  <button class="annotation-details-button" {{action "resolveAnnotation"}}>Resolve</button>
+  {{else}}
+    <p class="bold">[Resolved]</p>
+  {{/unless}}
+{{else}}
+  {{#unless annotation.isApproved}}
+    <button class="annotation-details-button" {{action "approveAnnotation"}}>Approve</button>
+  {{else}}
+    <p class="bold">[Approved]</p>
   {{/unless}}
 {{/if}}

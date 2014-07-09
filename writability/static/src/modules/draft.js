@@ -133,6 +133,8 @@ App.TeacherDraftController = App.DraftController.extend({
 
     annotationSelector: null,
     newAnnotation: null,
+    // Page displays blank anno's when this is used.
+    //annotations: Ember.computed.alias('review.annotations'),
 
     tags: function() {
         return this.store.find('tag');

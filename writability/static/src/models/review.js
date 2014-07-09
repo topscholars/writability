@@ -10,6 +10,13 @@ App.Review = DS.Model.extend({
     state: DS.attr('string'),
     annotations: DS.hasMany('annotation', {async: true}),
 
+    // This returns all non-approved annotations. Shows up as blank though..
+    //active_annotations: function() {
+    //    this.get('annotations').then(function (annotations) {
+    //        return annotations.rejectBy('state', 'approved');
+    //    });
+    //}.property('annotations'),
+
     // relationships
     draft: DS.belongsTo('draft'),
     teacher: DS.belongsTo('teacher')
