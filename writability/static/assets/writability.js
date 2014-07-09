@@ -294,6 +294,15 @@ App.AnnotationDetailComponent = Ember.Component.extend(App.Collapsable, {
 				component.sendAction('closeAnnotation');
 			});
 		},
+		approveAnnotation: function () {
+			var annotation = this.get('annotation'),
+				component = this;
+
+			annotation.set('state', 'approved');
+			annotation.save().then(function() {
+				component.sendAction('closeAnnotation');
+			});
+		},
 		closeAnnotation: function () {
 			this.sendAction('closeAnnotation');
 		}
@@ -485,12 +494,24 @@ App.Annotation = DS.Model.extend({
 
 	review: DS.belongsTo('review', {async: true}),
 
-	isPositive: function() {
+	isPositive: function() { // Required because handlebar template can't use an attr's value..
 		var model = this;
 		var tag_type = model.get('tag.tag_type'); 
 		var result = (tag_type == "POSITIVE" ? true : false);
     return result;
   }.property('tag.tag_type'),
+
+	isResolved: function() {
+		var state = this.get('state'); 
+		var result = (state == "resolved" ? true : false);
+    return result;
+  }.property('state'),
+
+  isApproved: function() {
+		var state = this.get('state'); 
+		var result = (state == "approved" ? true : false);
+    return result;
+  }.property('state'),
 
 	changeTagObserver: function() {
 		var model = this;
@@ -650,6 +671,45 @@ App.Review = DS.Model.extend({
     next_states: DS.attr('array', {readOnly: true}),
     state: DS.attr('string'),
     annotations: DS.hasMany('annotation', {async: true}),
+
+    all_annotations_resolved: function() {
+        var annotations = this._data.annotations;
+        var annos = this.get('annotations');
+        console.log("annotations[0].get('state'): " + annotations[0].get('state') );
+
+        for (i=0; i < annotations.length; i++) {
+            var anno_state = annotations[i].get('state');
+            console.log(anno_state);
+            if (anno_state == "new" ) {
+                return false;
+            }
+        }
+        return true;
+        // NONE OF THE BELOW WORK. Why ?? Leave this here until we get some answers.
+
+        // annotations[0] = an annotations ember object
+        //for (anno in annotations) {
+            //console.log('anno.get("state": ' + anno.get('state'));
+            //console.log('anno.state": ' + anno.state);
+            //console.log('anno.isResolved": ' + anno.isResolved);
+            //console.log('anno.isResolved()": ' + anno.isResolved() );
+        //    debugger
+            //console.log(anno._data.state);
+        //    if ( anno._data.state == "new") {
+        //        return false;                 
+        //    }
+        //}
+
+        //this.get('annotations')                   // Same problem without the .then() for async
+        //  .then(function(annotations) { 
+        //    for (anno in annotations) {
+        //        if ( anno.get('state') == "new") {  // annos is an Ember obj of ~130 elements instead of 4
+        //            return false;                   // so can't use != "resolved" .. goddamnit ember
+        //        }
+        //    }
+        //});
+        //return true;
+    }.property('annotations.@each.state'),
 
     // relationships
     draft: DS.belongsTo('draft'),
@@ -872,16 +932,22 @@ App.StudentDraftController = App.DraftController.extend({
     actions: {
         /**
          * Respond to next by submitting draft.
+         * This requires that all annotations on that draft's review be resolved before submit
          */
         next: function () {
-            if (confirm('Are you sure you want to submit this draft?')) {
-                var draft = this.get('model');
-                draft.set('state', 'submitted');
+            var annotations_resolved = this.get('model.review.all_annotations_resolved');
+            if (annotations_resolved) {
+                if (confirm('Are you sure you want to submit this draft?')) {
+                    var draft = this.get('model');
+                    draft.set('state', 'submitted');
 
-                // Save draft
-                draft.save().then(
-                    this.refreshAndTransitionEssay.bind(this)
-                );
+                    // Save draft
+                    draft.save().then(
+                        this.refreshAndTransitionEssay.bind(this)
+                    );
+                }
+            } else {
+                alert ('You must resolve all annotations before you can submit this draft.');
             }
         },
 
@@ -902,6 +968,8 @@ App.TeacherDraftController = App.DraftController.extend({
 
     annotationSelector: null,
     newAnnotation: null,
+    // Page displays blank anno's when this is used.
+    //annotations: Ember.computed.alias('review.annotations'),
 
     tags: function() {
         return this.store.find('tag');
@@ -2434,9 +2502,9 @@ Ember.TEMPLATES["components/annotation-container"] = Ember.Handlebars.compile("{
 
 Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{{#if tag}}\n<div class=\"annotation-create\">\n\t<span {{bind-attr class=\":annotation-create-tag-selected tag.isPositive:tag-positive:tag-negative\"}}>{{tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n\t{{#general-collapse isActive=collapseActive}}\n\t\t{{annotation.tag.description}}\n\t{{/general-collapse}}\n\n\t{{textarea value=comment class=\"annotation-create-comment\"}}\n\n\t<button class=\"annotation-create-button\" {{action \"saveAnnotation\"}}>Tag It</button>\n</div>\n{{else}}\n\t{{autosuggest-tag data=tags value=tagId}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotaion-close\" {{action 'closeAnnotation'}}><i class=\"icon-cancel-circled\"></i></span>\n\n<span {{bind-attr class=\":annotation-details-tag-selected annotation.isPositive:tag-positive:tag-negative\"}}>{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n\t<button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotaion-close\" {{action 'closeAnnotation'}}><i class=\"icon-cancel-circled\"></i></span>\n\n<span {{bind-attr class=\":annotation-details-tag-selected annotation.isPositive:tag-positive:tag-negative\"}}>{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n  {{#unless annotation.isResolved}}\n\t  <button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n  {{else}}\n    <p class=\"bold\">[Resolved]</p>\n  {{/unless}}\n{{else}}\n  {{#unless annotation.isApproved}}\n    <button class=\"annotation-details-button\" {{action \"approveAnnotation\"}}>Approve</button>\n  {{else}}\n    <p class=\"bold\">[Approved]</p>\n  {{/unless}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
+Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative annotation.isResolved:tag-resolved\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 

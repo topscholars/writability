@@ -103,16 +103,22 @@ App.StudentDraftController = App.DraftController.extend({
     actions: {
         /**
          * Respond to next by submitting draft.
+         * This requires that all annotations on that draft's review be resolved before submit
          */
         next: function () {
-            if (confirm('Are you sure you want to submit this draft?')) {
-                var draft = this.get('model');
-                draft.set('state', 'submitted');
+            var annotations_resolved = this.get('model.review.all_annotations_resolved');
+            if (annotations_resolved) {
+                if (confirm('Are you sure you want to submit this draft?')) {
+                    var draft = this.get('model');
+                    draft.set('state', 'submitted');
 
-                // Save draft
-                draft.save().then(
-                    this.refreshAndTransitionEssay.bind(this)
-                );
+                    // Save draft
+                    draft.save().then(
+                        this.refreshAndTransitionEssay.bind(this)
+                    );
+                }
+            } else {
+                alert ('You must resolve all annotations before you can submit this draft.');
             }
         },
 
@@ -133,6 +139,8 @@ App.TeacherDraftController = App.DraftController.extend({
 
     annotationSelector: null,
     newAnnotation: null,
+    // Page displays blank anno's when this is used.
+    //annotations: Ember.computed.alias('review.annotations'),
 
     tags: function() {
         return this.store.find('tag');

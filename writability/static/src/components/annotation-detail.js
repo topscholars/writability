@@ -16,6 +16,15 @@ App.AnnotationDetailComponent = Ember.Component.extend(App.Collapsable, {
 				component.sendAction('closeAnnotation');
 			});
 		},
+		approveAnnotation: function () {
+			var annotation = this.get('annotation'),
+				component = this;
+
+			annotation.set('state', 'approved');
+			annotation.save().then(function() {
+				component.sendAction('closeAnnotation');
+			});
+		},
 		closeAnnotation: function () {
 			this.sendAction('closeAnnotation');
 		}
