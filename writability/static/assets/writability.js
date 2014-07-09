@@ -501,13 +501,13 @@ App.Annotation = DS.Model.extend({
     return result;
   }.property('tag.tag_type'),
 
-	isResolved: function() { // Required because handlebar template can't use an attr's value..
+	isResolved: function() {
 		var state = this.get('state'); 
 		var result = (state == "resolved" ? true : false);
     return result;
   }.property('state'),
 
-  isApproved: function() { // Required because handlebar template can't use an attr's value..
+  isApproved: function() {
 		var state = this.get('state'); 
 		var result = (state == "approved" ? true : false);
     return result;
@@ -672,12 +672,44 @@ App.Review = DS.Model.extend({
     state: DS.attr('string'),
     annotations: DS.hasMany('annotation', {async: true}),
 
-    // This returns all non-approved annotations. Shows up as blank though..
-    //active_annotations: function() {
-    //    this.get('annotations').then(function (annotations) {
-    //        return annotations.rejectBy('state', 'approved');
-    //    });
-    //}.property('annotations'),
+    all_annotations_resolved: function() {
+        var annotations = this._data.annotations;
+        var annos = this.get('annotations');
+        console.log("annotations[0].get('state'): " + annotations[0].get('state') );
+
+        for (i=0; i < annotations.length; i++) {
+            var anno_state = annotations[i].get('state');
+            console.log(anno_state);
+            if (anno_state == "new" ) {
+                return false;
+            }
+        }
+        return true;
+        // NONE OF THE BELOW WORK. Why ?? Leave this here until we get some answers.
+
+        // annotations[0] = an annotations ember object
+        //for (anno in annotations) {
+            //console.log('anno.get("state": ' + anno.get('state'));
+            //console.log('anno.state": ' + anno.state);
+            //console.log('anno.isResolved": ' + anno.isResolved);
+            //console.log('anno.isResolved()": ' + anno.isResolved() );
+        //    debugger
+            //console.log(anno._data.state);
+        //    if ( anno._data.state == "new") {
+        //        return false;                 
+        //    }
+        //}
+
+        //this.get('annotations')                   // Same problem without the .then() for async
+        //  .then(function(annotations) { 
+        //    for (anno in annotations) {
+        //        if ( anno.get('state') == "new") {  // annos is an Ember obj of ~130 elements instead of 4
+        //            return false;                   // so can't use != "resolved" .. goddamnit ember
+        //        }
+        //    }
+        //});
+        //return true;
+    }.property('annotations.@each.state'),
 
     // relationships
     draft: DS.belongsTo('draft'),
@@ -900,16 +932,22 @@ App.StudentDraftController = App.DraftController.extend({
     actions: {
         /**
          * Respond to next by submitting draft.
+         * This requires that all annotations on that draft's review be resolved before submit
          */
         next: function () {
-            if (confirm('Are you sure you want to submit this draft?')) {
-                var draft = this.get('model');
-                draft.set('state', 'submitted');
+            var annotations_resolved = this.get('model.review.all_annotations_resolved');
+            if (annotations_resolved) {
+                if (confirm('Are you sure you want to submit this draft?')) {
+                    var draft = this.get('model');
+                    draft.set('state', 'submitted');
 
-                // Save draft
-                draft.save().then(
-                    this.refreshAndTransitionEssay.bind(this)
-                );
+                    // Save draft
+                    draft.save().then(
+                        this.refreshAndTransitionEssay.bind(this)
+                    );
+                }
+            } else {
+                alert ('You must resolve all annotations before you can submit this draft.');
             }
         },
 

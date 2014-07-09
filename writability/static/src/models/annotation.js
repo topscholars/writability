@@ -13,13 +13,13 @@ App.Annotation = DS.Model.extend({
     return result;
   }.property('tag.tag_type'),
 
-	isResolved: function() { // Required because handlebar template can't use an attr's value..
+	isResolved: function() {
 		var state = this.get('state'); 
 		var result = (state == "resolved" ? true : false);
     return result;
   }.property('state'),
 
-  isApproved: function() { // Required because handlebar template can't use an attr's value..
+  isApproved: function() {
 		var state = this.get('state'); 
 		var result = (state == "approved" ? true : false);
     return result;
