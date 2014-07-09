@@ -14,9 +14,11 @@ App.TextEditor = Ember.TextArea.extend({
     reviewMode: false,
     _suspendValueChange: false,
     _minimumChangeMilliseconds: 1000,
+    valueBuffer: null,
 
     didInsertElement: function () {
         this._setupInlineEditor();
+        console.log(this.get('valueBuffer'));
     },
 
     _setupInlineEditor: function () {
@@ -141,5 +143,12 @@ App.TextEditor = Ember.TextArea.extend({
         var editor = this.get('editor');
         editor.removeAllListeners();
         editor.destroy(false);
-    }
+    },
+
+    valueBufferPush: function() {
+        var editor = this.get('editor'),
+            newFormattedText = this.get('valueBuffer');
+
+        editor.setData(newFormattedText);
+    }.observes('valueBuffer')
 });

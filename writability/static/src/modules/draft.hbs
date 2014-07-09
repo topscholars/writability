@@ -26,15 +26,22 @@
             valueBinding="formatted_text"
             isReadOnly=false
             reviewMode=true
+            valueBuffer=formatted_text_buffer
         }}
     {{else}}
         {{view App.TextEditor
             action="startedWriting"
             valueBinding="formatted_text"
+            valueBuffer=formatted_text_buffer
         }}
     {{/if}}
 </div>
 
 <div class="editor-column annotations-column">
-    {{annotation-container newAnnotation=newAnnotation annotations=annotations tags=tags}}
+    {{annotation-container
+        newAnnotation=newAnnotation
+        annotations=domAnnotations
+        tags=tags
+        hasSavedAnnotation="hasSavedAnnotation"
+        isStudent=isStudent}}
 </div>

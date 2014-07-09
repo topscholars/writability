@@ -150,7 +150,7 @@ class TagPopulator(Populator):
         tag_type = tokens[1].strip()
         category = tokens[2].strip()
         description = tokens[3].strip()
-        example = tokens[4].strip()
+        super_category = tokens[4].strip()
 
         payload = {
             "tag": {
@@ -158,7 +158,7 @@ class TagPopulator(Populator):
                 "tag_type" : tag_type,
                 "category" : category,
                 "description" : description,
-                "example" : example
+                "super_category" : super_category
             }
         }
 

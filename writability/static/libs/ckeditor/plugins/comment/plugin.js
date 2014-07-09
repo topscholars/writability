@@ -9,6 +9,11 @@ CKEDITOR.plugins.add( 'comment', {
 
         editor.addCommand( 'insertComment', {
             exec: function( editor ) {
+                var currentInProgress = $('#annotation-in-progress');
+
+                if (currentInProgress.length > 0) {
+                    $(currentInProgress).replaceWith(currentInProgress.contents());
+                }
 
 
                 //if (selectedText.length < 1) {
