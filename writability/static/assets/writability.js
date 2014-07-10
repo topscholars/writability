@@ -379,6 +379,9 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 });
 
 App.FormDateComponent = Ember.TextField.extend({
+
+	classNames: ['form-date'],
+
 	min: true,
 
 	formatSubmit: "YYYY-MM-DD",
