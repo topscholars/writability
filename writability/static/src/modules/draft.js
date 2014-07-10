@@ -245,6 +245,10 @@ App.TeacherDraftController = App.DraftController.extend({
             Ember.run.debounce(this, this.saveDraft, App.autosaveTimout, true);
 
             this.set('newAnnotation', null);
+        },
+
+        saveEssay: function(essay) {
+            essay.save();
         }
     }
 });
@@ -290,6 +294,9 @@ App.SummaryPanel = Ember.ContainerView.extend({
         }));
         this.set('review', Ember.View.create({
             templateName: "modules/_draft-review-panel"
+        }));
+        this.set('settings', Ember.View.create({
+            templateName: "modules/draft/_settings-panel"
         }));
         this.set('childViews', []);
         this._super();
