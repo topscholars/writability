@@ -12,8 +12,8 @@ App.FormDateComponent = Ember.TextField.extend({
 	},
 
 	_elementValueDidChange: function() {
-		var format = this.$().val();
-		var outputVal = moment(format, this.get('format').toUpperCase());
+		var value = this.$().val();
+		var outputVal = moment(value, this.get('format').toUpperCase());
 		this.set('dateBind', outputVal.format(this.get('formatSubmit')));
 
 		this._super();

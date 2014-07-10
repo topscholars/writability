@@ -30,6 +30,16 @@
 </div>
 {{/if}}
 
+<div class="details-field">
+    <div class="key">Next Due Date: {{due_date}}</div>
+    {{form-date dateBind=due_date format="mm/dd/yyyy"}}
+</div>
+
+<div class="details-field">
+    <div class="key">Number of Revisions: {{due_date}}</div>
+    {{form-number value=num_of_drafts min=0 max=20}}
+</div>
+
 {{#if is_in_progress}}
     <div class="details-field">
         <div class="key">Topic:</div>
