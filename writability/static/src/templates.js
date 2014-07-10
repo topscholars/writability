@@ -6,6 +6,8 @@ Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<spa
 
 Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative annotation.isResolved:tag-resolved\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
 
+Ember.TEMPLATES["components/form-number"] = Ember.Handlebars.compile("{{input value=value}}\n<button class=\"up\" {{action 'increment'}}><i class=\"icon-up-open\"></i></button>\n<button class=\"down\" {{action 'decrement'}}><i class=\"icon-down-open\"></i></button>\n");
+
 Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 
 Ember.TEMPLATES["components/is-in-array-checkbox"] = Ember.Handlebars.compile("<div class=\"checkbox\">\n\t{{#if isInArray}}\n\t\t<i class=\"icon-check\"></i>\n\t{{else}}\n\t\t<i class=\"icon-check inactive\"></i>\n\t{{/if}}\n</div>\n");

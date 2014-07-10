@@ -414,6 +414,28 @@ App.FormDateComponent = Ember.TextField.extend({
 	}.property()
 });
 
+App.FormNumberComponent = Ember.Component.extend({
+	classNames: ['form-number'],
+	min: null,
+	max: null,
+	value: null,
+
+	willInsertElement: function() {
+		if (!this.get('value')) {
+			this.set('value', 0);
+		}
+	},
+
+	actions: {
+		increment: function() {
+			this.incrementProperty('value');
+		},
+		decrement: function() {
+			this.decrementProperty('value');
+		}
+	}
+});
+
 App.GeneralCollapseComponent = Ember.Component.extend({
 	classNames: ['collapse'],
 	classNameBindings: ['isActive'],
@@ -2541,6 +2563,8 @@ Ember.TEMPLATES["components/annotation-createbox"] = Ember.Handlebars.compile("{
 Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<span class=\"annotaion-close\" {{action 'closeAnnotation'}}><i class=\"icon-cancel-circled\"></i></span>\n\n<span {{bind-attr class=\":annotation-details-tag-selected annotation.isPositive:tag-positive:tag-negative\"}}>{{annotation.tag.name}} <i class=\"icon-info-circled\" {{action \"toggleCollapse\"}}></i></span>\n\n{{#general-collapse isActive=collapseActive}}\n\t{{annotation.tag.description}}\n{{/general-collapse}}\n\n<p class=\"annotation-details-comment\">{{annotation.comment}}</p>\n\n<p class=\"annotation-details-comment\">Original: \"{{annotation.original}}\"</p>\n\n{{#if isStudent}}\n  {{#unless annotation.isResolved}}\n\t  <button class=\"annotation-details-button\" {{action \"resolveAnnotation\"}}>Resolve</button>\n  {{else}}\n    <p class=\"bold\">[Resolved]</p>\n  {{/unless}}\n{{else}}\n  {{#unless annotation.isApproved}}\n    <button class=\"annotation-details-button\" {{action \"approveAnnotation\"}}>Approve</button>\n  {{else}}\n    <p class=\"bold\">[Approved]</p>\n  {{/unless}}\n{{/if}}\n");
 
 Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative annotation.isResolved:tag-resolved\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
+
+Ember.TEMPLATES["components/form-number"] = Ember.Handlebars.compile("{{input value=value}}\n<button class=\"up\" {{action 'increment'}}><i class=\"icon-up-open\"></i></button>\n<button class=\"down\" {{action 'decrement'}}><i class=\"icon-down-open\"></i></button>\n");
 
 Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 
