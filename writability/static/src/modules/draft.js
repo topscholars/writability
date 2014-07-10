@@ -5,6 +5,7 @@ App.autosaveTimout = 5000;
 App.DraftController = Ember.ObjectController.extend({
 
     isStudent: false,
+    isTeacher: false,
 
     annotations: Ember.computed.alias('review.annotations'),
 
@@ -50,6 +51,14 @@ App.DraftController = Ember.ObjectController.extend({
 
     onFailure: function () {
         console.log("Failure to sync draft to server.");
+    },
+
+    updateEssayDueDate: function() {
+        var essay = this.get('essay');
+
+        essay.autoUpdateDueDate();
+
+        return essay.save();
     },
 
     actions: {
@@ -109,13 +118,15 @@ App.StudentDraftController = App.DraftController.extend({
             var annotations_resolved = this.get('model.review.all_annotations_resolved');
             if (annotations_resolved) {
                 if (confirm('Are you sure you want to submit this draft?')) {
-                    var draft = this.get('model');
-                    draft.set('state', 'submitted');
+                    this.updateEssayDueDate().then(function() {
+                        var draft = this.get('model');
+                        draft.set('state', 'submitted');
 
-                    // Save draft
-                    draft.save().then(
-                        this.refreshAndTransitionEssay.bind(this)
-                    );
+                        // Save draft
+                        draft.save().then(
+                            this.refreshAndTransitionEssay.bind(this)
+                        );
+                    }.bind(this)};
                 }
             } else {
                 alert ('You must resolve all annotations before you can submit this draft.');
@@ -137,6 +148,7 @@ App.StudentDraftController = App.DraftController.extend({
 
 App.TeacherDraftController = App.DraftController.extend({
 
+    isTeacher: true,
     annotationSelector: null,
     newAnnotation: null,
     // Page displays blank anno's when this is used.
@@ -172,18 +184,19 @@ App.TeacherDraftController = App.DraftController.extend({
 
         next: function () {
             var draft = this.get('model');
-            draft.get('review')
-                .then(function (review) {
-                    review.set('state', 'completed');
-                    // Save draft
-                    return review.save();
-                })
-                .then(function (savedReview) {
-                    var essay_id = draft._data.essay.id;
-                    // Transition to essays page
-                    // TODO: convert this to essays once it's complete
-                    this.transitionToRoute('students');
-                }.bind(this));
+
+            this.updateEssayDueDate().then(function() {
+                draft.get('review')
+                    .then(function (review) {
+                        review.set('state', 'completed');
+                        // Save draft
+                        return review.save();
+                    })
+                    .then(function (savedReview) {
+                        var essay_id = draft._data.essay.id;
+                        this.transitionToRoute('students');
+                    }.bind(this));
+            }.bind(this));
         },
 
         back: function () {

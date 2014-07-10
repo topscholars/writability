@@ -1,5 +1,7 @@
 /* globals App, DS */
 App.Essay = DS.Model.extend({
+    dueDateAdvanceDays: 3,
+
     // properties
     audience: DS.attr('string'),
     context: DS.attr('string'),
@@ -15,6 +17,16 @@ App.Essay = DS.Model.extend({
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
     essay_template: DS.belongsTo('essayTemplate', {async: true}),
+
+    autoUpdateDueDate: function() {
+        var currentDueDate = moment(this.get('due_date'));
+
+        // Check if currentDueDate is in the past
+        if (currentDueDate.isBefore(moment())) {
+            var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
+            this.set('due_date', newDueDate.format('YYYY-MM-DD'));
+        }
+    }
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({

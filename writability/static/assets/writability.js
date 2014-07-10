@@ -648,6 +648,8 @@ App.Draft = DS.Model.extend({
 
 /* globals App, DS */
 App.Essay = DS.Model.extend({
+    dueDateAdvanceDays: 3,
+
     // properties
     audience: DS.attr('string'),
     context: DS.attr('string'),
@@ -663,6 +665,16 @@ App.Essay = DS.Model.extend({
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
     essay_template: DS.belongsTo('essayTemplate', {async: true}),
+
+    autoUpdateDueDate: function() {
+        var currentDueDate = moment(this.get('due_date'));
+
+        // Check if currentDueDate is in the past
+        if (currentDueDate.isBefore(moment())) {
+            var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
+            this.set('due_date', newDueDate.format('YYYY-MM-DD'));
+        }
+    }
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
@@ -928,6 +940,7 @@ App.autosaveTimout = 5000;
 App.DraftController = Ember.ObjectController.extend({
 
     isStudent: false,
+    isTeacher: false,
 
     annotations: Ember.computed.alias('review.annotations'),
 
@@ -973,6 +986,14 @@ App.DraftController = Ember.ObjectController.extend({
 
     onFailure: function () {
         console.log("Failure to sync draft to server.");
+    },
+
+    updateEssayDueDate: function() {
+        var essay = this.get('essay');
+
+        essay.autoUpdateDueDate();
+
+        return essay.save();
     },
 
     actions: {
@@ -1032,13 +1053,15 @@ App.StudentDraftController = App.DraftController.extend({
             var annotations_resolved = this.get('model.review.all_annotations_resolved');
             if (annotations_resolved) {
                 if (confirm('Are you sure you want to submit this draft?')) {
-                    var draft = this.get('model');
-                    draft.set('state', 'submitted');
+                    this.updateEssayDueDate().then(function() {
+                        var draft = this.get('model');
+                        draft.set('state', 'submitted');
 
-                    // Save draft
-                    draft.save().then(
-                        this.refreshAndTransitionEssay.bind(this)
-                    );
+                        // Save draft
+                        draft.save().then(
+                            this.refreshAndTransitionEssay.bind(this)
+                        );
+                    }.bind(this)};
                 }
             } else {
                 alert ('You must resolve all annotations before you can submit this draft.');
@@ -1060,6 +1083,7 @@ App.StudentDraftController = App.DraftController.extend({
 
 App.TeacherDraftController = App.DraftController.extend({
 
+    isTeacher: true,
     annotationSelector: null,
     newAnnotation: null,
     // Page displays blank anno's when this is used.
@@ -1095,18 +1119,19 @@ App.TeacherDraftController = App.DraftController.extend({
 
         next: function () {
             var draft = this.get('model');
-            draft.get('review')
-                .then(function (review) {
-                    review.set('state', 'completed');
-                    // Save draft
-                    return review.save();
-                })
-                .then(function (savedReview) {
-                    var essay_id = draft._data.essay.id;
-                    // Transition to essays page
-                    // TODO: convert this to essays once it's complete
-                    this.transitionToRoute('students');
-                }.bind(this));
+
+            this.updateEssayDueDate().then(function() {
+                draft.get('review')
+                    .then(function (review) {
+                        review.set('state', 'completed');
+                        // Save draft
+                        return review.save();
+                    })
+                    .then(function (savedReview) {
+                        var essay_id = draft._data.essay.id;
+                        this.transitionToRoute('students');
+                    }.bind(this));
+            }.bind(this));
         },
 
         back: function () {
@@ -1804,7 +1829,7 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 		closeModal: function() {
 			this.get('parentEssay').reload().then(function() {
 				this.transitionToRoute('student.essays.show');
-			});
+			}.bind(this));
 
 			return true;
 		},
@@ -2666,7 +2691,7 @@ Ember.TEMPLATES["modules/_universities-list-item"] = Ember.Handlebars.compile("<
 
 Ember.TEMPLATES["modules/_universities-new-item"] = Ember.Handlebars.compile("<div class=\"main-group\">\n    <div class=\"main-line\">\n        {{view Ember.Select\n        content=universities\n        selectionBinding=\"newUniversity\"\n        optionValuePath=\"content.id\"\n        valueBinding=\"defaultValueOption\"\n        optionLabelPath=\"content.name\"\n        prompt=\"Select a school\"}}\n    </div>\n</div>\n\n");
 
-Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n            <button {{action togglePanel \"settings\" target=view}} class=\"settings panel-toggle\">\n                Settings\n            </button>\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=false\n            reviewMode=true\n            valueBuffer=formatted_text_buffer\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            valueBuffer=formatted_text_buffer\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n    {{annotation-container\n        newAnnotation=newAnnotation\n        annotations=domAnnotations\n        tags=tags\n        hasSavedAnnotation=\"hasSavedAnnotation\"\n        isStudent=isStudent}}\n</div>\n");
+Ember.TEMPLATES["modules/draft"] = Ember.Handlebars.compile("<div class=\"editor-column summary-column\">\n    <section class=\"summary-header\">\n        <div class=\"panel-toggle-container\">\n            <button {{action togglePanel \"details\" target=view}} class=\"details panel-toggle\">\n                Details\n            </button>\n            <button {{action togglePanel \"review\" target=view}} class=\"review panel-toggle\">\n                Review\n            </button>\n            {{#if isTeacher}}\n                <button {{action togglePanel \"settings\" target=view}} class=\"settings panel-toggle\">\n                    Settings\n                </button>\n            {{/if}}\n        </div>\n        <div class=\"essay-prompt strong\">{{essay.essay_prompt}}</div>\n    </section>\n    <section class=\"summary-panel-container\">\n        {{view App.SummaryPanel viewName=\"summaryPanel\"}}\n    </section>\n</div>\n\n<div class=\"editor-column text-column\">\n    <div class=\"toolbar-container\">\n        <div id=\"editor-toolbar\" class=\"editor-toolbar\"></div>\n    </div>\n\n    {{#if reviewMode}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            isReadOnly=false\n            reviewMode=true\n            valueBuffer=formatted_text_buffer\n        }}\n    {{else}}\n        {{view App.TextEditor\n            action=\"startedWriting\"\n            valueBinding=\"formatted_text\"\n            valueBuffer=formatted_text_buffer\n        }}\n    {{/if}}\n</div>\n\n<div class=\"editor-column annotations-column\">\n    {{annotation-container\n        newAnnotation=newAnnotation\n        annotations=domAnnotations\n        tags=tags\n        hasSavedAnnotation=\"hasSavedAnnotation\"\n        isStudent=isStudent}}\n</div>\n");
 
 Ember.TEMPLATES["modules/draft/_settings-panel"] = Ember.Handlebars.compile("<div class=\"panel-title\">Essay Settings</div>\n\n<div class=\"details-field\">\n    <div class=\"key\">Next Due Date:</div>\n    {{form-date dateBind=essay.due_date format=\"mm/dd/yyyy\"}}\n</div>\n\n<div class=\"details-field\">\n    <div class=\"key\">Number of Revisions:</div>\n    {{form-number value=essay.num_of_drafts min=0 max=20}}\n</div>\n\n<div class=\"details-field\">\n\t<button {{action 'saveEssay' essay}}>Save Essay</button>\n</div>\n");
 
