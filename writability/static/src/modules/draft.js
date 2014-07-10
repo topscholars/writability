@@ -126,7 +126,7 @@ App.StudentDraftController = App.DraftController.extend({
                         draft.save().then(
                             this.refreshAndTransitionEssay.bind(this)
                         );
-                    }.bind(this)};
+                    }.bind(this));
                 }
             } else {
                 alert ('You must resolve all annotations before you can submit this draft.');
