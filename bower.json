@@ -13,6 +13,7 @@
     "ckeditor": "~4.4.0",
     "validatorjs": "~1.0",
     "select2": "*",
-    "entypo": "*"
+    "entypo": "*",
+    "pickadate": "~3.5.2"
   }
 }
