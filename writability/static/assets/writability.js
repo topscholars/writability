@@ -379,6 +379,10 @@ App.AutosuggestTagComponent = App.FormSelect2Component.extend({
 });
 
 App.FormDateComponent = Ember.TextField.extend({
+	min: true,
+
+	formatSubmit: "YYYY-MM-DD",
+
 	didInsertElement: function() {
 		Ember.run.scheduleOnce('afterRender', this, 'startPickadate');
 	},
@@ -387,13 +391,26 @@ App.FormDateComponent = Ember.TextField.extend({
 		this.$().pickadate(this.get('options'));
 	},
 
+	_elementValueDidChange: function() {
+		var format = this.$().val();
+		var outputVal = moment(format, this.get('format').toUpperCase());
+		this.set('dateBind', outputVal.format(this.get('formatSubmit')));
+
+		this._super();
+	},
+
 	options: function() {
-		return {
+		var options = {
 			format: this.get('format'),
 			formatSubmit: this.get('formatSubmit'),
-			min: this.get('min'),
 			hiddenName: true
 		};
+
+		if (this.get('min')) {
+			options.min = this.get('min');
+		}
+
+		return options;
 	}.property()
 });
 
