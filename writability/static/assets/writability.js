@@ -426,12 +426,36 @@ App.FormNumberComponent = Ember.Component.extend({
 		}
 	},
 
+	canIncrement: function() {
+		var max = this.get('max');
+
+		if (max === null) {
+			return true;
+		}
+
+		return this.get('value') < max;
+	}.property('value'),
+
+	canDecrement: function() {
+		var min = this.get('min');
+
+		if (min === null) {
+			return true;
+		}
+
+		return this.get('value') > min;
+	}.property('value'),
+
 	actions: {
 		increment: function() {
-			this.incrementProperty('value');
+			if (this.get('canIncrement')) {
+				this.incrementProperty('value');
+			}
 		},
 		decrement: function() {
-			this.decrementProperty('value');
+			if (this.get('canDecrement')) {
+				this.decrementProperty('value');
+			}
 		}
 	}
 });
@@ -2564,7 +2588,7 @@ Ember.TEMPLATES["components/annotation-detail"] = Ember.Handlebars.compile("<spa
 
 Ember.TEMPLATES["components/annotation-groupcontainer"] = Ember.Handlebars.compile("{{#each annotation in group.annotations}}\n\t<div {{bind-attr class=\":annotation-title annotation.isPositive:tag-positive:tag-negative annotation.isResolved:tag-resolved\"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>\n{{/each}}\n{{#if selectedAnnotation}}\n\t{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation=\"closeAnnotation\"}}\n{{/if}}\n");
 
-Ember.TEMPLATES["components/form-number"] = Ember.Handlebars.compile("{{input value=value}}\n<button class=\"up\" {{action 'increment'}}><i class=\"icon-up-open\"></i></button>\n<button class=\"down\" {{action 'decrement'}}><i class=\"icon-down-open\"></i></button>\n");
+Ember.TEMPLATES["components/form-number"] = Ember.Handlebars.compile("{{input value=value}}\n<div class=\"actions\">\n\t<button class=\"up\" {{action 'increment'}}><i class=\"icon-up-open\"></i></button>\n\t<button class=\"down\" {{action 'decrement'}}><i class=\"icon-down-open\"></i></button>\n</div>\n");
 
 Ember.TEMPLATES["components/general-collapse"] = Ember.Handlebars.compile("{{yield}}\n");
 

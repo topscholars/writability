@@ -10,12 +10,36 @@ App.FormNumberComponent = Ember.Component.extend({
 		}
 	},
 
+	canIncrement: function() {
+		var max = this.get('max');
+
+		if (max === null) {
+			return true;
+		}
+
+		return this.get('value') < max;
+	}.property('value'),
+
+	canDecrement: function() {
+		var min = this.get('min');
+
+		if (min === null) {
+			return true;
+		}
+
+		return this.get('value') > min;
+	}.property('value'),
+
 	actions: {
 		increment: function() {
-			this.incrementProperty('value');
+			if (this.get('canIncrement')) {
+				this.incrementProperty('value');
+			}
 		},
 		decrement: function() {
-			this.decrementProperty('value');
+			if (this.get('canDecrement')) {
+				this.decrementProperty('value');
+			}
 		}
 	}
 });
