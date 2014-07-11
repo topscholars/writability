@@ -7,13 +7,22 @@
 <div class="details-group">
     <div class="next-action">{{next_action}}</div>
     <div class="draft-due">
-        Draft Due: &nbsp;
-                  {{#if draft_due_date}}
-                    {{formatDate draft_due_date}}
-                  {{else}}N/A{{/if}}
+        Next Due:
+                  {{#if next_due_date}}
+                    {{formatDate next_due_date}}
+                  {{else}}
+                    {{#if due_date}}
+                      {{formatDate due_date}}
+                    {{else}}
+                      N/A
+                    {{/if}}
+                  {{/if}}
     </div>
     <div class="essay-due">
-      Essay Due:  {{#if due_date}} {{formatDate due_date}}
-                  {{else}}         N/A             {{/if}}
+      Essay Due:  {{#if due_date}}
+                    {{formatDate due_date}}
+                  {{else}}
+                    N/A
+                  {{/if}}
     </div>
 </div>
