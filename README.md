@@ -38,3 +38,14 @@ For any npm issues, run 'sudo npm install' from the project root.
     cd writability
     npm install grunt grunt-ember-templates grunt-contrib-concat grunt-contrib-wah grunt-contrib-less
     grunt watch     # to keep Ember app updated (recompile assets/writability.js when src files change)
+
+
+## Heroku
+Add Postgres DB
+Set buildpack to recognize app as Python instead of node:
+heroku config:set BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-python.
+
+To run the populate_db.py script:
+Set the HOST to be the full heroku URL, e.g. "http://writability-staging.herokuapp.com"
+Use $heroku run bash to get into the heroku command line.
+cd into /scripts and run as usual with 'python populate_db.py'
