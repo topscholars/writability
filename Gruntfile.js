@@ -57,7 +57,9 @@ module.exports = function(grunt) {
                     "writability/static/libs/momentjs/moment.js",
                     "writability/static/libs/validatorjs/dist/validator.min.js",
                     "writability/static/libs/select2/select2.js",
-                    "writability/static/libs/jquery-ui/js/jquery-ui-1.10.4.custom.js"
+                    "writability/static/libs/jquery-ui/js/jquery-ui-1.10.4.custom.js",
+                    "writability/static/libs/pickadate/lib/picker.js",
+                    "writability/static/libs/pickadate/lib/picker.date.js"
                     // "writability/static/libs/ckeditor/ckeditor.js"
                 ],
                 // the location of the resulting JS file

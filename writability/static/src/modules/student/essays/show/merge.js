@@ -27,7 +27,7 @@ App.StudentEssaysShowMergeController = Ember.Controller.extend({
 		closeModal: function() {
 			this.get('parentEssay').reload().then(function() {
 				this.transitionToRoute('student.essays.show');
-			});
+			}.bind(this));
 
 			return true;
 		},

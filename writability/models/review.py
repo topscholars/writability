@@ -5,6 +5,7 @@ models.review
 This module contains a Review of a Draft. Drafts are Reviewed by a Teacher.
 
 """
+import datetime
 from .db import db
 from .base import StatefulModel
 from sqlalchemy.orm import validates
@@ -31,6 +32,12 @@ class Review(StatefulModel):
     # relationships
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     annotations = db.relationship("Annotation", backref="review")
+
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        super(Review, self).process_before_create()
+        if not self.due_date:
+            self.due_date = draft.Draft.read(self.draft_id).due_date + datetime.timedelta(days=3)
 
     @validates('review_type')
     def validate_review_type(self, key, review_type):

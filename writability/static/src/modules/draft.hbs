@@ -7,6 +7,11 @@
             <button {{action togglePanel "review" target=view}} class="review panel-toggle">
                 Review
             </button>
+            {{#if isTeacher}}
+                <button {{action togglePanel "settings" target=view}} class="settings panel-toggle">
+                    Settings
+                </button>
+            {{/if}}
         </div>
         <div class="essay-prompt strong">{{essay.essay_prompt}}</div>
     </section>
