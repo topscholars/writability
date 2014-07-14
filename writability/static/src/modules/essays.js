@@ -1,4 +1,4 @@
-App.EssayItemView = App.ThickListItem.extend({
+App.EssayItemView = App.ThickListItem.extend(App.EssaySortable, {
     templateName: "modules/_essays-list-item",
 
     didInsertElement: function() {
