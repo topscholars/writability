@@ -1483,7 +1483,7 @@ App.ModulesEssayAppItemController = Ember.ObjectController.extend({
     }
 });
 
-App.EssayItemView = App.ThickListItem.extend(App.EssaySortable, {
+App.EssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
 
     didInsertElement: function() {
@@ -1502,7 +1502,7 @@ App.EssayItemView = App.ThickListItem.extend(App.EssaySortable, {
     }
 });
 
-App.EssaysController = Ember.ArrayController.extend({
+App.EssaysController = Ember.ArrayController.extend(App.EssaySortable, {
     // Ember won't accept an array for sorting by state..
     sortProperties: ['next_action'],
     sortAscending: false,
