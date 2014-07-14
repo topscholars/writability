@@ -1,20 +1,32 @@
 /* globals App, DS */
 App.Essay = DS.Model.extend({
+    dueDateAdvanceDays: 3,
+
     // properties
     audience: DS.attr('string'),
     context: DS.attr('string'),
-    due_date: DS.attr('date'),
+    due_date: DS.attr(),
     essay_prompt: DS.attr('string'),
     num_of_drafts: DS.attr('number'),
     topic: DS.attr('string'),
     max_words: DS.attr('number'),
-    draft_due_date: DS.attr('date', {readOnly: true}),
+    draft_due_date: DS.attr(null, {readOnly: true}),
     next_action: DS.attr('string', {readOnly: true}),
 
     // relationships
     student: DS.belongsTo('student'),
     drafts: DS.hasMany('draft', {async: true}),
     essay_template: DS.belongsTo('essayTemplate', {async: true}),
+
+    autoUpdateDueDate: function() {
+        var currentDueDate = moment(this.get('due_date'));
+
+        // Check if currentDueDate is in the past
+        if (currentDueDate.isBefore(moment())) {
+            var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
+            this.set('due_date', newDueDate.format('YYYY-MM-DD'));
+        }
+    }
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({

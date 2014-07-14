@@ -31,6 +31,12 @@ class Draft(StatefulModel):
     #non_tag master 
     review = db.relationship("Review", backref="draft", uselist=False)
     
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        super(Draft, self).process_before_create()
+        if not self.due_date:
+            self.due_date = essay.Essay.read(self.essay_id).due_date
+
     def change_related_objects(self):
         """Change any related objects before commit."""
         super(Draft, self).change_related_objects()
