@@ -578,7 +578,28 @@ App.computed.aliasArrayObject = function (dependentKey, index) {
 	    return this.get(dependentKey)[index];
 	  }
 	});
-}
+};
+
+App.isDateSort = function (a, b) {
+    var regex = /\d{4}-\d{2}-\d{2}/;
+
+    return a.match(regex) && b.match(regex)
+};
+
+App.sortDate = function (a, b) {
+    a = moment(a);
+    b = moment(b);
+
+    if (a.isSame(b)) {
+        return 0
+    }
+
+    return a.isBefore(b) ? -1 : 1;
+};
+
+App.sortNextAction = function (a, b) {
+    return Ember.compare(a,b);
+};
 
 App.Annotation = DS.Model.extend({
 	original: DS.attr(),
@@ -1544,20 +1565,40 @@ App.StudentView = App.DetailsView.extend({
 
 App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
-    sortProperties: ['next_action'],
-    sortAscending: false,
+    sortProperties: ['due_date', 'next_action'],
+
+    sortFunction: function (a, b) {
+        if (a !== null) {
+            console.log(a);
+        }
+        if (a === null) {
+            if (b === null) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else if (b === null) {
+            return -1;
+        }
+
+        if (App.isDateSort(a, b)) {
+            return App.sortDate(a, b);
+        } else {
+            return App.sortNextAction(a, b);
+        }
+    },
 
     showMergedEssays: false,
     selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
     mergedEssays: function () {
-        return this.get('model').filter(function(essay) {
+        return this.get('arrangedContent').filter(function(essay) {
             return (essay.get('parent'));
         })
     }.property('@each.parent'),
     unmergedEssays: function () {
-        return this.get('model').filter(function(essay) {
+        return this.get('arrangedContent').filter(function(essay) {
             return (!essay.get('parent'));
         })
     }.property('@each.parent'),

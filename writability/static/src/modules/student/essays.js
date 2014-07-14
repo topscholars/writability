@@ -1,19 +1,39 @@
 App.StudentEssaysController = Ember.ArrayController.extend({
     needs: ['student'],
-    sortProperties: ['next_action'],
-    sortAscending: false,
+    sortProperties: ['due_date', 'next_action'],
+
+    sortFunction: function (a, b) {
+        if (a !== null) {
+            console.log(a);
+        }
+        if (a === null) {
+            if (b === null) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else if (b === null) {
+            return -1;
+        }
+
+        if (App.isDateSort(a, b)) {
+            return App.sortDate(a, b);
+        } else {
+            return App.sortNextAction(a, b);
+        }
+    },
 
     showMergedEssays: false,
     selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
     mergedEssays: function () {
-        return this.get('model').filter(function(essay) {
+        return this.get('arrangedContent').filter(function(essay) {
             return (essay.get('parent'));
         })
     }.property('@each.parent'),
     unmergedEssays: function () {
-        return this.get('model').filter(function(essay) {
+        return this.get('arrangedContent').filter(function(essay) {
             return (!essay.get('parent'));
         })
     }.property('@each.parent'),
