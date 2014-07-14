@@ -7,7 +7,14 @@ from BeautifulSoup import BeautifulSoup
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-HOST = "http://localhost:5000/"
+## HEROKU_* vars are manually set on prod and staging.
+if 'HEROKU_PROD' in os.environ:
+    HOST = "http://writability-prod.herokuapp.com/"
+elif 'HEROKU_STG' in os.environ:
+    HOST = "http://writability-staging.herokuapp.com/"
+else:
+    HOST = "http://localhost:5000/"
+
 ROOT_URL = HOST + "api/"
 HEADERS = {'Content-type': 'application/json'}
 
