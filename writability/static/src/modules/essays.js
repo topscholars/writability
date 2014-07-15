@@ -26,8 +26,13 @@ App.EssaysController = Ember.ArrayController.extend({
     unmergedEssays: Ember.computed.filter('model', function(essay) {
         return (!essay.get('parent'));
     }),
-    actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
-        return (essay.get('state') != 'completed');
+
+    studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'student');
+    }),
+
+    teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'teacher');
     }),
 
     actions: {

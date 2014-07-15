@@ -674,7 +674,17 @@ App.Essay = DS.Model.extend({
             var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
             this.set('due_date', newDueDate.format('YYYY-MM-DD'));
         }
-    }
+    },
+
+    nextActionAwaits: function () {
+        var teacherStates = ['added_topics'];
+
+        if (teacherStates.indexOf(this.get('state')) != -1) {
+            return 'teacher';
+        } else {
+            return 'student';
+        }
+    }.property('next_action', 'state')
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
@@ -1465,8 +1475,13 @@ App.EssaysController = Ember.ArrayController.extend({
     unmergedEssays: Ember.computed.filter('model', function(essay) {
         return (!essay.get('parent'));
     }),
-    actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
-        return (essay.get('state') != 'completed');
+
+    studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'student');
+    }),
+
+    teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'teacher');
     }),
 
     actions: {
@@ -2664,7 +2679,7 @@ Ember.TEMPLATES["modules/essay/_app-item"] = Ember.Handlebars.compile("<li {{bin
 
 Ember.TEMPLATES["modules/essays/layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n</div>\n\n{{view App.EssaysListView}}\n");
 
-Ember.TEMPLATES["modules/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n  {{#if actionRequiredEssays}}\n    <li class=\"legend\">Take Action</li>\n    {{#each actionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n</ol>\n");
+Ember.TEMPLATES["modules/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n  {{#if studentActionRequiredEssays}}\n    <li class=\"legend\">Take Action</li>\n    {{#each studentActionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n  {{#if teacherActionRequiredEssays}}\n    <li class=\"legend\">Awaiting Teacher</li>\n    {{#each teacherActionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t{{#if showMergedEssays}}\n\t\t<button {{action 'toggleMergedEssays'}}>Hide Merged Essays</button>\n\t{{else}}\n\t\t<button {{action 'toggleMergedEssays'}}>Show Merged Essays</button>\n\t{{/if}}\n</div>\n\n{{view App.StudentEssaysListView}}\n");
 

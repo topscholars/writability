@@ -26,7 +26,17 @@ App.Essay = DS.Model.extend({
             var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
             this.set('due_date', newDueDate.format('YYYY-MM-DD'));
         }
-    }
+    },
+
+    nextActionAwaits: function () {
+        var teacherStates = ['added_topics'];
+
+        if (teacherStates.indexOf(this.get('state')) != -1) {
+            return 'teacher';
+        } else {
+            return 'student';
+        }
+    }.property('next_action', 'state')
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
