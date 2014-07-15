@@ -38,6 +38,15 @@ class Annotation(StatefulModel):
     #     if not self.dom_id and self.state == "new":
     #         self.dom_id = self.id
 
+    @classmethod
+    def create(class_, object_dict):
+        model = super(Annotation, class_).create(object_dict)
+        if (not model.dom_id or model.dom_id == 0) and model.state == "new":
+            db.session.add(model)
+            model.dom_id = model.id
+            db.session.commit()
+        return model
+
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {
