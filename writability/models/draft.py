@@ -44,6 +44,7 @@ class Draft(StatefulModel):
         if self.state == "in_progress" and self.review is None:
             this_essay = essay.Essay.read(self.essay_id)
             ann_list = []
+            prev_review = None
             if len(this_essay.drafts) > 1:
                 prev_draft = Draft.read(max([d.id for d in this_essay.drafts if d.id != self.id]))
                 prev_review = prev_draft.review
@@ -57,6 +58,7 @@ class Draft(StatefulModel):
             new_review_params = {
                 "teacher": self.essay.student.teacher,
                 "draft": self,
+                "text": prev_review.text if prev_review else '',
                 "review_type": "TEXT_REVIEW",
                 "annotations": ann_list
             }
