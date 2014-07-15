@@ -5,9 +5,15 @@
     {{view view.listItem classNameBindings="isSelected" }}
   {{/each}}
 {{else}}
-    {{#if actionRequiredEssays}}
+    {{#if teacherActionRequiredEssays}}
       <li class="legend">Take Action</li>
-      {{#each actionRequiredEssays}}
+      {{#each teacherActionRequiredEssays}}
+        {{view view.listItem classNameBindings="isSelected" }}
+      {{/each}}
+    {{/if}}
+    {{#if studentActionRequiredEssays}}
+      <li class="legend">Awaiting Student</li>
+      {{#each studentActionRequiredEssays}}
         {{view view.listItem classNameBindings="isSelected" }}
       {{/each}}
     {{/if}}

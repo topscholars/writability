@@ -29,9 +29,9 @@ App.Essay = DS.Model.extend({
     },
 
     nextActionAwaits: function () {
-        var teacherStates = ['added_topics'];
+        var nextAction = this.get('next_action');
 
-        if (teacherStates.indexOf(this.get('state')) != -1) {
+        if ( nextAction.match(/Review|Approve/)) {
             return 'teacher';
         } else {
             return 'student';
