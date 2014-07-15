@@ -28,9 +28,36 @@ App.Essay = DS.Model.extend({
         }
     },
 
-    recentDraft: Ember.computed.alias('drafts.lastObject'),
+    recentDraft: Ember.computed.alias('drafts.lastObject').property('drafts', 'drafts.length'),
 
-    teacherRecentReview: Ember.computed.alias('recentDraft.review')
+    numberOfStartedDrafts: Ember.computed.alias('drafts.length'),
+
+    teacherRecentReview: Ember.computed.alias('recentDraft.review'),
+
+    draftsWithCompletedDrafts: Ember.computed.filterBy('drafts', 'reviewState', 'completed'),
+
+    studentRecentReview: function () {
+        return this.get('drafts')
+            .then(function (drafts) {
+                var reviewPromises = [];
+                drafts.forEach(function (item, index) {
+                    var reviewPromise = item.get('review');
+                    if (reviewPromise) {
+                        reviewPromises.push(reviewPromise);
+                    }
+                });
+                return Ember.RSVP.all(reviewPromises);
+            })
+            .then(function (reviews) {
+                var reviewsWithGoodState = reviews.filterBy('state', 'completed');
+                var numOfGoodReviews = reviewsWithGoodState.length;
+                if (numOfGoodReviews > 0) {
+                    return reviewsWithGoodState[numOfGoodReviews - 1];
+                } else {
+                    return null;
+                }
+            });
+    }.property('drafts', 'teacherRecentReview', 'draftsWithCompletedDrafts')
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
