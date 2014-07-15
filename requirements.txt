@@ -8,6 +8,12 @@ psycopg2==2.5.2
 # Flask-SSLify==0.1.4
 # pyOpenSSL==0.14
 
+# migrations
+Flask-Migrate==1.2.0
+Flask-Script==2.0.5
+alembic==0.6.5
+Mako==1.0.0
+
 # dev
 BeautifulSoup==3.2.1
 nose
