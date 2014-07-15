@@ -27,6 +27,7 @@ class AnnotationResourceManager(StatefulResourceManager):
             "original": fields.String,
             "start_index": fields.Integer,
             "end_index": fields.Integer,
+            "dom_id": fields.Integer,
             "tag": ResourceField(
                 TagResourceManager.item_resource_name,
                 absolute=True),
