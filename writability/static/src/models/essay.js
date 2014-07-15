@@ -26,7 +26,11 @@ App.Essay = DS.Model.extend({
             var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
             this.set('due_date', newDueDate.format('YYYY-MM-DD'));
         }
-    }
+    },
+
+    recentDraft: Ember.computed.alias('drafts.lastObject'),
+
+    teacherRecentReview: Ember.computed.alias('recentDraft.review')
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({

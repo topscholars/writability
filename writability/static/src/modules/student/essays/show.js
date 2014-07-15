@@ -3,7 +3,6 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
         return this.draftByMostCurrent(0);
     }.property('drafts'),
 
-    recentDraft: Ember.computed.alias('model.drafts.lastObject'),
     draft_ready_for_review: Ember.computed.equal('recentDraft.state', 'submitted'),
 
     approveAndSelectTopic: function(model, approvedTopicField) {
