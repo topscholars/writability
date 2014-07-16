@@ -57,7 +57,17 @@ App.Essay = DS.Model.extend({
                     return null;
                 }
             });
-    }.property('drafts', 'teacherRecentReview', 'draftsWithCompletedDrafts')
+    }.property('drafts', 'teacherRecentReview', 'draftsWithCompletedDrafts'),
+
+    nextActionAwaits: function () {
+        var nextAction = this.get('next_action');
+
+        if ( nextAction.match(/Review|Approve/)) {
+            return 'teacher';
+        } else {
+            return 'student';
+        }
+    }.property('next_action', 'state')
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
