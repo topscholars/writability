@@ -643,7 +643,9 @@ App.Draft = DS.Model.extend({
 
     // relationships
     essay: DS.belongsTo('themeEssay'), // TODO: need this for essay.theme
-    review: DS.belongsTo('review', {async: true})
+    review: DS.belongsTo('review', {async: true}),
+
+    reviewState: Ember.computed.alias('review.state')
 });
 
 /* globals App, DS */
@@ -674,7 +676,38 @@ App.Essay = DS.Model.extend({
             var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
             this.set('due_date', newDueDate.format('YYYY-MM-DD'));
         }
-    }
+    },
+
+    recentDraft: Ember.computed.alias('drafts.lastObject').property('drafts', 'drafts.length'),
+
+    numberOfStartedDrafts: Ember.computed.alias('drafts.length'),
+
+    teacherRecentReview: Ember.computed.alias('recentDraft.review'),
+
+    draftsWithCompletedDrafts: Ember.computed.filterBy('drafts', 'reviewState', 'completed'),
+
+    studentRecentReview: function () {
+        return this.get('drafts')
+            .then(function (drafts) {
+                var reviewPromises = [];
+                drafts.forEach(function (item, index) {
+                    var reviewPromise = item.get('review');
+                    if (reviewPromise) {
+                        reviewPromises.push(reviewPromise);
+                    }
+                });
+                return Ember.RSVP.all(reviewPromises);
+            })
+            .then(function (reviews) {
+                var reviewsWithGoodState = reviews.filterBy('state', 'completed');
+                var numOfGoodReviews = reviewsWithGoodState.length;
+                if (numOfGoodReviews > 0) {
+                    return reviewsWithGoodState[numOfGoodReviews - 1];
+                } else {
+                    return null;
+                }
+            });
+    }.property('drafts', 'teacherRecentReview', 'draftsWithCompletedDrafts')
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
@@ -984,12 +1017,11 @@ App.StudentDraftController = App.DraftController.extend({
     isStudent: true,
 
     getCurrentReview: function () {
-        var essay = this.get('essay');
-        var essayController = this.get('controllers.themeEssay').set('model', essay);
-        essayController.currentReviewWithState('completed')
-            .then(function (review) {
-                this.set('currentReview', review);
-            }.bind(this));
+        this.get('essay.studentRecentReview').then(function (review) {
+            this.set('currentReview', review);
+        }.bind(this));
+
+        return this.set('currentReview', this.get('essay.studentRecentReview'));
     }.observes('essay'),
 
     onNewDraftOpened: function () {
@@ -1274,29 +1306,6 @@ App.EssayController = Ember.ObjectController.extend({
     currentDraft: function () {
         return this.draftByMostCurrent(0);
     }.property('drafts'),
-
-    currentReviewWithState: function (state) {
-        return this.get('drafts')
-            .then(function (drafts) {
-                var reviewPromises = [];
-                drafts.forEach(function (item, index) {
-                    var reviewPromise = item.get('review');
-                    if (reviewPromise) {
-                        reviewPromises.push(reviewPromise);
-                    }
-                });
-                return Ember.RSVP.all(reviewPromises);
-            })
-            .then(function (reviews) {
-                var reviewsWithGoodState = reviews.filterBy('state', state);
-                var numOfGoodReviews = reviewsWithGoodState.length;
-                if (numOfGoodReviews > 0) {
-                    return reviewsWithGoodState[numOfGoodReviews - 1];
-                } else {
-                    return null;
-                }
-            });
-    },
 
     draftByMostCurrent: function (version) {
         var drafts = this.get('drafts');
@@ -1620,7 +1629,6 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
         return this.draftByMostCurrent(0);
     }.property('drafts'),
 
-    recentDraft: Ember.computed.alias('model.drafts.lastObject'),
     draft_ready_for_review: Ember.computed.equal('recentDraft.state', 'submitted'),
 
     approveAndSelectTopic: function(model, approvedTopicField) {
