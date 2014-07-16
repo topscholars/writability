@@ -1,9 +1,10 @@
 var gulp = require('gulp'),
 	es6transpiler = require('gulp-es6-module-transpiler'),
 	concat = require('gulp-concat')
-	handlebars = require('gulp-ember-handlebars'),
+	handlebars = require('gulp-ember-templates'),
 	merge = require('merge-stream'),
-	livereload = require('gulp-livereload');
+	livereload = require('gulp-livereload'),
+	sourcemaps = require('gulp-sourcemaps');
 
 var bowerDir = './writability/static/libs/',
 	dest = gulp.dest('./writability/static/assets');
@@ -34,20 +35,24 @@ gulp.task('vendor', function() {
 
 gulp.task('ember-app', function() {
 	var app = gulp.src('./writability/ember/**/*.js')
+		.pipe(sourcemaps.init())
 		.pipe(es6transpiler({
 			type: 'amd',
 			prefix: 'writability'
 		}));
 
 	var templates = gulp.src('./writability/ember/templates/**/*.hbs')
+		.pipe(sourcemaps.init())
 		.pipe(handlebars({
-			outputType: 'amd'
+			type: 'amd',
+			moduleName: 'writability/templates'
 		}));
 
 	return merge(app, templates)
 		.pipe(concat('app-new.js'))
+		.pipe(sourcemaps.write())
 		.pipe(dest)
-		.pipe(livereload({ auto: false }));;
+		.pipe(livereload({ auto: false }));
 });
 
 gulp.task('watch', function () {
