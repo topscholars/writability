@@ -28,10 +28,15 @@
 
 {% block scripts %}
 <script src="/static/libs/modernizr/modernizr.js"></script>
-<script src="/static/assets/vendor-new.js"></script>
-<script src="/static/assets/app-new.js"></script>
+
 <script>
-	window.Writability = require('writability/app')['default'].create();
+  window.WritabilityENV = {"environment":"development","baseURL":"/","locationType":"auto","EmberENV":{"FEATURES":{}},"APP":{"LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_MODULE_RESOLVER":true,"LOG_VIEW_LOOKUPS":true},"LOG_MODULE_RESOLVER":true};
+  window.EmberENV = window.WritabilityENV.EmberENV;
+</script>
+<script src="/static/app/assets/vendor.js"></script>
+<script src="/static/app/assets/writability.js"></script>
+<script>
+  window.Writability = require('writability/app')['default'].create(WritabilityENV.APP);
 </script>
 <!-- <script src="/static/libs/ckeditor/ckeditor.js"></script> -->
 <!-- This next line is required to make CKEditor 'recache' the plugins.
