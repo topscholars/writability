@@ -1,17 +1,19 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
-    students: null,
-    invitations: null,
     invitedStudentEmail: null,
 
-    pendingInvitations: function() {
-        return this.get('invitations').filterBy('is_registered', false);
-    }.property('invitations.@each'),
+    pendingInvitations: Ember.computed.filterBy('invitations', 'is_registered', false),
+
+    resetInvitedStudent: function() {
+        this.set('invitedStudentEmail', '');
+    },
 
     actions: {
         inviteStudentCont: function () {
             this.send('inviteStudent', this.get('invitedStudentEmail'));
+
+            this.resetInvitedStudent();
         }
     }
 });
