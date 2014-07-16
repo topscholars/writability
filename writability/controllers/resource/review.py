@@ -1,8 +1,8 @@
 """
-controllers.resource.draft
+controllers.resource.review
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This module contains the resource Draft.
+This module contains the resource Review.
 
 """
 from flask.ext.restful import fields
