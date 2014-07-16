@@ -8,7 +8,6 @@ export default AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-        // this.render('layouts/main');
         this.render('Header', {outlet: 'header'});
         this.render({into: 'layouts/main', outlet: 'left-side-outlet'});
         this.render('core/select-prompt', {into: 'layouts/main', outlet: 'right-side-outlet'});
