@@ -16,11 +16,11 @@ export default AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-        this.render('core/layouts/main');
+        this.render('layouts/main');
         this.render('Header', {outlet: 'header'});
-        // needs into explicity because core/layouts/main was rendered
+        // needs into explicity because layouts/main was rendered
         // within function
-        this.render('modules/students', {into: 'core/layouts/main', outlet: 'left-side-outlet'});
+        this.render('modules/students', {into: 'layouts/main', outlet: 'left-side-outlet'});
     },
 
     actions: {

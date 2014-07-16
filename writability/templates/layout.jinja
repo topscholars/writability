@@ -28,15 +28,19 @@
 
 {% block scripts %}
 <script src="/static/libs/modernizr/modernizr.js"></script>
-<script src="/static/assets/vendors.js"></script>
-<script src="/static/libs/ckeditor/ckeditor.js"></script>
+<script src="/static/assets/vendor-new.js"></script>
+<script src="/static/assets/app-new.js"></script>
+<script>
+	window.Writability = require('writability/app')['default'].create();
+</script>
+<!-- <script src="/static/libs/ckeditor/ckeditor.js"></script> -->
 <!-- This next line is required to make CKEditor 'recache' the plugins.
   Increment it anytime a plugin is not refreshing.
-  http://stackoverflow.com/questions/14940452/force-ckeditor-to-refresh-config 
+  http://stackoverflow.com/questions/14940452/force-ckeditor-to-refresh-config
   // CKEDITOR.timestamp = ( new Date() ).valueOf();
 -->
-<script type="text/javascript">CKEDITOR.timestamp=( new Date() ).valueOf();</script>
-<script src="/static/assets/writability.js"></script>
+<!-- <script type="text/javascript">CKEDITOR.timestamp=( new Date() ).valueOf();</script> -->
+<!-- <script src="/static/assets/writability.js"></script> -->
 {% endblock %}
 
 </html>

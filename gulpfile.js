@@ -1,7 +1,7 @@
 var gulp = require('gulp'),
 	es6transpiler = require('gulp-es6-module-transpiler'),
 	concat = require('gulp-concat')
-	handlebars = require('gulp-ember-templates'),
+	handlebars = require('gulp-ember-handlebars'),
 	merge = require('merge-stream'),
 	livereload = require('gulp-livereload'),
 	sourcemaps = require('gulp-sourcemaps');
@@ -35,7 +35,6 @@ gulp.task('vendor', function() {
 
 gulp.task('ember-app', function() {
 	var app = gulp.src('./writability/ember/**/*.js')
-		.pipe(sourcemaps.init())
 		.pipe(es6transpiler({
 			type: 'amd',
 			prefix: 'writability'
@@ -44,8 +43,8 @@ gulp.task('ember-app', function() {
 	var templates = gulp.src('./writability/ember/templates/**/*.hbs')
 		.pipe(sourcemaps.init())
 		.pipe(handlebars({
-			type: 'amd',
-			moduleName: 'writability/templates'
+			outputType: 'amd',
+			templateRoot: 'writability/templates'
 		}));
 
 	return merge(app, templates)

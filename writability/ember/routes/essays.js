@@ -17,8 +17,8 @@ export default AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-        this.render('core/layouts/main');
+        this.render('layouts/main');
         this.render('Header', {outlet: 'header'});
-        this.render({into: 'core/layouts/main', outlet: 'left-side-outlet'});
+        this.render({into: 'layouts/main', outlet: 'left-side-outlet'});
     }
 });
