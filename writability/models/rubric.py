@@ -26,7 +26,7 @@ class Rubric(BaseModel):
     # relationships
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
 
-class RubricCategory(BaseModel):
+class RubricCategory(BaseModel): # Impact, Content, and Quality.
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -40,7 +40,8 @@ class RubricCategory(BaseModel):
 
     help_text = db.Column(db.String)
 
-class Criterion(Tag):
+class Criterion(Tag):   # Tags that a teacher can write an annotation against, 
+                        # that are also associated with a rubric category
     pass
     # rubriccategory: don't explicitly declare it but it's here
 
