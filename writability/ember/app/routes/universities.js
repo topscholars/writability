@@ -20,7 +20,6 @@ export default AuthenticatedRoute.extend({
 
     actions: {
         selectedUniversity: function (university, controller) {
-            debugger;
             var student = this.get('currentStudent');
             var universitiesPromise = student.get('universities');
 
