@@ -7,6 +7,6 @@ export default Ember.Component.extend({
 		var target = this.get('target'),
 			list = this.get('list');
 
-		return (list.indexOf(target) != -1) || (list.indexOf(target.toString()) != -1);
+		return (list.indexOf(target) !== -1) || (list.indexOf(target.toString()) !== -1);
 	}.property('list.@each', 'target')
 });

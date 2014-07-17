@@ -5,9 +5,9 @@ export default AuthenticatedRoute.extend({
     activate: function () {
         this._super();
         if (this.get('currentUser').get('isStudent')) {
-            this.controllerName = 'studentDraft';
+            this.controllerName = 'draft/student';
         } else {
-            this.controllerName = 'teacherDraft';
+            this.controllerName = 'draft/teacher';
         }
     },
 
@@ -28,11 +28,11 @@ export default AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-        this.render('core/layouts/editor');
+        this.render('layouts/editor');
         this.render('nav-header', {outlet: 'header'});
         this.render({
             controller: this.controllerName,
-            into: 'core/layouts/editor',
+            into: 'layouts/editor',
             outlet: 'editor-module'
         });
     },

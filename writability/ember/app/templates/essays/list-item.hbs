@@ -9,10 +9,10 @@
     <div class="draft-due">
         Next Due:
                   {{#if next_due_date}}
-                    {{formatDate next_due_date}}
+                    {{format-date next_due_date}}
                   {{else}}
                     {{#if due_date}}
-                      {{formatDate due_date}}
+                      {{format-date due_date}}
                     {{else}}
                       N/A
                     {{/if}}
@@ -20,7 +20,7 @@
     </div>
     <div class="essay-due">
       Essay Due:  {{#if due_date}}
-                    {{formatDate due_date}}
+                    {{format-date due_date}}
                   {{else}}
                     N/A
                   {{/if}}

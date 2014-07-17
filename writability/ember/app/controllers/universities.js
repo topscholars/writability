@@ -36,7 +36,7 @@ export default Ember.ArrayController.extend({
                         student_id: student.id,
                         universities: universities.getEach('id')
                     })
-                }).then(function() { resolve() });
+                }).then(function() { resolve(); });
             });
         });
     },

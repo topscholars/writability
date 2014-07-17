@@ -18,7 +18,7 @@ export default Ember.ArrayController.extend(EssaySortable, {
     }),
 
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
-        return (essay.get('state') != 'completed');
+        return (essay.get('state') !== 'completed');
     }),
 
     actions: {

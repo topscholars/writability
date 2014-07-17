@@ -1,4 +1,5 @@
 import NavButton from './nav-button';
+import Ember from 'ember';
 
 export default NavButton.extend({
     classNames: ['right-nav-button'],

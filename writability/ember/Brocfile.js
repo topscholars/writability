@@ -19,5 +19,7 @@ var app = new EmberApp();
 app.import('vendor/momentjs/moment.js');
 app.import('vendor/pickadate/lib/picker.js');
 app.import('vendor/pickadate/lib/picker.date.js');
+app.import('vendor/validatorjs/dist/validator.min.js');
+app.import('vendor/select2/select2.js');
 
 module.exports = app.toTree();
