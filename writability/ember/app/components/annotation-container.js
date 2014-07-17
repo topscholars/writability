@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-Ember.Component.extend({
+export default Ember.Component.extend({
 	existingAnnotationGroups: function() {
 		var groups = Ember.ArrayProxy.create({content:[]});
 
