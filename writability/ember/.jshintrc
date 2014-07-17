@@ -5,6 +5,7 @@
     "window": true,
     "CKEDITOR": true,
     "Validator": true,
+    "$": true,
     "WritabilityENV": true
   },
   "browser" : true,
