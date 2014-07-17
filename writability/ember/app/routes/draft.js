@@ -29,7 +29,7 @@ export default AuthenticatedRoute.extend({
 
     renderTemplate: function () {
         this.render('core/layouts/editor');
-        this.render('NavHeader', {outlet: 'header'});
+        this.render('nav-header', {outlet: 'header'});
         this.render({
             controller: this.controllerName,
             into: 'core/layouts/editor',

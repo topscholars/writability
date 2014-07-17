@@ -1,6 +1,6 @@
-import Ember from 'ember';
+import HeaderView from './header';
 
-export default Ember.View.extend({
-    templateName: 'core/modules/nav_header',
+export default HeaderView.extend({
+	templateName: 'application/nav-header',
     classNames: ['nav-header']
 });

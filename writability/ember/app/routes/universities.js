@@ -14,12 +14,13 @@ export default AuthenticatedRoute.extend({
 
     renderTemplate: function () {
         this.render('layouts/main');
-        this.render('NavHeader', {outlet: 'header'});
+        this.render('nav-header', {outlet: 'header'});
         this.render({into: 'layouts/main', outlet: 'left-side-outlet'});
     },
 
     actions: {
         selectedUniversity: function (university, controller) {
+            debugger;
             var student = this.get('currentStudent');
             var universitiesPromise = student.get('universities');
 
