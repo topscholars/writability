@@ -7,9 +7,6 @@ export default Ember.Mixin.create({
 	sortProperties: ['due_date', 'next_action'],
 
 	sortFunction: function (a, b) {
-	    if (a !== null) {
-	        console.log(a);
-	    }
 	    if (a === null) {
 	        if (b === null) {
 	            return 0;

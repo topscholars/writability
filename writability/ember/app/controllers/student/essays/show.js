@@ -64,7 +64,7 @@ export default Ember.ObjectController.extend({
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: JSON.stringify(data)
-                }).then(function(data) { console.log(data); resolve(); });
+                }).then(function(data) { resolve(); });
             });
         }
     }
