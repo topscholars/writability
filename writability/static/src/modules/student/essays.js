@@ -1,19 +1,17 @@
-App.StudentEssaysController = Ember.ArrayController.extend({
+App.StudentEssaysController = Ember.ArrayController.extend(App.EssaySortable, {
     needs: ['student'],
-    sortProperties: ['next_action'],
-    sortAscending: false,
 
     showMergedEssays: false,
     selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
     mergedEssays: function () {
-        return this.get('model').filter(function(essay) {
+        return this.get('arrangedContent').filter(function(essay) {
             return (essay.get('parent'));
         })
     }.property('@each.parent'),
     unmergedEssays: function () {
-        return this.get('model').filter(function(essay) {
+        return this.get('arrangedContent').filter(function(essay) {
             return (!essay.get('parent'));
         })
     }.property('@each.parent'),

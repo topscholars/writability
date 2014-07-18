@@ -17,15 +17,14 @@ App.EssayItemView = App.ThickListItem.extend({
     }
 });
 
-App.EssaysController = Ember.ArrayController.extend({
+App.EssaysController = Ember.ArrayController.extend(App.EssaySortable, {
     // Ember won't accept an array for sorting by state..
-    sortProperties: ['next_action'],
-    sortAscending: false,
     selectedEssay: null,
 
-    unmergedEssays: Ember.computed.filter('model', function(essay) {
+    unmergedEssays: Ember.computed.filter('arrangedContent', function(essay) {
         return (!essay.get('parent'));
     }),
+
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') != 'completed');
     }),
