@@ -43,6 +43,10 @@ export default DS.Model.extend({
     nextActionAwaits: function () {
         var nextAction = this.get('next_action');
 
+        if (nextAction === undefined) {
+            return null;
+        }
+
         if ( nextAction.match(/Review|Approve/)) {
             return 'teacher';
         } else {
