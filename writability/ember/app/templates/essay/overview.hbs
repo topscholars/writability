@@ -17,9 +17,7 @@
         <div class="value student-text">{{topic}}</div>
     </div>
 
-    {{#if review}}
-        <button {{action openDraft}}>Read Draft</button>
-    {{else}}
+    {{#if readyToWriteDraft}}
         <button {{action openDraft}}>Write Draft</button>
     {{/if}}
 {{else}}

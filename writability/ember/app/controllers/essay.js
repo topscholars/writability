@@ -8,6 +8,10 @@ export default Ember.ObjectController.extend({
         'proposed_topic_1': 'required'
     },
 
+    readyToWriteDraft: function() {
+        return (this.get('is_in_progress') && this.get('nextActionAwaits') === 'student');
+    }.property('is_in_progress', 'nextActionAwaits'),
+
     currentDraft: function () {
         return this.draftByMostCurrent(0);
     }.property('drafts'),
