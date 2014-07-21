@@ -27,7 +27,9 @@ export default Ember.TextArea.extend({
                                                 // It thus isn't using config file...
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline(id, config);
-
+        CKEDITOR.plugins.addExternal( 'comment', '/static/app/ckeditor/comment/' ); // Loads our comment plugin
+        
+        //
         CKEDITOR.once('instanceReady', function (e) {
             var editor = CKEDITOR.instances[e.editor.name];
             console.log(editor.filter.allowedContent);
