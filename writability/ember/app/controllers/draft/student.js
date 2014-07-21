@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DraftController from 'writability/controllers/draft';
 
 export default DraftController.extend({
