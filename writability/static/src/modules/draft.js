@@ -84,12 +84,11 @@ App.StudentDraftController = App.DraftController.extend({
     isStudent: true,
 
     getCurrentReview: function () {
-        var essay = this.get('essay');
-        var essayController = this.get('controllers.themeEssay').set('model', essay);
-        essayController.currentReviewWithState('completed')
-            .then(function (review) {
-                this.set('currentReview', review);
-            }.bind(this));
+        this.get('essay.studentRecentReview').then(function (review) {
+            this.set('currentReview', review);
+        }.bind(this));
+
+        return this.set('currentReview', this.get('essay.studentRecentReview'));
     }.observes('essay'),
 
     onNewDraftOpened: function () {

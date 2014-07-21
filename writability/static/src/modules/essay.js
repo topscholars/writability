@@ -45,29 +45,6 @@ App.EssayController = Ember.ObjectController.extend({
         return this.draftByMostCurrent(0);
     }.property('drafts'),
 
-    currentReviewWithState: function (state) {
-        return this.get('drafts')
-            .then(function (drafts) {
-                var reviewPromises = [];
-                drafts.forEach(function (item, index) {
-                    var reviewPromise = item.get('review');
-                    if (reviewPromise) {
-                        reviewPromises.push(reviewPromise);
-                    }
-                });
-                return Ember.RSVP.all(reviewPromises);
-            })
-            .then(function (reviews) {
-                var reviewsWithGoodState = reviews.filterBy('state', state);
-                var numOfGoodReviews = reviewsWithGoodState.length;
-                if (numOfGoodReviews > 0) {
-                    return reviewsWithGoodState[numOfGoodReviews - 1];
-                } else {
-                    return null;
-                }
-            });
-    },
-
     draftByMostCurrent: function (version) {
         var drafts = this.get('drafts');
         if (!drafts) {

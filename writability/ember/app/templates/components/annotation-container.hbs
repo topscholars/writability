@@ -1,0 +1,7 @@
+{{#each annotationGroup in existingAnnotationGroups}}
+	{{annotation-groupcontainer group=annotationGroup isStudent=isStudent}}
+{{/each}}
+
+{{#if newAnnotation}}
+	{{annotation-createbox annotation=newAnnotation tags=tags hasSavedAnnotation="hasSavedAnnotation"}}
+{{/if}}

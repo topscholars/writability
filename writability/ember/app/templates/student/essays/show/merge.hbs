@@ -1,0 +1,22 @@
+<div class="modal-content">
+  <button class="close-button" {{action 'closeModal'}}>X</button>
+  <div class="modal-title">Merge Essays</div>
+  <div class="instructions">
+  	<p>Select the essays to merge into {{parentEssay.theme.name}}.</p>
+  	<p>You'll only write to the Prompt and Topics for {{parentEssay.theme.name}}.</p>
+  </div>
+  <ul class="modal-list">
+  	{{#each essay in mergeEssays}}
+  		<li {{action 'toggleMergeSelected' essay}}>
+        {{is-in-array-checkbox list=parentEssay.merged_theme_essays target=essay}}
+  			<div class="main-group">
+          <div class="main-line">{{essay.theme.name}}</div>
+          <div class="sub-line">{{essay.theme.category}}</div>
+        </div>
+  		</li>
+  	{{/each}}
+  </ul>
+  <div class="modal-actions">
+    <button class="double-column" {{action 'mergeEssays' parentEssay}}>Merge &gt;</button>
+  </div>
+</div>

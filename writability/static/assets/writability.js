@@ -689,7 +689,9 @@ App.Draft = DS.Model.extend({
 
     // relationships
     essay: DS.belongsTo('themeEssay'), // TODO: need this for essay.theme
-    review: DS.belongsTo('review', {async: true})
+    review: DS.belongsTo('review', {async: true}),
+
+    reviewState: Ember.computed.alias('review.state')
 });
 
 /* globals App, DS */
@@ -720,7 +722,48 @@ App.Essay = DS.Model.extend({
             var newDueDate = currentDueDate.add('d', this.get('dueDateAdvanceDays'));
             this.set('due_date', newDueDate.format('YYYY-MM-DD'));
         }
-    }
+    },
+
+    recentDraft: Ember.computed.alias('drafts.lastObject').property('drafts', 'drafts.length'),
+
+    numberOfStartedDrafts: Ember.computed.alias('drafts.length'),
+
+    teacherRecentReview: Ember.computed.alias('recentDraft.review'),
+
+    draftsWithCompletedDrafts: Ember.computed.filterBy('drafts', 'reviewState', 'completed'),
+
+    studentRecentReview: function () {
+        return this.get('drafts')
+            .then(function (drafts) {
+                var reviewPromises = [];
+                drafts.forEach(function (item, index) {
+                    var reviewPromise = item.get('review');
+                    if (reviewPromise) {
+                        reviewPromises.push(reviewPromise);
+                    }
+                });
+                return Ember.RSVP.all(reviewPromises);
+            })
+            .then(function (reviews) {
+                var reviewsWithGoodState = reviews.filterBy('state', 'completed');
+                var numOfGoodReviews = reviewsWithGoodState.length;
+                if (numOfGoodReviews > 0) {
+                    return reviewsWithGoodState[numOfGoodReviews - 1];
+                } else {
+                    return null;
+                }
+            });
+    }.property('drafts', 'teacherRecentReview', 'draftsWithCompletedDrafts'),
+
+    nextActionAwaits: function () {
+        var nextAction = this.get('next_action');
+
+        if ( nextAction.match(/Review|Approve/)) {
+            return 'teacher';
+        } else {
+            return 'student';
+        }
+    }.property('next_action', 'state')
 });
 
 App.ThemeEssaySerializer = App.ApplicationSerializer.extend({
@@ -1030,12 +1073,11 @@ App.StudentDraftController = App.DraftController.extend({
     isStudent: true,
 
     getCurrentReview: function () {
-        var essay = this.get('essay');
-        var essayController = this.get('controllers.themeEssay').set('model', essay);
-        essayController.currentReviewWithState('completed')
-            .then(function (review) {
-                this.set('currentReview', review);
-            }.bind(this));
+        this.get('essay.studentRecentReview').then(function (review) {
+            this.set('currentReview', review);
+        }.bind(this));
+
+        return this.set('currentReview', this.get('essay.studentRecentReview'));
     }.observes('essay'),
 
     onNewDraftOpened: function () {
@@ -1321,29 +1363,6 @@ App.EssayController = Ember.ObjectController.extend({
         return this.draftByMostCurrent(0);
     }.property('drafts'),
 
-    currentReviewWithState: function (state) {
-        return this.get('drafts')
-            .then(function (drafts) {
-                var reviewPromises = [];
-                drafts.forEach(function (item, index) {
-                    var reviewPromise = item.get('review');
-                    if (reviewPromise) {
-                        reviewPromises.push(reviewPromise);
-                    }
-                });
-                return Ember.RSVP.all(reviewPromises);
-            })
-            .then(function (reviews) {
-                var reviewsWithGoodState = reviews.filterBy('state', state);
-                var numOfGoodReviews = reviewsWithGoodState.length;
-                if (numOfGoodReviews > 0) {
-                    return reviewsWithGoodState[numOfGoodReviews - 1];
-                } else {
-                    return null;
-                }
-            });
-    },
-
     draftByMostCurrent: function (version) {
         var drafts = this.get('drafts');
         if (!drafts) {
@@ -1510,6 +1529,14 @@ App.EssaysController = Ember.ArrayController.extend(App.EssaySortable, {
         return (!essay.get('parent'));
     }),
 
+    studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'student');
+    }),
+
+    teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'teacher');
+    }),
+
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') != 'completed');
     }),
@@ -1594,19 +1621,31 @@ App.StudentEssaysController = Ember.ArrayController.extend(App.EssaySortable, {
     selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
+
     mergedEssays: function () {
         return this.get('arrangedContent').filter(function(essay) {
             return (essay.get('parent'));
         })
     }.property('@each.parent'),
+
     unmergedEssays: function () {
         return this.get('arrangedContent').filter(function(essay) {
             return (!essay.get('parent'));
         })
     }.property('@each.parent'),
+
+    studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'student');
+    }),
+
+    teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'teacher');
+    }),
+
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') != 'completed');
     }),
+
     actions: {
         selectEssay: function(model, noTransition) {
             this.set('selectedEssay', model);
@@ -1663,7 +1702,6 @@ App.StudentEssaysShowController = Ember.ObjectController.extend({
         return this.draftByMostCurrent(0);
     }.property('drafts'),
 
-    recentDraft: Ember.computed.alias('model.drafts.lastObject'),
     draft_ready_for_review: Ember.computed.equal('recentDraft.state', 'submitted'),
 
     approveAndSelectTopic: function(model, approvedTopicField) {
@@ -2707,11 +2745,11 @@ Ember.TEMPLATES["modules/essay/_app-item"] = Ember.Handlebars.compile("<li {{bin
 
 Ember.TEMPLATES["modules/essays/layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n</div>\n\n{{view App.EssaysListView}}\n");
 
-Ember.TEMPLATES["modules/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n  {{#if actionRequiredEssays}}\n    <li class=\"legend\">Take Action</li>\n    {{#each actionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n</ol>\n");
+Ember.TEMPLATES["modules/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n  {{#if studentActionRequiredEssays}}\n    <li class=\"legend\">Take Action</li>\n    {{#each studentActionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n  {{#if teacherActionRequiredEssays}}\n    <li class=\"legend\">Awaiting Teacher</li>\n    {{#each teacherActionRequiredEssays}}\n      {{view view.listItem classNameBindings=\"isSelected\" }}\n    {{/each}}\n  {{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["modules/student/essay-layout"] = Ember.Handlebars.compile("<div class=\"module-title\">\n\t<h2>Essays</h2>\n\t<span class=\"student-info\">{{student.name}}</span>\n\t{{#if showMergedEssays}}\n\t\t<button {{action 'toggleMergedEssays'}}>Hide Merged Essays</button>\n\t{{else}}\n\t\t<button {{action 'toggleMergedEssays'}}>Show Merged Essays</button>\n\t{{/if}}\n</div>\n\n{{view App.StudentEssaysListView}}\n");
 
-Ember.TEMPLATES["modules/student/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#if showMergedEssays}}\n  <li class=\"legend\">Merged</li>\n  {{#each mergedEssays}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n  {{/each}}\n{{else}}\n    {{#if actionRequiredEssays}}\n      <li class=\"legend\">Take Action</li>\n      {{#each actionRequiredEssays}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n      {{/each}}\n    {{/if}}\n{{/if}}\n</ol>\n");
+Ember.TEMPLATES["modules/student/essays/list"] = Ember.Handlebars.compile("<ol class=\"list\">\n{{#if showMergedEssays}}\n  <li class=\"legend\">Merged</li>\n  {{#each mergedEssays}}\n    {{view view.listItem classNameBindings=\"isSelected\" }}\n  {{/each}}\n{{else}}\n    {{#if teacherActionRequiredEssays}}\n      <li class=\"legend\">Take Action</li>\n      {{#each teacherActionRequiredEssays}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n      {{/each}}\n    {{/if}}\n    {{#if studentActionRequiredEssays}}\n      <li class=\"legend\">Awaiting Student</li>\n      {{#each studentActionRequiredEssays}}\n        {{view view.listItem classNameBindings=\"isSelected\" }}\n      {{/each}}\n    {{/if}}\n{{/if}}\n</ol>\n");
 
 Ember.TEMPLATES["modules/student/essays/show/_app-item"] = Ember.Handlebars.compile("<li {{bind-attr class=\":tab-list-item selected unselected\"}} {{action 'select'}}>\n    <div class=\"tab-li-field app-text\">{{essay_template.university.name}}:</div>\n    <div class=\"tab-li-field\">{{essay_prompt}}</div>\n    {{#if theme_essays}}\n        <div class=\"tab-li-field\">Also with:\n        {{#each theme_essay in theme_essays}}\n            {{theme_essay.essay_template.theme.name}}\n            ({{theme_essay.essay_template.theme.category}}),\n        {{/each}}\n        </div>\n    {{/if}}\n</li>\n");
 

@@ -1,0 +1,25 @@
+<span class="annotaion-close" {{action 'closeAnnotation'}}><i class="icon-cancel-circled"></i></span>
+
+<span {{bind-attr class=":annotation-details-tag-selected annotation.isPositive:tag-positive:tag-negative"}}>{{annotation.tag.name}} <i class="icon-info-circled" {{action "toggleCollapse"}}></i></span>
+
+{{#general-collapse isActive=collapseActive}}
+	{{annotation.tag.description}}
+{{/general-collapse}}
+
+<p class="annotation-details-comment">{{annotation.comment}}</p>
+
+<p class="annotation-details-comment">Original: "{{annotation.original}}"</p>
+
+{{#if isStudent}}
+  {{#unless annotation.isResolved}}
+	  <button class="annotation-details-button" {{action "resolveAnnotation"}}>Resolve</button>
+  {{else}}
+    <p class="bold">[Resolved]</p>
+  {{/unless}}
+{{else}}
+  {{#unless annotation.isApproved}}
+    <button class="annotation-details-button" {{action "approveAnnotation"}}>Approve</button>
+  {{else}}
+    <p class="bold">[Approved]</p>
+  {{/unless}}
+{{/if}}
