@@ -38,5 +38,15 @@ export default DS.Model.extend({
 
     draftsWithCompletedReview: Ember.computed.filterBy('drafts', 'reviewState', 'completed'),
 
-    studentRecentReview: Ember.computed.alias('draftsWithCompletedReview.lastObject.review')
+    studentRecentReview: Ember.computed.alias('draftsWithCompletedReview.lastObject.review'),
+
+    nextActionAwaits: function () {
+        var nextAction = this.get('next_action');
+
+        if ( nextAction.match(/Review|Approve/)) {
+            return 'teacher';
+        } else {
+            return 'student';
+        }
+    }.property('next_action', 'state')
 });
