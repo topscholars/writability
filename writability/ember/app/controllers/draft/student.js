@@ -6,17 +6,9 @@ export default DraftController.extend({
 
     reviewMode: false,
 
-    currentReview: null,
+    currentReview: Ember.computed.alias('essay.studentRecentReview'),
 
     isStudent: true,
-
-    getCurrentReview: function () {
-        this.get('essay.studentRecentReview').then(function (review) {
-            this.set('currentReview', review);
-        }.bind(this));
-
-        return this.set('currentReview', this.get('essay.studentRecentReview'));
-    }.observes('essay'),
 
     onNewDraftOpened: function () {
         var draft = this.get('model');
