@@ -31,11 +31,13 @@ var extraAssets = pickFiles(app.trees.vendor.dir,{
 		'modernizr/modernizr.js',
 		'ckeditor/ckeditor.js',
 		'ckeditor/config.js',
-		'ckeditor/skins/moono/editor.css',
+		'ckeditor/styles.js',
+		'ckeditor/plugins/sharedspace/plugin.js',
+		'ckeditor/skins/moono/**/*.css',
+		'ckeditor/skins/moono/**/*.png',
 		'ckeditor/lang/en.js'
     ],
     destDir: '/libs'
 });
-extraAssets = flatten(extraAssets, { destDir: '/libs' });
 
 module.exports = mergeTrees([app.toTree(), extraAssets]);
