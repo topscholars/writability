@@ -1,6 +1,9 @@
 /* global require, module */
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+var pickFiles   = require('broccoli-static-compiler');
+var mergeTrees = require('broccoli-merge-trees');
+var flatten = require('broccoli-flatten');
 
 var app = new EmberApp();
 
@@ -22,4 +25,17 @@ app.import('vendor/pickadate/lib/picker.date.js');
 app.import('vendor/validatorjs/dist/validator.min.js');
 app.import('vendor/select2/select2.js');
 
-module.exports = app.toTree();
+var extraAssets = pickFiles(app.trees.vendor.dir,{
+    srcDir: '/',
+    files: [
+		'modernizr/modernizr.js',
+		'ckeditor/ckeditor.js',
+		'ckeditor/config.js',
+		'ckeditor/skins/moono/editor.css',
+		'ckeditor/lang/en.js'
+    ],
+    destDir: '/libs'
+});
+extraAssets = flatten(extraAssets, { destDir: '/libs' });
+
+module.exports = mergeTrees([app.toTree(), extraAssets]);
