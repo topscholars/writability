@@ -10,6 +10,8 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 ## HEROKU_* vars are manually set on prod and staging.
 if 'HEROKU_PROD' in os.environ:
     HOST = "http://writability-prod.herokuapp.com/"
+elif 'HEROKU_DEV' in os.environ:
+    HOST = "http://writability-dev.herokuapp.com/"
 elif 'HEROKU_STG' in os.environ:
     HOST = "http://writability-staging.herokuapp.com/"
 else:
