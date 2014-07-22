@@ -25,6 +25,9 @@ app.import('vendor/pickadate/lib/picker.date.js');
 app.import('vendor/validatorjs/dist/validator.min.js');
 app.import('vendor/select2/select2.js');
 
+
+// This takes files from the bower directory and then copys
+// them to the compiled directory in a libs directory
 var extraAssets = pickFiles(app.trees.vendor.dir,{
     srcDir: '/',
     files: [
@@ -40,4 +43,6 @@ var extraAssets = pickFiles(app.trees.vendor.dir,{
     destDir: '/libs'
 });
 
+// This combines the output of Ember CLI
+// and the extraAssets file picking
 module.exports = mergeTrees([app.toTree(), extraAssets]);
