@@ -1,0 +1,46 @@
+.rubric-slider {
+	.score, .description {
+		padding-top: 3px;
+		padding-bottom: 3px;
+	}
+
+	.score {
+		button {
+			font-size: 16px;
+			line-height: 16px;
+			border: none;
+			display: inline-block;
+			padding: 0;
+			position: absolute;
+
+			&.decrement {
+				left: 0;
+			}
+
+			&.increment {
+				right: 0;
+			}
+		}
+
+		.bar {
+			display: inline-block;
+			background: black;
+			content: '';
+			height: 16px;
+		}
+
+		width: 60%;
+		float: left;
+		position: relative;
+		.clearfix();
+	}
+
+	.description {
+		padding-left: 5px;
+		width: 40%;
+		float: right;
+		border-left: 2px black solid;
+	}
+
+	.clearfix();
+}

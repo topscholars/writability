@@ -1,0 +1,10 @@
+<div class="rubric-slider">
+	<div class="score">
+		<button class="decrement"><i class="icon-minus"></i></button>
+		<div class="bar" {{bind-attr style=barWidth}}></div>
+		<button class="increment"><i class="icon-plus"></i></button>
+	</div>
+	<div class="description">
+		{{category.name}} <span class="percent">({{category.score}}%)</span>
+	</div>
+</div>
