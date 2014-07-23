@@ -2,7 +2,8 @@ export default [
 	{
 		id: 1,
 		name: 'Content',
-		score: 10
+		score: 10,
+		criteria: [1,2,3]
 	},
 	{
 		id: 2,
