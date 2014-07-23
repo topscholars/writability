@@ -5,13 +5,17 @@
 	}
 
 	.score {
+		.clearfix();
+		display: table;
+
 		button {
 			font-size: 16px;
 			line-height: 16px;
 			border: none;
-			display: inline-block;
+			display: table-cell;
 			padding: 0;
 			position: absolute;
+			width: 16px;
 
 			&.decrement {
 				left: 0;
@@ -22,17 +26,22 @@
 			}
 		}
 
+		.bar-container {
+			display: table-cell;
+		}
+
 		.bar {
+			// display: table-cell;
 			display: inline-block;
 			background: black;
 			content: '';
 			height: 16px;
+			color: rgba(0,0,0,0);
 		}
 
 		width: 60%;
 		float: left;
 		position: relative;
-		.clearfix();
 	}
 
 	.description {
