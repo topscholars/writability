@@ -1083,6 +1083,24 @@ input.form-date {
 }
 .rubric-slider {
   zoom: 1;
+  position: relative;
+}
+.rubric-slider:before {
+  content: '';
+  display: block;
+}
+.rubric-slider:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+.rubric-slider.selected:before {
+  font-family: 'entypo';
+  position: absolute;
+  content: "\e78b";
+  left: -15px;
+  top: -8px;
+  font-size: 40px;
 }
 .rubric-slider .score,
 .rubric-slider .description {
@@ -1131,19 +1149,11 @@ input.form-date {
   color: rgba(0, 0, 0, 0);
 }
 .rubric-slider .description {
+  cursor: pointer;
   padding-left: 5px;
   width: 40%;
   float: right;
   border-left: 2px black solid;
-}
-.rubric-slider:before {
-  content: '';
-  display: block;
-}
-.rubric-slider:after {
-  content: '';
-  display: table;
-  clear: both;
 }
 /*@import "modules";
 @import "partials"; */

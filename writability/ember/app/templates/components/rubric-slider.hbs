@@ -1,12 +1,10 @@
-<div class="rubric-slider">
-	<div class="score">
-		<button class="decrement" {{action 'decrement'}}><i class="icon-minus"></i></button>
-		<div class="bar-container">
-			<div class="bar" {{bind-attr style=barWidth}}>kjhsdkjhsdfkjhsd</div>
-		</div>
-		<button class="increment" {{action 'increment'}}><i class="icon-plus"></i></button>
+<div class="score">
+	<button class="decrement" {{action 'decrement'}}><i class="icon-minus"></i></button>
+	<div class="bar-container">
+		<div class="bar" {{bind-attr style=barWidth}}>{{category.score}}</div>
 	</div>
-	<div class="description">
-		{{category.name}} <span class="percent">({{category.score}}%)</span>
-	</div>
+	<button class="increment" {{action 'increment'}}><i class="icon-plus"></i></button>
+</div>
+<div class="description" {{action 'select'}}>
+	{{category.name}} <span class="percent">({{category.score}}%)</span>
 </div>
