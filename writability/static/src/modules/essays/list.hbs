@@ -1,0 +1,14 @@
+<ol class="list">
+  {{#if studentActionRequiredEssays}}
+    <li class="legend">Take Action</li>
+    {{#each studentActionRequiredEssays}}
+      {{view view.listItem classNameBindings="isSelected" }}
+    {{/each}}
+  {{/if}}
+  {{#if teacherActionRequiredEssays}}
+    <li class="legend">Awaiting Teacher</li>
+    {{#each teacherActionRequiredEssays}}
+      {{view view.listItem classNameBindings="isSelected" }}
+    {{/each}}
+  {{/if}}
+</ol>

@@ -29,7 +29,7 @@ app = Flask(__name__)
 
 app.config.from_object('config')
 
-init_app(app, security.security_forms)
+manager = init_app(app, security.security_forms)
 
 # Automatically tear down SQLAlchemy.
 '''
@@ -70,7 +70,7 @@ def internal_error_404(error):
 
 @app.errorhandler(resource.base.InvalidUsage)
 def handle_invalid_usage(error):
-    response = jsonify(error.to_dict())
+    response = jsonify(error.to_dict())    # FIXME: unresolved reference
     response.status_code = error.status_code
     return response
 
@@ -88,7 +88,5 @@ if not app.debug:
 # Launch.
 # ----------------------------------------------------------------------------#
 
-# Specify port manually:
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    manager.run()

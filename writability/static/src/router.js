@@ -30,8 +30,29 @@ App.Router.map(function () {
         this.route('unauthorized');
     });
 
+    this.route('select2-test');
+
 });
 
+App.Select2TestRoute = Ember.Route.extend({
+    model: function() {
+        return this.store.find('tag');
+    },
+    renderTemplate: function () {
+        this.render('core/layouts/main');
+        this.render('NavHeader', {outlet: 'header'});
+        this.render('test/select', {into: 'core/layouts/main', outlet: 'left-side-outlet'});
+    }
+});
+
+App.LoadingRoute = Ember.Route.extend({
+    renderTemplate: function() {
+        this.send('openLoading');
+    },
+    deactivate: function() {
+        this.send('closeLoading');
+    }
+});
 
 /**
  * AuthenticatedRoute has access to a current user object.
@@ -105,7 +126,13 @@ App.ApplicationRoute = App.AuthenticatedRoute.extend({
         },
         openModal: function() {
             this.controllerFor('application').set('modalActive', true);
-        }
+        },
+        openLoading: function() {
+            this.controllerFor('application').set('loadingActive', true);
+        },
+        closeLoading: function() {
+            this.controllerFor('application').set('loadingActive', false);
+        },
     }
 });
 
@@ -199,7 +226,6 @@ App.StudentsRoute = App.AuthenticatedRoute.extend({
         inviteStudent: function (studentEmail) {
             var invitation = this.store.createRecord('invitation', {
                 email: studentEmail,
-                is_registered: false,
                 teacher: this.get('currentTeacher')
             });
             this.get('currentTeacher').get('invitations').then(function(invitations) {
@@ -236,7 +262,6 @@ App.EssaysRoute = App.AuthenticatedRoute.extend({
             console.log('in teacher side of essaysroute');
             return this.get('currentTeacher').get('students').get('theme_essays');
         }
-
     },
 
     renderTemplate: function () {
@@ -264,9 +289,7 @@ App.StudentEssaysRoute = App.AuthenticatedRoute.extend({
 
 App.StudentEssaysShowRoute = App.AuthenticatedRoute.extend({
     renderTemplate: function () {
-        var id = this.currentModel.id;
-
-        // this.controllerFor('student.essays').findBy('id', id).send('select', false);
+        this.controllerFor('student.essays').send('selectEssay', this.currentModel, true);
         this.render({outlet: 'right-side-outlet'});
     }
 });
@@ -289,12 +312,7 @@ App.EssayRoute = App.AuthenticatedRoute.extend({
     },
 
     renderTemplate: function () {
-
-        console.log('this.currentModel id: ' + this.currentModel.id );
-        //this.modelFor(this.EssayRoute)
-        var id = this.currentModel.id;
-        //var id = this.controller.get('model').id;
-        this.controllerFor('essays').findBy('id', id).send('select');
+        this.controllerFor('essays').send('selectEssay', this.currentModel);
         this.render({outlet: 'right-side-outlet'});
     },
 
@@ -371,14 +389,14 @@ App.DraftRoute = App.AuthenticatedRoute.extend({
     _assert_teachers_review: function (id) {
         var route = this;
         Ember.RSVP.Promise.all([
-            route.get('currentTeacher').get('reviews'),
+            route.get('currentTeacher.reviews'),
             route.store.find('draft', id)
         ]).then(function (values) {
             var reviews = values[0];
             var draft = values[1];
-            var review_id = draft._data.review.id;
+            var review_id = draft.get('review.id');
 
-            if (!reviews.isAny('id', review_id)) {
+            if (review_id && !reviews.isAny('id', review_id)) {
                 route.transitionTo('error.unauthorized');
             }
         });

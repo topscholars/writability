@@ -45,29 +45,6 @@ App.EssayController = Ember.ObjectController.extend({
         return this.draftByMostCurrent(0);
     }.property('drafts'),
 
-    currentReviewWithState: function (state) {
-        return this.get('drafts')
-            .then(function (drafts) {
-                var reviewPromises = [];
-                drafts.forEach(function (item, index) {
-                    var reviewPromise = item.get('review');
-                    if (reviewPromise) {
-                        reviewPromises.push(reviewPromise);
-                    }
-                });
-                return Ember.RSVP.all(reviewPromises);
-            })
-            .then(function (reviews) {
-                var reviewsWithGoodState = reviews.filterBy('state', state);
-                var numOfGoodReviews = reviewsWithGoodState.length;
-                if (numOfGoodReviews > 0) {
-                    return reviewsWithGoodState[numOfGoodReviews - 1];
-                } else {
-                    return null;
-                }
-            });
-    },
-
     draftByMostCurrent: function (version) {
         var drafts = this.get('drafts');
         if (!drafts) {
@@ -114,8 +91,8 @@ App.EssayController = Ember.ObjectController.extend({
     // }.observes('proposed_topic_1'),
 
     getMostRecentDraft: function () {
-        return this.get('model').get('drafts').then(function (drafts) {
-            return drafts.get('lastObject').get('id');
+        return this.get('model.drafts').then(function (drafts) {
+            return drafts.get('lastObject');
         });
     },
 
@@ -133,8 +110,11 @@ App.EssayController = Ember.ObjectController.extend({
     actions: {
         openDraft: function () {
             var that = this;
-            this.getMostRecentDraft().then(function (id) {
-                that.transitionToRoute('draft', id);
+            this.getMostRecentDraft().then(function (draft) {
+                draft.set('state', 'in_progress');
+                draft.save().then(function() {
+                    that.transitionToRoute('draft', draft);
+                });
             });
         },
         submitProposedTopics: function(model) {

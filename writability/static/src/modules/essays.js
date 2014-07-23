@@ -1,34 +1,41 @@
-/* globals App, Ember */
-App.EssayItemController = Ember.ObjectController.extend({
-    isSelected: (function () {
-        var selectedEssay = this.get('controllers.essays.selectedEssay');
-        return selectedEssay === this.get('model');
-    }).property('controllers.essays.selectedEssay'),
-
-    needs: ['essays'],
-
-    actions: {
-        select: function () {
-            var model = this.get('model');
-            console.log('EssayItemController, essay id: ' + model.id);
-            this.get('controllers.essays').send('selectEssay', model);
-        }
-    },
-});
-
 App.EssayItemView = App.ThickListItem.extend({
     templateName: "modules/_essays-list-item",
-    click: function (ev) {
-        this.get('controller').send('select');
+
+    didInsertElement: function() {
+        this.isSelectedHasChanged();
     },
+    isSelectedHasChanged: function() {
+        if (this.get('controller.selectedEssay.id') == this.get('context.id')) {
+            this.$().addClass('is-selected');
+        } else {
+            this.$().removeClass('is-selected');
+        }
+    }.observes('controller.selectedEssay'),
+
+    click: function (ev) {
+        this.get('controller').send('selectEssay', this.get('context'));
+    }
 });
 
-App.EssaysController = Ember.ArrayController.extend({
-    itemController: 'essay.item',
+App.EssaysController = Ember.ArrayController.extend(App.EssaySortable, {
     // Ember won't accept an array for sorting by state..
-    sortProperties: ['next_action'], 
-    sortAscending: false,
     selectedEssay: null,
+
+    unmergedEssays: Ember.computed.filter('arrangedContent', function(essay) {
+        return (!essay.get('parent'));
+    }),
+
+    studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'student');
+    }),
+
+    teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('nextActionAwaits') === 'teacher');
+    }),
+
+    actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
+        return (essay.get('state') != 'completed');
+    }),
 
     actions: {
         selectEssay: function (model) {
@@ -40,8 +47,14 @@ App.EssaysController = Ember.ArrayController.extend({
     }
 });
 
-App.EssaysView = App.ListView.extend({
+App.EssaysListView = Ember.View.extend({
+    templateName: 'modules/essays/list',
+    // templateName: 'modules/student/essays/list',
     title: 'Essays',
     //sections: ['To do', 'Not to do'],
     listItem: App.EssayItemView
+});
+
+App.EssaysView = App.ListView.extend({
+    templateName: 'modules/essays/layout'
 });

@@ -1,1 +1,1 @@
-web: python writability/app.py
+web: python writability/app.py runserver

@@ -8,6 +8,11 @@ App.Review = DS.Model.extend({
 
     next_states: DS.attr('array', {readOnly: true}),
     state: DS.attr('string'),
+    annotations: DS.hasMany('annotation', {async: true}),
+
+    all_annotations_resolved: function() {
+        return ! this.get('annotations').isAny('state', 'new');
+    }.property('annotations.@each.state'),
 
     // relationships
     draft: DS.belongsTo('draft'),

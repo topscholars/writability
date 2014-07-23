@@ -1,0 +1,15 @@
+<div class="panel-title">Essay Settings</div>
+
+<div class="details-field">
+    <div class="key">Next Due Date:</div>
+    {{form-date dateBind=essay.due_date format="mm/dd/yyyy"}}
+</div>
+
+<div class="details-field">
+    <div class="key">Number of Revisions:</div>
+    {{form-number value=essay.num_of_drafts min=0 max=20}}
+</div>
+
+<div class="details-field">
+	<button {{action 'saveEssay' essay}}>Save Essay</button>
+</div>

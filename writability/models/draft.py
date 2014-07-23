@@ -6,7 +6,7 @@ This module contains a Draft of an Essay. Essays have a series of Drafts that
 the Student writes.
 
 """
-import review
+import review, essay
 from .db import db
 from .base import StatefulModel
 
@@ -27,20 +27,43 @@ class Draft(StatefulModel):
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
-    review = db.relationship("Review", backref="draft")
+
+    #non_tag master 
+    review = db.relationship("Review", backref="draft", uselist=False)
+    
+    def process_before_create(self):
+        """Process model to prepare it for adding it db."""
+        super(Draft, self).process_before_create()
+        if not self.due_date:
+            self.due_date = essay.Essay.read(self.essay_id).due_date
 
     def change_related_objects(self):
         """Change any related objects before commit."""
         super(Draft, self).change_related_objects()
 
-        if self.state == "submitted" and self.review is None:
+        if self.state == "in_progress" and self.review is None:
+            this_essay = essay.Essay.read(self.essay_id)
+            ann_list = []
+            prev_review = None
+            if len(this_essay.drafts) > 1:
+                prev_draft = Draft.read(max([d.id for d in this_essay.drafts if d.id != self.id]))
+                prev_review = prev_draft.review
+                ann_list = [a.create_copy() for a in prev_review.annotations if a.state != "approved"]
+
+            # first check if there was a previous draft and, if so, copy over 
+            # annotations that are not marked "complete" by the teacher
+
+            # if there were no previous drafts, create a new empty review
+
             new_review_params = {
                 "teacher": self.essay.student.teacher,
                 "draft": self,
-                "review_type": "TEXT_REVIEW"
+                "text": prev_review.text if prev_review else '',
+                "review_type": "TEXT_REVIEW",
+                "annotations": ann_list
             }
 
-            self.review = review.Review(**new_review_params)
+            self.review = review.Review(**new_review_params)  ####********* This is likely obsolete.  ****#######
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""

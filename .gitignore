@@ -1,5 +1,9 @@
+.DS_Store
 .env
 node_modules/
+
+# Personal dev scripts
+refresh_db.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

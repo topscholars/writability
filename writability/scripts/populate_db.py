@@ -7,7 +7,16 @@ from BeautifulSoup import BeautifulSoup
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-HOST = "http://localhost:5000/"
+## HEROKU_* vars are manually set on prod and staging.
+if 'HEROKU_PROD' in os.environ:
+    HOST = "http://writability-prod.herokuapp.com/"
+elif 'HEROKU_DEV' in os.environ:
+    HOST = "http://writability-dev.herokuapp.com/"
+elif 'HEROKU_STG' in os.environ:
+    HOST = "http://writability-staging.herokuapp.com/"
+else:
+    HOST = "http://localhost:5000/"
+
 ROOT_URL = HOST + "api/"
 HEADERS = {'Content-type': 'application/json'}
 
@@ -150,7 +159,7 @@ class TagPopulator(Populator):
         tag_type = tokens[1].strip()
         category = tokens[2].strip()
         description = tokens[3].strip()
-        example = tokens[4].strip()
+        super_category = tokens[4].strip()
 
         payload = {
             "tag": {
@@ -158,7 +167,7 @@ class TagPopulator(Populator):
                 "tag_type" : tag_type,
                 "category" : category,
                 "description" : description,
-                "example" : example
+                "super_category" : super_category
             }
         }
 

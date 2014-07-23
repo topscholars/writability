@@ -1,0 +1,52 @@
+<div class="editor-column summary-column">
+    <section class="summary-header">
+        <div class="panel-toggle-container">
+            <button {{action togglePanel "details" target=view}} class="details panel-toggle">
+                Details
+            </button>
+            <button {{action togglePanel "review" target=view}} class="review panel-toggle">
+                Review
+            </button>
+            {{#if isTeacher}}
+                <button {{action togglePanel "settings" target=view}} class="settings panel-toggle">
+                    Settings
+                </button>
+            {{/if}}
+        </div>
+        <div class="essay-prompt strong">{{essay.essay_prompt}}</div>
+    </section>
+    <section class="summary-panel-container">
+        {{view 'draft/summary' viewName="summaryPanel"}}
+    </section>
+</div>
+
+<div class="editor-column text-column">
+    <div class="toolbar-container">
+        <div id="editor-toolbar" class="editor-toolbar"></div>
+    </div>
+
+    {{#if reviewMode}}
+        {{view 'draft/text-editor'
+            action="startedWriting"
+            valueBinding="formatted_text"
+            isReadOnly=false
+            reviewMode=true
+            valueBuffer=formatted_text_buffer
+        }}
+    {{else}}
+        {{view 'draft/text-editor'
+            action="startedWriting"
+            valueBinding="formatted_text"
+            valueBuffer=formatted_text_buffer
+        }}
+    {{/if}}
+</div>
+
+<div class="editor-column annotations-column">
+    {{annotation-container
+        newAnnotation=newAnnotation
+        annotations=domAnnotations
+        tags=tags
+        hasSavedAnnotation="hasSavedAnnotation"
+        isStudent=isStudent}}
+</div>

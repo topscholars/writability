@@ -76,7 +76,8 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
             "application_essay_states": JSONField,
             "merged_theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
-                absolute=True))
+                absolute=True)),
+            "parent_id": fields.Integer
         })
 
 
