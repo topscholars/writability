@@ -104,7 +104,7 @@ class ThemeEssay(StatefulModel, Essay):
 
     _application_essays = db.relationship(
         "EssayStateAssociations",
-        backref=db.backref("theme_essays", lazy="dynamic"))
+        backref=db.backref("theme_essays")) #, lazy="dynamic"s
 
     ## Commented from Master for merging merge-backend
     # @validates('proposed_topics')
@@ -270,7 +270,8 @@ class ApplicationEssay(Essay):
 
 class EssayStateAssociations(BaseModel):
     __tablename__ = 'essay_associations'
-
+    #__table_args__ = {'extend_existing': True} #Because table is defined in relationships.py
+    
     ALLOWED_APP_ESSAY_STATES = ["selected","not_selected","pending"]
 
     @validates('state')
@@ -280,16 +281,16 @@ class EssayStateAssociations(BaseModel):
 
     application_essays = db.relationship(
         "ApplicationEssay",
-        backref=db.backref("essay_associations", lazy="dynamic"))
+        backref=db.backref("essay_associations")) #, lazy="dynamic" -> removed
     # theme_essays: don't explicitly declare it but it's here'
 
     # this needs to be a list?
     application_essay_id = db.Column(
         db.Integer,
         db.ForeignKey("application_essay.id"),
-        primary_key=True),
+        primary_key=True)
     theme_essay_id = db.Column(
         db.Integer,
         db.ForeignKey("theme_essay.id"),
-        primary_key=True),
+        primary_key=True)
     state = db.Column(db.String, default="pending")
