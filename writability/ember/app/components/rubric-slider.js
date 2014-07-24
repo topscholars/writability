@@ -26,12 +26,12 @@ export default Ember.Component.extend({
 
 	actions: {
 		decrement: function () {
-			if (this.get('category.score') >= 10) {
+			if (this.get('category.score') >= 10 && this.get('reviewMode')) {
 				this.decrementProperty('category.score', 10);
 			}
 		},
 		increment: function () {
-			if (this.get('category.score') <= 90) {
+			if (this.get('category.score') <= 90 && this.get('reviewMode')) {
 				this.incrementProperty('category.score', 10);
 			}
 		},
