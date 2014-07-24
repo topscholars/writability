@@ -9,11 +9,11 @@ from flask import request
 from flask.ext.restful import Resource, fields
 from flask.ext.restful import marshal
 
-from models.essay import Essay, ThemeEssay, ApplicationEssay
+from models.essay import Essay, ThemeEssay, ApplicationEssay, EssayStateAssociations
 
 from .base import ResourceManager, ItemResource, ListResource
 from .base import StatefulResourceManager, InvalidUsage
-from .fields import ResourceField, JSONField
+from .fields import ResourceField, JSONField, ApplicationEssayResourceField
 import draft
 import theme
 import user
@@ -73,9 +73,11 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
             "theme": ResourceField(
                 theme.ThemeResourceManager.item_resource_name,
                 absolute=True),
-            "application_essay_states": JSONField,
             "merged_theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
+                absolute=True)),
+            "application_essays": fields.List(ApplicationEssayResourceField(
+                ApplicationEssayResourceManager.item_resource_name,
                 absolute=True)),
             "parent_id": fields.Integer
         })
@@ -116,12 +118,25 @@ class ApplicationEssayListResource(EssayListResource):
 
     resource_manager_class = ApplicationEssayResourceManager
 
+class EssayStateAssociationsManager(StatefulResourceManager):
+    item_resource_name = "essaystateassociation"
+    list_resource_name = "essaystateassociations"
+    model_class = EssayStateAssociations
 
-class ApplicationEssayStateResource(ThemeEssayResource):
+    def _add_item_fields(self):
+        super(EssayStateAssociationsManager, self)._add_item_fields()
+        self._item_fields.update({
+            "theme_essay_id": fields.Integer,
+            "application_essay_id": fields.Integer
+        })
+
+class EssayStateAssociationsResource(ItemResource):
     """
     This resource allows direct updates of the Application Essay states upon clicking
     them in the Essays view. 
     """
+    resource_manager_class = EssayStateAssociationsManager
+
     def get(self, themeessay_id, appessay_id):
         # what's the correct way to 404 this?
         raise NotImplementedError()
@@ -140,13 +155,19 @@ class ApplicationEssayStateResource(ThemeEssayResource):
         payload = self._get_payload(appessay_id)
         # print resource_name, id   # TODO KIRK DELETE THESE
         # print payload
+        try:
+            essay_assoc = model_class.read_by_filter({"theme_essay_id": themeessay_id,
+            "application_essay_id" : appessay_id})
+            assert len(essay_assoc) == 1
+            essay_assoc = essay_assoc[0]
+        except:
+            essay_assoc = None
 
-        app_essay_states = model_class.read(themeessay_id).application_essay_states
-
-        if appessay_id in app_essay_states:
+        if essay_assoc:
             # Should return a single state. Validated by the model class.
-            app_essay_states[appessay_id] = payload
-            item = {resource_name: model_class.update(themeessay_id, { 'application_essay_states' : app_essay_states })}            
+            # essay_assoc.state = payload
+            item = {resource_name: model_class.update(essay_assoc.application_essay_id,
+                essay_assoc.theme_essay_id, { 'state' : payload })}            
             return marshal(item, item_field)
         else:
             raise InvalidUsage('Did you pass the correct application essay ID in the URL?')
