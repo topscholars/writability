@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { autosaveTimout } from 'writability/config';
 
 export default Ember.Component.extend({
 	classNames: ['rubric-slider'],
@@ -6,6 +7,14 @@ export default Ember.Component.extend({
 
 	category: null,
 	selectedRubricCategory: null,
+
+	saveCategory: function() {
+		this.get('category').save();
+	},
+
+	categoryScoreHasChanged: function() {
+		Ember.run.debounce(this, this.saveCategory, autosaveTimout);
+	}.observes('category.score'),
 
 	barWidth: function() {
 		return "width: " + this.get('category.score') + "%;";
