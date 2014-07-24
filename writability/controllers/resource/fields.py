@@ -48,13 +48,15 @@ class ApplicationEssayResourceField(fields.Url):
     def output(self, key, obj):
         id = None
         state = None
-
+        import pdb; pdb.set_trace();
+        # theme_essay_id = kwargs[something]
+        
         # if object is a list get the right key
         if hasattr(obj, "__iter__"):
             id = obj[key].id
             try:
                 for ea in obj[key].essay_associations:
-                    if ea.application_essay_id == id:
+                    if ea.theme_essay_id == theme_essay_id:
                         state = ea.state
             except:
                 pass
@@ -66,13 +68,14 @@ class ApplicationEssayResourceField(fields.Url):
                 id = sub_obj.id
                 try: 
                     for ea in sub_obj.essay_associations:
-                        if ea.application_essay_id == id:
+                        if ea.theme_essay_id == theme_essay_id:
                             state = ea.state
                 except:
                     pass
                 # id = {"id": sub_obj.id}
 
         if id:
+            # how can I make this just one dictionary instead of many in the list????
             return {id : state}
             # return super(ResourceField, self).output(key, id)
         else:
