@@ -1163,7 +1163,17 @@ input.form-date {
   border-top: black 1px solid;
 }
 .rubric-detail .rubric-criterion {
+  zoom: 1;
   padding: 10px inherit;
+}
+.rubric-detail .rubric-criterion:before {
+  content: '';
+  display: block;
+}
+.rubric-detail .rubric-criterion:after {
+  content: '';
+  display: table;
+  clear: both;
 }
 .rubric-detail .rubric-criterion span.rubric-criterion-index {
   float: left;
