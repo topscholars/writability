@@ -10,6 +10,8 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 ## HEROKU_* vars are manually set on prod and staging.
 if 'HEROKU_PROD' in os.environ:
     HOST = "http://writability-prod.herokuapp.com/"
+elif 'HEROKU_DEV' in os.environ:
+    HOST = "http://writability-dev.herokuapp.com/"
 elif 'HEROKU_STG' in os.environ:
     HOST = "http://writability-staging.herokuapp.com/"
 else:
@@ -173,6 +175,34 @@ class TagPopulator(Populator):
 
     def _get_title(self, payload):
         return payload["tag"]["name"]
+
+class CriteriaPopulator(Populator):
+
+    _PATH = "criteria"
+    _FILE_PATH = "data/rubric-criteria.csv"
+
+    def _construct_payload(self, line):
+        tokens = line.split('\t')
+        name = tokens[0].strip()
+        tag_type = tokens[1].strip()
+        category = tokens[2].strip()
+        description = tokens[3].strip()
+        super_category = tokens[4].strip()
+
+        payload = {
+            "criterion": {
+                "name" : name,
+                "tag_type" : tag_type,
+                "category" : category,
+                "description" : description,
+                "super_category" : super_category
+            }
+        }
+
+        return payload
+
+    def _get_title(self, payload):
+        return payload["criterion"]["name"]
 
 class ThemeEssayTemplatePopulator(Populator):
 
@@ -535,6 +565,7 @@ def populate_db():
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
     TagPopulator()
+    CriteriaPopulator()
     # custom data
     # delete_users()
     UserPopulator()
