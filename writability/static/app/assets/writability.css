@@ -1708,6 +1708,9 @@ input[type="checkbox"]:disabled {
   border: 1px black solid;
   height: 50px;
   width: 50px;
+  font-size: 40px;
+  cursor: pointer;
+  line-height: 1em;
 }
 .inviteStudent:hover {
   text-decoration: none;
@@ -1719,7 +1722,7 @@ input[type="checkbox"]:disabled {
   color: #54b348;
   margin-bottom: 15px;
 }
-.new-item input,
+.new-item input[type="text"],
 .new-item select {
   font-family: 'Rockwell W01', serif;
   font-size: 40px;
