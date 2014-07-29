@@ -207,7 +207,7 @@ class CriteriaPopulator(Populator):
 
 class RubricCategoryPopulator(Populator):
 
-    _PATH = "rubriccategory"
+    _PATH = "rubric_categories"
     _FILE_PATH = "data/rubric_categories.txt"
 
     def _construct_payload(self, line):
@@ -581,15 +581,15 @@ def delete_users():
 
 
 def populate_db():
-     # predefined
+    # predefined
     RolePopulator()
     UniversityPopulator()
     ThemePopulator()
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
     TagPopulator()
-    #RubricCategoryPopulator() # Doesn't work, need 3-4 rub_cats as of July '14
-    CriteriaPopulator() # Need to manually create Content/Impact/Quality/Style for this data to work
+    RubricCategoryPopulator()
+    CriteriaPopulator()
     # custom data
     # delete_users()
     UserPopulator()
