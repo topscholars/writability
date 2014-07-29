@@ -63,10 +63,12 @@ class Criterion(Tag):   # Tags that a teacher can write an annotation against,
     def change_related_objects(self):
         super(Criterion, self).change_related_objects()
         if not RubricCategory.read_by_filter({'name':self.name}):
+            print "NOT loop"
             new_rc_params = {
                 "name": self.name
             }
             new_rc = RubricCategory(**new_rc_params)
+        #import pdb; pdb.set_trace()
         self.rubriccategory = RubricCategory.read_by_filter({'name':self.name})[0]
 
 class RubricCategoryRubricAssociations(BaseModel):

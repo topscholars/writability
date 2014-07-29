@@ -32,7 +32,7 @@ class Populator(object):
 
         f = open(os.path.join(base_dir, self._FILE_PATH), "r")
         file = f.read()
-
+ 
         for obj in self._parse_file_into_objects(file):
             payload = self._construct_payload(obj)
             if payload:
@@ -195,7 +195,8 @@ class CriteriaPopulator(Populator):
                 "tag_type" : tag_type,
                 "category" : category,
                 "description" : description,
-                "super_category" : super_category
+                "super_category" : super_category,
+                "rubriccategory": None
             }
         }
 
@@ -203,6 +204,28 @@ class CriteriaPopulator(Populator):
 
     def _get_title(self, payload):
         return payload["criterion"]["name"]
+
+class RubricCategoryPopulator(Populator):
+
+    _PATH = "rubriccategory"
+    _FILE_PATH = "data/rubric_categories.txt"
+
+    def _construct_payload(self, line):
+        tokens = line.split('\t')
+        name = tokens[0].strip()
+        help_text = tokens[1].strip()
+
+        payload = {
+            "rubriccategory": {
+                "name" : name,
+                "help_text" : help_text
+            }
+        }
+
+        return payload
+
+    def _get_title(self, payload):
+        return payload["rubriccategory"]["name"]
 
 class ThemeEssayTemplatePopulator(Populator):
 
@@ -558,21 +581,21 @@ def delete_users():
 
 
 def populate_db():
-    # predefined
+     # predefined
     RolePopulator()
     UniversityPopulator()
     ThemePopulator()
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
     TagPopulator()
-    CriteriaPopulator()
+    #RubricCategoryPopulator() # Doesn't work, need 3-4 rub_cats as of July '14
+    CriteriaPopulator() # Need to manually create Content/Impact/Quality/Style for this data to work
     # custom data
     # delete_users()
     UserPopulator()
     DraftPopulator()
     ReviewPopulator()
     AnnotationPopulator()
-
 
 populate_db()
 # TagPopulator()
