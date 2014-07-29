@@ -88,8 +88,12 @@ class RubricCategoryRubricAssociations(BaseModel):
     @validates('grade')
     def validate_grades(self, key, grade):
         """Assert that grade is rounded to 10. 0/10/20../90/100."""
-        assert val in self.ALLOWED_GRADES
+        assert grade in self.ALLOWED_GRADES
         return grade
+
+    rubric_categories = db.relationship(
+        "RubricCategory",
+        backref=db.backref("rubric_category_associations"))
 
     rubric_id = db.Column(
         db.Integer,

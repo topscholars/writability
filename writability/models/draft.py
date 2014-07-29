@@ -9,7 +9,7 @@ the Student writes.
 import review, essay
 from .db import db
 from .base import StatefulModel
-from rubric import Rubric, RubricCategory
+from rubric import Rubric, RubricCategory, RubricCategoryRubricAssociations
 
 
 class Draft(StatefulModel):
@@ -66,35 +66,39 @@ class Draft(StatefulModel):
 
             self.review = review.Review(**new_review_params)  ####********* This is likely obsolete.  ****#######
 
+            db.session.commit()
+
             #rubric_category_list = []
             #rubric_category_list.append( RubricCategory.read_by_filter({'name':'Content'}) )
-
-            rubr_cat_content = RubricCategory.read_by_filter({'name':'Content'})
-            rubr_cat_impact = RubricCategory.read_by_filter({'name':'Impact'})
-            rubr_cat_quality = RubricCategory.read_by_filter({'name':'Quality'})
+            try:
+                rubr_cat_content = RubricCategory.read_by_filter({'name':'Content'})[0]
+                rubr_cat_impact = RubricCategory.read_by_filter({'name':'Impact'})[0]
+                rubr_cat_quality = RubricCategory.read_by_filter({'name':'Quality'})[0]
+            except:
+                raise ValueError('RubricCategory items are not defined!')
 
             new_rubric_params = {
                 "name": None,
                 "review_id": self.review.id
             }
 
-            self.review.rubric = Rubric(**new_rubric_params)
-            rubric = self.review.rubric
+            rubric = Rubric(**new_rubric_params)
+            db.session.add(rubric)
+            self.review.rubric = rubric
 
             if len(this_essay.drafts) < 2: # If first draft, create new rubric categories
-                rubric._rubric_categories.append( RubricCategoryRubricAssociations(rubric_id=rubric.id, rubric_category_id=rubr_cat_content.id, grade=0) )
-                rubric._rubric_categories.append( RubricCategoryRubricAssociations(rubric_id=rubric.id, rubric_category_id=rubr_cat_impact.id,  grade=0) )
-                rubric._rubric_categories.append( RubricCategoryRubricAssociations(rubric_id=rubric.id, rubric_category_id=rubr_cat_quality.id, grade=0) )
+                rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':0}) )
+                rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':0}) )
+                rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':0}) )
             else: # If not first draft, copy old rubric_category assocation grades
                 rub_cats = prev_review.rubric._rubric_categories
                 content_grade = rub_cats.read_by_filter({'name':'Content'})[0].grade
                 impact_grade  = rub_cats.read_by_filter({'name':'Impact'})[0].grade
                 quality_grade = rub_cats.read_by_filter({'name':'Quality'})[0].grade
                 # Create new rubric Categories with grades from prior review/rubric
-                rubric._rubric_categories.append( RubricCategoryRubricAssociations(rubric_id=rubric.id, rubric_category_id=rubr_cat_content.id, grade=content_grade) )
-                rubric._rubric_categories.append( RubricCategoryRubricAssociations(rubric_id=rubric.id, rubric_category_id=rubr_cat_impact.id, grade=impact_grade)  )
-                rubric._rubric_categories.append( RubricCategoryRubricAssociations(rubric_id=rubric.id, rubric_category_id=rubr_cat_quality.id, grade=quality_grade) )
-
+                rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':content_grade}) )
+                rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':impact_grade}) )
+                rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':quality_grade}) )
             #rubric.RubricCategoryRubricAssociations.append(rubric.RubricCategoryRubricAssociations)
  
            # Create rubric + rubric_category joins with Grade Data

@@ -32,7 +32,7 @@ class Review(StatefulModel):
     # relationships
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     annotations = db.relationship("Annotation", backref="review")
-    rubric = db.relationship("Rubric", backref="review")
+    rubric = db.relationship("Rubric", backref="review",uselist=False)
 
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
