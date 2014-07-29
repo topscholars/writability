@@ -12,13 +12,13 @@ export default Ember.Component.extend({
 		this.get('category').save();
 	},
 
-	categoryScoreHasChanged: function() {
+	categoryGradeHasChanged: function() {
 		Ember.run.debounce(this, this.saveCategory, autosaveTimout);
-	}.observes('category.score'),
+	}.observes('category.grade'),
 
 	barWidth: function() {
-		return "width: " + this.get('category.score') + "%;";
-	}.property('category.score'),
+		return "width: " + this.get('category.grade') + "%;";
+	}.property('category.grade'),
 
 	selected: function () {
 		return this.get('category.id') === this.get('selectedRubricCategory.id');
@@ -26,13 +26,13 @@ export default Ember.Component.extend({
 
 	actions: {
 		decrement: function () {
-			if (this.get('category.score') >= 10 && this.get('reviewMode')) {
-				this.decrementProperty('category.score', 10);
+			if (this.get('category.grade') >= 10 && this.get('reviewMode')) {
+				this.decrementProperty('category.grade', 10);
 			}
 		},
 		increment: function () {
-			if (this.get('category.score') <= 90 && this.get('reviewMode')) {
-				this.incrementProperty('category.score', 10);
+			if (this.get('category.grade') <= 90 && this.get('reviewMode')) {
+				this.incrementProperty('category.grade', 10);
 			}
 		},
 		select: function () {

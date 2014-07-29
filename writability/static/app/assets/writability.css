@@ -1102,28 +1102,28 @@ input.form-date {
   top: -8px;
   font-size: 40px;
 }
-.rubric-slider .score,
+.rubric-slider .grade,
 .rubric-slider .description {
   padding-top: 3px;
   padding-bottom: 3px;
 }
-.rubric-slider .score {
+.rubric-slider .grade {
   zoom: 1;
   display: table;
   width: 60%;
   float: left;
   position: relative;
 }
-.rubric-slider .score:before {
+.rubric-slider .grade:before {
   content: '';
   display: block;
 }
-.rubric-slider .score:after {
+.rubric-slider .grade:after {
   content: '';
   display: table;
   clear: both;
 }
-.rubric-slider .score button {
+.rubric-slider .grade button {
   font-size: 16px;
   line-height: 16px;
   border: none;
@@ -1132,16 +1132,16 @@ input.form-date {
   position: absolute;
   width: 16px;
 }
-.rubric-slider .score button.decrement {
+.rubric-slider .grade button.decrement {
   left: 0;
 }
-.rubric-slider .score button.increment {
+.rubric-slider .grade button.increment {
   right: 0;
 }
-.rubric-slider .score .bar-container {
+.rubric-slider .grade .bar-container {
   display: table-cell;
 }
-.rubric-slider .score .bar {
+.rubric-slider .grade .bar {
   display: inline-block;
   background: black;
   content: '';
