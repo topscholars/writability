@@ -73,6 +73,15 @@ class Criterion(Tag):   # Tags that a teacher can write an annotation against,
 
 class RubricCategoryRubricAssociations(BaseModel):
     __tablename__ = 'rubric_rubric_category_associations'
+
+    #rubric_category = db.relationship(
+    #    "rubric_category",
+    #    backref=db.backref("rubric_category_associations") )
+
+    #_application_essays = db.relationship(
+    #    "ApplicationEssay",
+    #    secondary=essay_associations,
+    #    backref=db.backref("theme_essays", lazy="dynamic"))
     
     ALLOWED_GRADES = [0,10,20,30,40,50,60,70,80,90,100]
 
