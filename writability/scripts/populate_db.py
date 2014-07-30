@@ -32,7 +32,7 @@ class Populator(object):
 
         f = open(os.path.join(base_dir, self._FILE_PATH), "r")
         file = f.read()
-
+ 
         for obj in self._parse_file_into_objects(file):
             payload = self._construct_payload(obj)
             if payload:
@@ -195,7 +195,8 @@ class CriteriaPopulator(Populator):
                 "tag_type" : tag_type,
                 "category" : category,
                 "description" : description,
-                "super_category" : super_category
+                "super_category" : super_category,
+                "rubriccategory": None
             }
         }
 
@@ -203,6 +204,28 @@ class CriteriaPopulator(Populator):
 
     def _get_title(self, payload):
         return payload["criterion"]["name"]
+
+class RubricCategoryPopulator(Populator):
+
+    _PATH = "rubric_categories"
+    _FILE_PATH = "data/rubric_categories.txt"
+
+    def _construct_payload(self, line):
+        tokens = line.split('\t')
+        name = tokens[0].strip()
+        help_text = tokens[1].strip()
+
+        payload = {
+            "rubriccategory": {
+                "name" : name,
+                "help_text" : help_text
+            }
+        }
+
+        return payload
+
+    def _get_title(self, payload):
+        return payload["rubriccategory"]["name"]
 
 class ThemeEssayTemplatePopulator(Populator):
 
@@ -565,6 +588,7 @@ def populate_db():
     ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
     TagPopulator()
+    RubricCategoryPopulator()
     CriteriaPopulator()
     # custom data
     # delete_users()
@@ -572,7 +596,6 @@ def populate_db():
     DraftPopulator()
     ReviewPopulator()
     AnnotationPopulator()
-
 
 populate_db()
 # TagPopulator()

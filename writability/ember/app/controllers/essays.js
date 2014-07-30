@@ -6,16 +6,17 @@ export default Ember.ArrayController.extend(EssaySortable, {
     selectedEssay: null,
 
     unmergedEssays: Ember.computed.filter('arrangedContent', function(essay) {
+        console.log('computed');
         return (!essay.get('parent'));
-    }),
+    }).property('arrangedContent', 'arrangedContent.length'),
 
     studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('nextActionAwaits') === 'student');
-    }),
+    }).property('unmergedEssays', 'unmergedEssays.length'),
 
     teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('nextActionAwaits') === 'teacher');
-    }),
+    }).property('unmergedEssays', 'unmergedEssays.length'),
 
     actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') !== 'completed');

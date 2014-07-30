@@ -63,22 +63,37 @@ class Criterion(Tag):   # Tags that a teacher can write an annotation against,
     def change_related_objects(self):
         super(Criterion, self).change_related_objects()
         if not RubricCategory.read_by_filter({'name':self.name}):
+            print "NOT loop"
             new_rc_params = {
                 "name": self.name
             }
             new_rc = RubricCategory(**new_rc_params)
+        #import pdb; pdb.set_trace()
         self.rubriccategory = RubricCategory.read_by_filter({'name':self.name})[0]
 
 class RubricCategoryRubricAssociations(BaseModel):
     __tablename__ = 'rubric_rubric_category_associations'
+
+    #rubric_category = db.relationship(
+    #    "rubric_category",
+    #    backref=db.backref("rubric_category_associations") )
+
+    #_application_essays = db.relationship(
+    #    "ApplicationEssay",
+    #    secondary=essay_associations,
+    #    backref=db.backref("theme_essays", lazy="dynamic"))
     
     ALLOWED_GRADES = [0,10,20,30,40,50,60,70,80,90,100]
 
     @validates('grade')
     def validate_grades(self, key, grade):
         """Assert that grade is rounded to 10. 0/10/20../90/100."""
-        assert val in self.ALLOWED_GRADES
+        assert grade in self.ALLOWED_GRADES
         return grade
+
+    rubric_categories = db.relationship(
+        "RubricCategory",
+        backref=db.backref("rubric_category_associations"))
 
     rubric_id = db.Column(
         db.Integer,
