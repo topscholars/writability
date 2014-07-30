@@ -100,11 +100,20 @@ class Draft(StatefulModel):
                         prev_review.rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':0}) )
                         prev_review.rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':0}) )
 
-
                 rub_cats = prev_review.rubric._rubric_categories
-                content_grade = rub_cats.read_by_filter({'name':'Content'})[0].grade
-                impact_grade  = rub_cats.read_by_filter({'name':'Impact'})[0].grade
-                quality_grade = rub_cats.read_by_filter({'name':'Quality'})[0].grade
+
+                # This returns the grades for different categories on this draft's review's rubric's category_grades
+                try:
+                    content_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_content.id})[0].grade
+                    impact_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_impact.id})[0].grade
+                    quality_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_quality.id})[0].grade
+                except:
+                    raise ValueError('RubricCategoryRubricAssociations items are not defined on your previous review!')
+                
+                # Don't work. # content_grade = rub_cats.read_by_filter({'name':'Content'})[0].grade
+                # Don't work. # impact_grade  = rub_cats.read_by_filter({'name':'Impact'})[0].grade
+                # Don't work. # quality_grade = rub_cats.read_by_filter({'name':'Quality'})[0].grade
+
                 # Create new rubric Categories with grades from prior review/rubric
                 rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':content_grade}) )
                 rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':impact_grade}) )
