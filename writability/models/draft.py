@@ -92,13 +92,13 @@ class Draft(StatefulModel):
                 rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':0}) )
             else: # If not first draft, copy old rubric_category assocation grades
                 
-                # For first-time on existing reviews, create rubric_categories
+                # For first-time with previous existing reviews (w/ no rubric), create Rubric & rubric_categories
                 if not prev_review.rubric:
                     prev_review.rubric = Rubric(**new_rubric_params)
                     if not prev_review.rubric._rubric_categories:
-                        prev_review.rubric._rubric_categories.append(**{'name':'Content'} )
-                        prev_review.rubric._rubric_categories.append(**{'name':'Impact'} )
-                        prev_review.rubric._rubric_categories.append(**{'name':'Quality'} )
+                        prev_review.rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':0}) )
+                        prev_review.rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':0}) )
+                        prev_review.rubric._rubric_categories.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':0}) )
 
 
                 rub_cats = prev_review.rubric._rubric_categories
