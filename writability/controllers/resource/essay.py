@@ -6,14 +6,12 @@ This module contains the resource Essay, ThemeEssay, and ApplicationEssay.
 
 """
 from flask import request
-from flask.ext.restful import Resource, fields
-from flask.ext.restful import marshal
+from flask.ext.restful import abort, fields, marshal
 
 from models.essay import Essay, ThemeEssay, ApplicationEssay, EssayStateAssociations
-
 from .base import ResourceManager, ItemResource, ListResource
 from .base import StatefulResourceManager, InvalidUsage
-from .fields import ResourceField, JSONField, ApplicationEssayResourceField
+from .fields import ResourceField, ApplicationEssayResourceField
 import draft
 import theme
 import user
@@ -21,7 +19,6 @@ import essay_template
 
 
 class EssayResourceManager(ResourceManager):
-
     item_resource_name = "essay"
     list_resource_name = "essays"
     model_class = Essay
@@ -51,17 +48,14 @@ class EssayResourceManager(ResourceManager):
 
 
 class EssayResource(ItemResource):
-
     resource_manager_class = EssayResourceManager
 
 
 class EssayListResource(ListResource):
-
     resource_manager_class = EssayResourceManager
 
 
 class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
-
     item_resource_name = "theme_essay"
     list_resource_name = "theme_essays"
     model_class = ThemeEssay
@@ -84,17 +78,14 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
 
 
 class ThemeEssayResource(EssayResource):
-
     resource_manager_class = ThemeEssayResourceManager
 
 
 class ThemeEssayListResource(EssayListResource):
-
     resource_manager_class = ThemeEssayResourceManager
 
 
 class ApplicationEssayResourceManager(EssayResourceManager):
-
     item_resource_name = "application_essay"
     list_resource_name = "application_essays"
     model_class = ApplicationEssay
@@ -110,13 +101,12 @@ class ApplicationEssayResourceManager(EssayResourceManager):
 
 
 class ApplicationEssayResource(EssayResource):
-
     resource_manager_class = ApplicationEssayResourceManager
 
 
 class ApplicationEssayListResource(EssayListResource):
-
     resource_manager_class = ApplicationEssayResourceManager
+
 
 class EssayStateAssociationsManager(StatefulResourceManager):
     item_resource_name = "essaystateassociation"
@@ -130,6 +120,7 @@ class EssayStateAssociationsManager(StatefulResourceManager):
             "application_essay_id": fields.Integer
         })
 
+
 class EssayStateAssociationsResource(ItemResource):
     """
     This resource allows direct updates of the Application Essay states upon clicking
@@ -138,12 +129,10 @@ class EssayStateAssociationsResource(ItemResource):
     resource_manager_class = EssayStateAssociationsManager
 
     def get(self, themeessay_id, appessay_id):
-        # what's the correct way to 404 this?
-        raise NotImplementedError()
+        abort(400, message="Bad Request")
 
     def delete(self, themeessay_id, appessay_id):
-        # what's the correct way to 404 this?
-        raise NotImplementedError()
+        abort(400, message="Bad Request")
 
     def put(self, themeessay_id, appessay_id):
         resource_name = self.resource_manager.item_resource_name
@@ -155,17 +144,17 @@ class EssayStateAssociationsResource(ItemResource):
         # print payload
         try:
             essay_assoc = model_class.read_by_filter({"theme_essay_id": themeessay_id,
-            "application_essay_id" : appessay_id})
+                                                      "application_essay_id": appessay_id})
             assert len(essay_assoc) == 1
             essay_assoc = essay_assoc[0]
-        except:
+        except:  # FIXME: too broad exception
             essay_assoc = None
 
         if essay_assoc:
             # Should return a single state. Validated by the model class.
             # essay_assoc.state = payload
-            item = {resource_name: model_class.update(essay_assoc.application_essay_id,
-                essay_assoc.theme_essay_id, { 'state' : payload })}            
+            item = {resource_name: model_class.update(essay_assoc.application_essay_id, essay_assoc.theme_essay_id,
+                                                      {'state': payload})}
             return marshal(item, item_field)
         else:
             raise InvalidUsage('Did you pass the correct application essay ID in the URL?')
@@ -175,10 +164,10 @@ class EssayStateAssociationsResource(ItemResource):
         Get the JSON body of the request.
         Should be in the form { "appessay_id" : "NEW_STATE" }
 
-        """        
+        """
         json = request.get_json()
-        try:            
+        try:
             payload = json[str(appessay_id)]
-        except:
+        except:  # FIXME: too broad exception
             raise InvalidUsage('Did you pass the correct application essay ID in the request body?')
         return payload
