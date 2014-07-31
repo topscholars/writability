@@ -140,12 +140,10 @@ class EssayStateAssociationsResource(ItemResource):
     def get(self, themeessay_id, appessay_id):
         # what's the correct way to 404 this?
         raise NotImplementedError()
-        return None
 
     def delete(self, themeessay_id, appessay_id):
         # what's the correct way to 404 this?
         raise NotImplementedError()
-        return None
 
     def put(self, themeessay_id, appessay_id):
         resource_name = self.resource_manager.item_resource_name
