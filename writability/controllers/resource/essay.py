@@ -62,6 +62,7 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
 
     def _add_item_fields(self):
         super(ThemeEssayResourceManager, self)._add_item_fields()
+
         self._item_fields.update({
             "proposed_topics": fields.List(fields.String),
             "theme": ResourceField(
@@ -83,6 +84,22 @@ class ThemeEssayResource(EssayResource):
 
 class ThemeEssayListResource(EssayListResource):
     resource_manager_class = ThemeEssayResourceManager
+
+    def get(self):
+        resource_name = self.resource_manager.list_resource_name
+        model_class = self.resource_manager.model_class
+        list_field = self.resource_manager.list_field
+
+        ids = self._get_ids_from_query_params()
+
+        if ids:  # if sent multiple ids then grab the list
+            models = model_class.read_many(ids)
+        else:  # or do a filter
+            query_filters = self._get_query_filters()
+            models = model_class.read_by_filter(query_filters)
+
+        items = {resource_name: models}
+        return marshal(items, list_field)
 
 
 class ApplicationEssayResourceManager(EssayResourceManager):

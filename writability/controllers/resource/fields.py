@@ -3,89 +3,66 @@ controllers.resource.fields
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains custom output fields.
-
 """
+from collections import Iterable
+
 from flask.ext.restful import fields
-from flask import jsonify
 
 
 class ResourceField(fields.Url):
-
     """
     Convert a list (or single item of) Resource to the format for Url
     and then return the Url.
 
     """
-
     def output(self, key, obj):
-        id = None
+        obj_id = None
 
-        # if object is a list get the right key
-        if hasattr(obj, "__iter__"):
-            id = obj[key].id
-            # id = {"id": obj[key].id}
-        # else, just grab the id from the object
-        else:
+        if isinstance(obj, Iterable):  # if object is a list get the right key
+            obj_id = obj[key].id
+        else:  # else, just grab the id from the object
             sub_obj = getattr(obj, key)
             if sub_obj:
-                id = sub_obj.id
-                # id = {"id": sub_obj.id}
+                obj_id = sub_obj.id
 
-        if id:
-            return id
-            # return super(ResourceField, self).output(key, id)
+        if obj_id:
+            return obj_id
         else:
             return None
+
 
 class ApplicationEssayResourceField(fields.Url):
-
     """
     Convert a list (or single item of) Resource to the format for Url
     and then return the Url.
 
     """
-
     def output(self, key, obj):
-        id = None
+        ae_id = None
         state = None
-        import pdb; pdb.set_trace();
-        # theme_essay_id = kwargs[something]
-        
-        # if object is a list get the right key
-        if hasattr(obj, "__iter__"):
-            id = obj[key].id
-            try:
-                for ea in obj[key].essay_associations:
-                    if ea.theme_essay_id == theme_essay_id:
-                        state = ea.state
-            except:
-                pass
-            # id = {"id": obj[key].id}
-        # else, just grab the id from the object
-        else:
+
+        if isinstance(obj, Iterable):  # if object is a list get the right key
+            ae_id = obj[key].id
+            for ea in obj[key].essay_associations:
+                state = ea.theme_essay.state   # TODO: (Mike) discuss it with John
+        else:  # else, just grab the id from the object
             sub_obj = getattr(obj, key)
             if sub_obj:
-                id = sub_obj.id
-                try: 
-                    for ea in sub_obj.essay_associations:
-                        if ea.theme_essay_id == theme_essay_id:
-                            state = ea.state
-                except:
-                    pass
-                # id = {"id": sub_obj.id}
-
-        if id:
-            # how can I make this just one dictionary instead of many in the list????
-            return {id : state}
-            # return super(ResourceField, self).output(key, id)
+                ae_id = sub_obj.id
+                for ea in sub_obj.essay_associations:
+                    state = ea.theme_essay.state   # TODO: (Mike) discuss it with John
+        if ae_id:
+            key = 'appessay_id_%d' % ae_id
+            return {key: state}
         else:
             return None
 
-class JSONField(fields.String):
 
+class JSONField(fields.String):
     """
     Convert a string field to JSON for output.
 
     """
+
     def format(self, value):
         return value
