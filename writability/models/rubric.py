@@ -59,6 +59,15 @@ class Criterion(Tag):   # Tags that a teacher can write an annotation against,
     ##### ADD relationship to RubricCategory 
     rubric_category_id = db.Column(db.Integer, db.ForeignKey('rubric_category.id'))
 
+
+    #__tablename__ = 'criteria'
+    # inheritance
+    __mapper_args__ = {'polymorphic_identity': 'criteria'}
+    # required fields
+    id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+
+
+
     ## Creates rubric categories from criteria
     def change_related_objects(self):
         super(Criterion, self).change_related_objects()

@@ -61,7 +61,6 @@ class RubricCategoryResource(ItemResource):
 
     resource_manager_class = RubricCategoryResourceManager
 
-
 class RubricCategoryListResource(ListResource):
 
     resource_manager_class = RubricCategoryResourceManager
@@ -71,6 +70,8 @@ class CriterionResourceManager(annotation.TagResourceManager):
     item_resource_name = "criterion"
     list_resource_name = "criteria"
     model_class = Criterion
+
+    # RETURN ONLY TAGS WHERE rubriccategory != NULL or supercategory==TRUE
 
     def _add_item_fields(self):
         super(CriterionResourceManager, self)._add_item_fields()
