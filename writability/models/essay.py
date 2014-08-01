@@ -88,6 +88,7 @@ class ThemeEssay(StatefulModel, Essay):
 
     # optional fields
     proposed_topics = db.Column(SerializableStringList, default=["", ""])
+    is_displayed = db.Column(db.Boolean, default=True)
 
     # relationships
     theme_id = db.Column(db.Integer, db.ForeignKey("theme.id"))
@@ -207,6 +208,7 @@ class ApplicationEssay(Essay):
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     # optional fields
+    is_displayed = db.Column(db.Boolean, default=False)
 
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
@@ -227,6 +229,12 @@ class ApplicationEssay(Essay):
         self.max_words = app_essay_template.max_words
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
+
+    @property
+    def next_action(self):
+        """Return next action to be taken on essay."""
+        curr_draft = self.current_draft
+        return "Complete" if curr_draft.is_final_draft else "Error"
 
 class EssayStateAssociations(StatefulModel):
     __tablename__ = 'essay_associations'

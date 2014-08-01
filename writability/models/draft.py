@@ -9,6 +9,7 @@ the Student writes.
 import review, essay
 from .db import db
 from .base import StatefulModel
+from .essay import EssayStateAssociations
 
 
 class Draft(StatefulModel):
@@ -23,13 +24,17 @@ class Draft(StatefulModel):
     formatted_text = db.Column(db.String)
     word_count = db.Column(db.Integer)
     due_date = db.Column(db.Date)
-    is_final_draft = db.Column(db.Boolean, default=False)
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
 
     #non_tag master 
     review = db.relationship("Review", backref="draft", uselist=False)
+
+    @property
+    def is_final_draft(self):
+        this_essay = essay.Essay.read(self.essay_id)
+        return len(this_essay.drafts) >= this_essay.num_of_drafts
     
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
@@ -63,7 +68,19 @@ class Draft(StatefulModel):
                 "annotations": ann_list
             }
 
-            self.review = review.Review(**new_review_params)  ####********* This is likely obsolete.  ****#######
+            self.review = review.Review(**new_review_params)  # FIXME: This is likely obsolete
+        elif self.state == "reviewed" and self.is_final_draft:
+            """
+            When a final draft is accepted on a Theme Essay, all of the Application Essays marked "selected" for that
+            Theme Essay or any of its merged_theme_essays should show up in the Essays list (have is_displayed set to
+            True), and the Theme Essay should be hidden (is_displayed set to False). The most recent Draft and Review
+            objects should be copied into these Application Essays the same way they are for each new Draft currently
+            (including Annotations, etc). However, the old Theme Essay should NOT get these copied objects.
+            """
+            for esa in EssayStateAssociations.read_by_filter({'application_essay_id': self.essay_id}):
+                esa.state = "selected"
+                esa.application_essay.is_displayed = True
+                esa.theme_essay.is_displayed = False
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
