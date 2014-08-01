@@ -582,20 +582,20 @@ def delete_users():
 
 def populate_db():
     # predefined
-    RolePopulator()
-    UniversityPopulator()
-    ThemePopulator()
-    ThemeEssayTemplatePopulator()
-    ApplicationEssayTemplatePopulator()
-    TagPopulator()
+    # RolePopulator()
+    # UniversityPopulator()
+    # ThemePopulator()
+    # ThemeEssayTemplatePopulator()
+    # ApplicationEssayTemplatePopulator()
+    # TagPopulator()
     RubricCategoryPopulator()
     CriteriaPopulator()
     # custom data
     # delete_users()
-    UserPopulator()
-    DraftPopulator()
-    ReviewPopulator()
-    AnnotationPopulator()
+    # UserPopulator()
+    # DraftPopulator()
+    # ReviewPopulator()
+    # AnnotationPopulator()
 
 populate_db()
 # TagPopulator()

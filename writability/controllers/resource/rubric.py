@@ -7,11 +7,11 @@ This module contains the resource Rubric.
 """
 from flask.ext.restful import fields
 
-from models.rubric import Rubric, RubricCategory, Criterion
+from models.rubric import Rubric, RubricCategory, Criterion, RubricCategoryRubricAssociations
 import review, annotation
 
 from .base import ResourceManager, ItemResource, ListResource
-from .fields import ResourceField
+from .fields import ResourceField, RubricCategoryResourceField
 
 
 class RubricResourceManager(ResourceManager):
@@ -27,7 +27,7 @@ class RubricResourceManager(ResourceManager):
             "review": ResourceField(
                 review.ReviewResourceManager.item_resource_name,
                 absolute=True),
-            "categories": fields.List(ResourceField(
+            "rubric_categories": fields.List(RubricCategoryResourceField(
                 RubricCategoryResourceManager.item_resource_name,
                 absolute=True))
         })
@@ -39,6 +39,27 @@ class RubricResource(ItemResource):
 class RubricListResource(ListResource):
 
     resource_manager_class = RubricResourceManager
+
+class RubricCategoryRubricAssociationsResourceManager(ResourceManager):
+
+    item_resource_name = "rubric_association"
+    list_resource_name = "rubric_associations"
+    model_class = Rubric
+
+    def _add_item_fields(self):
+        super(RubricCategoryRubricAssociationsResourceManager, self)._add_item_fields()
+        self._item_fields.update({
+            "rubric_category_id": fields.Integer,
+            "grade": fields.Integer
+        })
+
+class RubricCategoryRubricAssociationsResource(ItemResource):
+
+    resource_manager_class = RubricCategoryRubricAssociationsResourceManager
+
+class RubricCategoryRubricAssociationsListResource(ListResource):
+
+    resource_manager_class = RubricCategoryRubricAssociationsResourceManager
 
 class RubricCategoryResourceManager(ResourceManager):
 

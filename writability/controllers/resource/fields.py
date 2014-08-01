@@ -7,7 +7,8 @@ This module contains custom output fields.
 """
 from flask.ext.restful import fields
 from flask import jsonify
-
+from collections import Iterable
+from models.rubric import RubricCategory
 
 class ResourceField(fields.Url):
 
@@ -34,6 +35,27 @@ class ResourceField(fields.Url):
         if id:
             return id
             # return super(ResourceField, self).output(key, id)
+        else:
+            return None
+
+class RubricCategoryResourceField(fields.Url):
+
+    def output(self, key, obj):
+        rc_id = None
+        grade = None
+
+        if isinstance(obj, Iterable):  # if object is a list get the right key
+            rc_id = obj[key].id
+            for ea in obj[key].rubric_associations:
+                grade = ea.grade   # TODO: (Mike) discuss it with John
+        else:  # else, just grab the id from the object
+            sub_obj = getattr(obj, key)
+            if sub_obj:
+                rc_id = sub_obj.id
+                for ea in sub_obj.rubric_associations:
+                    grade = ea.grade   # TODO: (Mike) discuss it with John
+        if rc_id:
+            return dict(rubric_category=RubricCategory.read(rc_id).name, grade=grade)
         else:
             return None
 

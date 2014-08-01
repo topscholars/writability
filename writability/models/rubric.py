@@ -11,6 +11,7 @@ from .db import db
 from .base import BaseModel
 # from sqlalchemy.orm import validates
 from annotation import Tag
+from sqlalchemy.ext.associationproxy import association_proxy
 
 class Rubric(BaseModel):
     __tablename__ = 'rubric'
@@ -29,9 +30,11 @@ class Rubric(BaseModel):
     #    uselist=True) 
 
 
-    _rubric_categories = db.relationship(
+    rubric_associations = db.relationship(
         "RubricCategoryRubricAssociations",
         backref=db.backref("rubric"))
+
+    rubric_categories = association_proxy('rubric_associations', 'rubric_category')
 
     # optional fields
     name = db.Column(db.String)
@@ -100,9 +103,9 @@ class RubricCategoryRubricAssociations(BaseModel):
         assert grade in self.ALLOWED_GRADES
         return grade
 
-    rubric_categories = db.relationship(
+    rubric_category = db.relationship(
         "RubricCategory",
-        backref=db.backref("rubric_category_associations"))
+        backref=db.backref("rubric_associations"))
 
     rubric_id = db.Column(
         db.Integer,
