@@ -63,8 +63,8 @@ class RubricCategoryRubricAssociationsListResource(ListResource):
 
 class RubricCategoryResourceManager(ResourceManager):
 
-    item_resource_name = "rubriccategory"
-    list_resource_name = "rubriccategories"
+    item_resource_name = "rubric-category"
+    list_resource_name = "rubric-categories"
     model_class = RubricCategory
 
     def _add_item_fields(self):
@@ -97,7 +97,7 @@ class CriterionResourceManager(annotation.TagResourceManager):
     def _add_item_fields(self):
         super(CriterionResourceManager, self)._add_item_fields()
         self._item_fields.update({
-            "rubriccategory": ResourceField(
+            "rubric-category": ResourceField(
                 RubricCategoryResourceManager.item_resource_name,
                 absolute=True)
         })
