@@ -1,12 +1,13 @@
 import DS from 'ember-data';
-import FixtureData from 'writability/fixtures/rubric-criterion';
+//import FixtureData from 'writability/fixtures/rubric-criterion';
 
-var RubricCategory = DS.Model.extend({
+var Criterion = DS.Model.extend({
 	description: DS.attr()
+  //rubric_category: DS.attr()
 });
 
-RubricCategory.reopenClass({
-	FIXTURES: FixtureData
-});
+//RubricCategory.reopenClass({
+//	FIXTURES: FixtureData
+//});
 
-export default RubricCategory;
+export default Criterion;
