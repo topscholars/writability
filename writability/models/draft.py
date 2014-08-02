@@ -107,25 +107,17 @@ class Draft(StatefulModel):
                     content_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_content.id})[0].grade
                     impact_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_impact.id})[0].grade
                     quality_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_quality.id})[0].grade
-                except:
-                    raise ValueError('RubricCategoryRubricAssociations items are not defined on your previous review!')
-                
-                # Don't work. # content_grade = rub_cats.read_by_filter({'name':'Content'})[0].grade
-                # Don't work. # impact_grade  = rub_cats.read_by_filter({'name':'Impact'})[0].grade
-                # Don't work. # quality_grade = rub_cats.read_by_filter({'name':'Quality'})[0].grade
-
+                except: # Sets RubricCategoryRubricAssociations grades if RCRAs are not defined on previous review
+                    content_grade = 10
+                    impact_grade = 10
+                    quality_grade = 10
+                    
                 # Create new rubric Categories with grades from prior review/rubric
                 rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':content_grade}) )
                 rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':impact_grade}) )
                 rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':quality_grade}) )
             
             db.session.commit()
-            #rubric.RubricCategoryRubricAssociations.append(rubric.RubricCategoryRubricAssociations)
- 
-           # Create rubric + rubric_category joins with Grade Data
-
-            # Create rubric here
-            # Include copying grade to new join table objects
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
