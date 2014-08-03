@@ -28,7 +28,7 @@ from resource.role import RoleListResource, RoleResource
 from resource.annotation import AnnotationResource, AnnotationListResource, TagResource, TagListResource
 from resource.add_universities import AddUniversitiesResource
 from resource.rubric import RubricListResource, RubricResource, RubricCategoryResource, RubricCategoryListResource, CriterionResource, CriterionListResource
-
+from resource.rubric import RubricCategoryRubricAssociationsResource
 
 def add_resource_with_endpoint(api, resource_class, path):
     """Help add a resource by standardizing the external interation."""
@@ -160,5 +160,7 @@ def initialize(app, api_prefix):
     add_resource_with_endpoint(api, RubricCategoryListResource, "/rubric_categories")
     add_resource_with_endpoint(api, RubricCategoryResource, "/rubric_categories/<int:id>")
 
+    api.add_resource(RubricCategoryRubricAssociationsResource,
+        "/set-grade/<int:rubric_id>/<int:rubric_category_id>")
 
 

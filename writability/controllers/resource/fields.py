@@ -38,26 +38,59 @@ class ResourceField(fields.Url):
         else:
             return None
 
-class RubricCategoryResourceField(fields.Url):
 
+class RubricAssocationResourceField(fields.Url):
+    """
+    Fuckery specifically for Rubric API
+
+    """
     def output(self, key, obj):
-        rc_id = None
+        rub_id = None
+        rub_cat_id = None
         grade = None
 
-        if isinstance(obj, Iterable):  # if object is a list get the right key
-            rc_id = obj[key].id
-            for ea in obj[key].rubric_associations:
-                grade = ea.grade   # TODO: (Mike) discuss it with John
-        else:  # else, just grab the id from the object
+        # if object is a list get the right key
+        if hasattr(obj, "__iter__"):
+            rub_id = obj[key].rubric_id
+            rub_cat_id = obj[key].rubric_category_id
+            grade = obj[key].grade
+
+            # id = {"id": obj[key].id}
+        # else, just grab the id from the object
+        else:
             sub_obj = getattr(obj, key)
             if sub_obj:
-                rc_id = sub_obj.id
-                for ea in sub_obj.rubric_associations:
-                    grade = ea.grade   # TODO: (Mike) discuss it with John
-        if rc_id:
-            return dict(rubric_category=RubricCategory.read(rc_id).name, grade=grade)
+                rub_id = sub_obj.rubric_id
+                rub_cat_id = sub_obj.rubric_category_id
+                grade = sub_obj.grade
+
+        if rub_id and rub_cat_id:
+            return dict(rubric_category_id=rub_cat_id, grade=grade)
+            # return super(ResourceField, self).output(key, id)
         else:
             return None
+
+# Maybe?
+# class RubricCategoryResourceField(fields.Url):
+
+#     def output(self, key, obj):
+#         rc_id = None
+#         grade = None
+
+#         if isinstance(obj, Iterable):  # if object is a list get the right key
+#             rc_id = obj[key].id
+#             for ea in obj[key].rubric_associations:
+#                 grade = ea.grade   # TODO: (Mike) discuss it with John
+#         else:  # else, just grab the id from the object
+#             sub_obj = getattr(obj, key)
+#             if sub_obj:
+#                 rc_id = sub_obj.id
+#                 for ea in sub_obj.rubric_associations:
+#                     grade = ea.grade   # TODO: (Mike) discuss it with John
+#         if rc_id:
+#             return dict(rubric_category=RubricCategory.read(rc_id).name, grade=grade)
+#         else:
+#             return None
 
 class JSONField(fields.String):
 

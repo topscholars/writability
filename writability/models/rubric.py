@@ -42,33 +42,6 @@ class Rubric(BaseModel):
     # relationships
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
 
-    @classmethod
-    def update(class_, id, updated_dict):
-        model = class_.read(id)
-        db.session.add(model)
-
-        prepared_dict = class_._replace_resource_ids_with_models(updated_dict)
-        model.process_before_update(prepared_dict)
-        for k, v in prepared_dict.items():
-            # only update attributes that have changed
-            try:
-                if getattr(model, k) != v:
-                    if k == 'rubric_categories':
-                        for rc_update in v:
-                            try:
-                                rc = RubricCategory.read_by_filter({'name' : rc_update['rubric_category']})[0]
-                                ra = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':id,'rubric_category_id':rc.id})[0]
-                                ra.grade = rc_update['grade']
-                            except:
-                                pass
-                    else:
-                        setattr(model, k, v)
-            except AttributeError:
-                setattr(model, k, v)
-
-        model.change_related_objects()
-        db.session.commit()
-        return model
 
 class RubricCategory(BaseModel): # Impact, Content, and Quality.
     __tablename__ = 'rubric_category'
@@ -144,3 +117,22 @@ class RubricCategoryRubricAssociations(BaseModel):
         db.ForeignKey("rubric_category.id"),
         primary_key=True)
     grade = db.Column(db.Integer, default=0)
+
+    @classmethod
+    def update(class_, rubric_id, rubric_category_id, updated_dict):
+        model = class_.read_by_filter({'rubric_id':rubric_id, 'rubric_category_id':rubric_category_id})[0]
+        db.session.add(model)
+
+        prepared_dict = class_._replace_resource_ids_with_models(updated_dict)
+        model.process_before_update(prepared_dict)
+        for k, v in prepared_dict.items():
+            # only update attributes that have changed
+            try:
+                if getattr(model, k) != v:
+                    setattr(model, k, v)
+            except AttributeError:
+                setattr(model, k, v)
+
+        model.change_related_objects()
+        db.session.commit()
+        return model
