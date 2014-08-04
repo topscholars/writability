@@ -32,7 +32,7 @@ class Populator(object):
 
         f = open(os.path.join(base_dir, self._FILE_PATH), "r")
         file = f.read()
- 
+
         for obj in self._parse_file_into_objects(file):
             payload = self._construct_payload(obj)
             if payload:
@@ -581,22 +581,31 @@ def delete_users():
 
 
 def populate_db():
-  ## For deploy Aug 2
-  #  # predefined
-  #  RolePopulator()
-  #  UniversityPopulator()
-  #  ThemePopulator()
-  #  ThemeEssayTemplatePopulator()
-  #  ApplicationEssayTemplatePopulator()
-  #  TagPopulator()
     RubricCategoryPopulator()
     CriteriaPopulator()
-  #  # custom data
-  #  # delete_users()
-  #  UserPopulator()
-  #  DraftPopulator()
-  #  ReviewPopulator()
-  #  AnnotationPopulator()
+
+def populate_test_data():
+    ## For deploy Aug 2
+    #  # predefined
+    RolePopulator()
+    UniversityPopulator()
+    ThemePopulator()
+    ThemeEssayTemplatePopulator()
+    ApplicationEssayTemplatePopulator()
+    TagPopulator()
+    #  # custom data
+    delete_users()
+    UserPopulator()
+    #  DraftPopulator()
+    #  ReviewPopulator()
+    #  AnnotationPopulator()
 
 populate_db()
+
+import sys
+
+for arg in sys.argv:
+    if arg in ('--dev'):
+        populate_test_data()
+
 # TagPopulator()
