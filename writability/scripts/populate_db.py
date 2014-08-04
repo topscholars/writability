@@ -207,7 +207,7 @@ class CriteriaPopulator(Populator):
 
 class RubricCategoryPopulator(Populator):
 
-    _PATH = "rubric_categories"
+    _PATH = "rubric-categories"
     _FILE_PATH = "data/rubric_categories.txt"
 
     def _construct_payload(self, line):
@@ -216,7 +216,7 @@ class RubricCategoryPopulator(Populator):
         help_text = tokens[1].strip()
 
         payload = {
-            "rubriccategory": {
+            "rubric-category": {
                 "name" : name,
                 "help_text" : help_text
             }
@@ -225,7 +225,7 @@ class RubricCategoryPopulator(Populator):
         return payload
 
     def _get_title(self, payload):
-        return payload["rubriccategory"]["name"]
+        return payload["rubric-category"]["name"]
 
 class ThemeEssayTemplatePopulator(Populator):
 
