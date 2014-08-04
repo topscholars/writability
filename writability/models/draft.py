@@ -9,7 +9,6 @@ the Student writes.
 import review, essay
 from .db import db
 from .base import StatefulModel
-from .essay import EssayStateAssociations
 
 
 class Draft(StatefulModel):
@@ -44,6 +43,8 @@ class Draft(StatefulModel):
 
     def change_related_objects(self):
         """Change any related objects before commit."""
+        from .essay import EssayStateAssociations
+
         super(Draft, self).change_related_objects()
 
         if self.state == "in_progress" and self.review is None:

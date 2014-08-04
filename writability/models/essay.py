@@ -10,17 +10,15 @@ Essays have a series of Drafts that the Student writes.
 
 """
 from sqlalchemy.orm import validates
+from sqlalchemy.ext.associationproxy import association_proxy
 
-import draft
 from .db import db
 from .base import BaseModel, StatefulModel
 from .fields import SerializableStringList
-# from .relationships import essay_associations
-from sqlalchemy.ext.associationproxy import association_proxy
+from .draft import Draft
 
 
 class Essay(BaseModel):
-
     # required fields
     id = db.Column(db.Integer, primary_key=True)
     essay_prompt = db.Column(db.String, nullable=False)
@@ -73,40 +71,8 @@ class Essay(BaseModel):
         # import pdb; pdb.set_trace()
         return self.current_draft.due_date
 
-    @property
-    def next_action(self):
-        """Return next action to be taken on essay."""
-        drafts = self.drafts
-        existing_drafts = self.existing_drafts
-        num_of_drafts = self.num_of_drafts
-        curr_draft = self.current_draft
-        s = curr_draft.state if curr_draft else None
-        # chokes when no curr_draft
-        action = "ERROR"
-        # if self.proposed_topics[0] or self.proposed_topics[1]:
-        if self.state == "new":
-            action = "Add Topics"
-        elif self.state == "added_topics":  # State change may need added
-            action = "Approve Topic"
-        elif self.state == "in_progress":
-            if existing_drafts != 0 and existing_drafts < num_of_drafts:
-                if (s == "new") or (s == "in_progress"):
-                    action = "Write"
-                elif s == "submitted":
-                    action = "Review"
-                return "%s Draft %d / %d" % (
-                    action,
-                    existing_drafts,
-                    num_of_drafts)
-        elif curr_draft.is_final_draft and s == "reviewed":
-            action = "Complete"
-        else:
-            action = "Error"
-        return action
-
 
 class ThemeEssay(StatefulModel, Essay):
-
     __tablename__ = "theme_essay"
 
     _STATES = ["new", "added_topics", "in_progress", "completed"]
@@ -172,7 +138,7 @@ class ThemeEssay(StatefulModel, Essay):
                 "essay": self
             }
 
-            self.drafts.append(draft.Draft(**new_draft_params))
+            self.drafts.append(Draft(**new_draft_params))
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
@@ -197,9 +163,39 @@ class ThemeEssay(StatefulModel, Essay):
     def existing_drafts(self):
         return len(self.drafts)
 
+    @property
+    def next_action(self):
+        """Return next action to be taken on essay."""
+        drafts = self.drafts
+        existing_drafts = self.existing_drafts
+        num_of_drafts = self.num_of_drafts
+        curr_draft = self.current_draft
+        s = curr_draft.state if curr_draft else None
+        # chokes when no curr_draft
+        action = "ERROR"
+        # if self.proposed_topics[0] or self.proposed_topics[1]:
+        if self.state == "new":
+            action = "Add Topics"
+        elif self.state == "added_topics":  # State change may need added
+            action = "Approve Topic"
+        elif self.state == "in_progress":
+            if existing_drafts != 0 and existing_drafts < num_of_drafts:
+                if (s == "new") or (s == "in_progress"):
+                    action = "Write"
+                elif s == "submitted":
+                    action = "Review"
+                return "%s Draft %d / %d" % (
+                    action,
+                    existing_drafts,
+                    num_of_drafts)
+        elif curr_draft.is_final_draft and s == "reviewed":
+            action = "Complete"
+        else:
+            action = "Error"
+        return action
+
 
 class ApplicationEssay(Essay):
-
     # inheritance
     __tablename__ = "application_essay"
     __mapper_args__ = {'polymorphic_identity': 'application_essay'}
@@ -230,17 +226,23 @@ class ApplicationEssay(Essay):
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
 
+    @property
+    def next_action(self):
+        """Return next action to be taken on essay."""
+        curr_draft = self.current_draft
+        return "Complete" if curr_draft.is_final_draft else "Error"
+
 
 class EssayStateAssociations(StatefulModel):
     __tablename__ = 'essay_associations'
-    #__table_args__ = {'extend_existing': True} #Because table is defined in relationships.py
-    
-    _STATES = ["selected","not_selected","pending"]
+    # __table_args__ = {'extend_existing': True} #Because table is defined in relationships.py
+
+    _STATES = ["selected", "not_selected", "pending"]
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {
-            "pending": ["selected","not_selected"],
+            "pending": ["selected", "not_selected"],
             "selected": ["not_selected"],
             "not_selected": ["selected"]
         }
@@ -281,7 +283,7 @@ class EssayStateAssociations(StatefulModel):
 
     application_essay = db.relationship(
         "ApplicationEssay",
-        backref=db.backref("essay_associations")) #, lazy="dynamic" -> removed
+        backref=db.backref("essay_associations"))  #, lazy="dynamic" -> removed
     # theme_essay: don't explicitly declare it but it's here'
 
     # this needs to be a list?
@@ -307,6 +309,6 @@ class EssayStateAssociations(StatefulModel):
         # when an app essay is marked selected for this theme essay, mark the app essay 
         # 'not_selected' for all other theme essays
         if self.state == "selected":
-            for esa in EssayStateAssociations.read_by_filter({'application_essay_id' : self.application_essay_id}):
+            for esa in EssayStateAssociations.read_by_filter({'application_essay_id': self.application_essay_id}):
                 if esa.theme_essay_id != self.theme_essay_id:
                     esa.state = "not_selected"
