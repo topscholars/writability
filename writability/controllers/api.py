@@ -157,10 +157,8 @@ def initialize(app, api_prefix):
     add_resource_with_endpoint(api, RubricResource, "/rubrics/<int:id>")
     add_resource_with_endpoint(api, CriterionListResource, "/criteria")
     add_resource_with_endpoint(api, CriterionResource, "/criteria/<int:id>")
-    add_resource_with_endpoint(api, RubricCategoryListResource, "/rubric_categories")
-    add_resource_with_endpoint(api, RubricCategoryResource, "/rubric_categories/<int:id>")
+    add_resource_with_endpoint(api, RubricCategoryListResource, "/rubric-categories")
+    add_resource_with_endpoint(api, RubricCategoryResource, "/rubric-categories/<int:id>")
 
     api.add_resource(RubricCategoryRubricAssociationsResource,
-        "/set-grade/<int:rubric_id>/<int:rubric_category_id>")
-
-
+        "/rubric-association/<int:rubric_id>-<int:rubric_category_id>")

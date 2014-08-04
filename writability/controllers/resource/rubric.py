@@ -48,8 +48,9 @@ class RubricCategoryRubricAssociationsResourceManager(ResourceManager):
     model_class = RubricCategoryRubricAssociations
 
     def _add_item_fields(self):
-        super(RubricCategoryRubricAssociationsResourceManager, self)._add_item_fields()
+        # super(RubricCategoryRubricAssociationsResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "id": fields.String,
             "rubric_category_id": fields.Integer,
             "rubric_id": fields.Integer,
             "grade": fields.Integer
@@ -77,7 +78,10 @@ class RubricCategoryRubricAssociationsResource(ItemResource):
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
-        grade = self._get_payload()
+        payload = self._get_payload()
+
+        grade = payload["grade"]
+        id = payload["id"]
 
         try:            
             rubric_association = model_class.read_by_filter({'rubric_id':rubric_id,'rubric_category_id':rubric_category_id})[0]
@@ -85,7 +89,7 @@ class RubricCategoryRubricAssociationsResource(ItemResource):
             rubric_association = None
 
         if rubric_association:
-            item = {resource_name: model_class.update(rubric_id, rubric_category_id, { 'grade' : grade })}            
+            item = {resource_name: model_class.update(rubric_id, rubric_category_id, { 'id':id, 'grade' : grade })}            
             return marshal(item, item_field)
         else:
             raise InvalidUsage('Rubric association does not exist.')
@@ -93,12 +97,18 @@ class RubricCategoryRubricAssociationsResource(ItemResource):
     def _get_payload(self):
         """
         Get the JSON body of the request.
-        Should be in the form { "grade" : grade }
+        Should be in the form
+        { "rubric_association" :
+            {
+                "id" : "2_7",
+                "grade": 80
+            }
+        }
 
         """        
         json = request.get_json()
         try:            
-            payload = json[str("grade")]
+            payload = json[self.resource_manager.item_resource_name]
         except:
             raise InvalidUsage('Did you pass grade correctly?')
         return payload

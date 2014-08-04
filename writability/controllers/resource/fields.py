@@ -48,13 +48,14 @@ class RubricAssocationResourceField(fields.Url):
         rub_id = None
         rub_cat_id = None
         grade = None
+        id=None
 
         # if object is a list get the right key
         if hasattr(obj, "__iter__"):
             rub_id = obj[key].rubric_id
             rub_cat_id = obj[key].rubric_category_id
             grade = obj[key].grade
-
+            id = str(rub_id)+'-'+str(rub_cat_id)
             # id = {"id": obj[key].id}
         # else, just grab the id from the object
         else:
@@ -63,9 +64,10 @@ class RubricAssocationResourceField(fields.Url):
                 rub_id = sub_obj.rubric_id
                 rub_cat_id = sub_obj.rubric_category_id
                 grade = sub_obj.grade
+                id = str(rub_id)+'-'+str(rub_cat_id)
 
         if rub_id and rub_cat_id:
-            return dict(rubric_category_id=rub_cat_id, grade=grade)
+            return dict(id=id,rubric_category_id=rub_cat_id, grade=grade)
             # return super(ResourceField, self).output(key, id)
         else:
             return None
