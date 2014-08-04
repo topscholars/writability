@@ -73,6 +73,37 @@ class Essay(BaseModel):
         # import pdb; pdb.set_trace()
         return self.current_draft.due_date
 
+    @property
+    def next_action(self):
+        """Return next action to be taken on essay."""
+        drafts = self.drafts
+        existing_drafts = self.existing_drafts
+        num_of_drafts = self.num_of_drafts
+        curr_draft = self.current_draft
+        s = curr_draft.state if curr_draft else None
+        # chokes when no curr_draft
+        action = "ERROR"
+        # if self.proposed_topics[0] or self.proposed_topics[1]:
+        if self.state == "new":
+            action = "Add Topics"
+        elif self.state == "added_topics":  # State change may need added
+            action = "Approve Topic"
+        elif self.state == "in_progress":
+            if existing_drafts != 0 and existing_drafts < num_of_drafts:
+                if (s == "new") or (s == "in_progress"):
+                    action = "Write"
+                elif s == "submitted":
+                    action = "Review"
+                return "%s Draft %d / %d" % (
+                    action,
+                    existing_drafts,
+                    num_of_drafts)
+        elif curr_draft.is_final_draft and s == "reviewed":
+            action = "Complete"
+        else:
+            action = "Error"
+        return action
+
 
 class ThemeEssay(StatefulModel, Essay):
 
@@ -166,37 +197,6 @@ class ThemeEssay(StatefulModel, Essay):
     def existing_drafts(self):
         return len(self.drafts)
 
-    @property
-    def next_action(self):
-        """Return next action to be taken on essay."""
-        drafts = self.drafts
-        existing_drafts = self.existing_drafts
-        num_of_drafts = self.num_of_drafts
-        curr_draft = self.current_draft
-        s = curr_draft.state if curr_draft else None
-        # chokes when no curr_draft
-        action = "ERROR"
-        # if self.proposed_topics[0] or self.proposed_topics[1]:
-        if self.state == "new":
-            action = "Add Topics"
-        elif self.state == "added_topics":  # State change may need added
-            action = "Approve Topic"
-        elif self.state == "in_progress":
-            if existing_drafts != 0 and existing_drafts < num_of_drafts:
-                if (s == "new") or (s == "in_progress"):
-                    action = "Write"
-                elif s == "submitted":
-                    action = "Review"
-                return "%s Draft %d / %d" % (
-                    action,
-                    existing_drafts,
-                    num_of_drafts)
-        elif curr_draft.is_final_draft and s == "reviewed":
-            action = "Complete"
-        else:
-            action = "Error"
-        return action
-
 
 class ApplicationEssay(Essay):
 
@@ -230,11 +230,6 @@ class ApplicationEssay(Essay):
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
 
-    @property
-    def next_action(self):
-        """Return next action to be taken on essay."""
-        curr_draft = self.current_draft
-        return "Complete" if curr_draft.is_final_draft else "Error"
 
 class EssayStateAssociations(StatefulModel):
     __tablename__ = 'essay_associations'
