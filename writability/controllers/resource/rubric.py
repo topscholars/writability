@@ -115,8 +115,8 @@ class RubricCategoryRubricAssociationsResource(ItemResource):
 
 class RubricCategoryResourceManager(ResourceManager):
 
-    item_resource_name = "rubric_category"
-    list_resource_name = "rubric_categories"
+    item_resource_name = "rubric-category"
+    list_resource_name = "rubric-categories"
     model_class = RubricCategory
 
     def _add_item_fields(self):
