@@ -600,12 +600,12 @@ def populate_test_data():
     #  ReviewPopulator()
     #  AnnotationPopulator()
 
-populate_db()
-
 import sys
 
 for arg in sys.argv:
     if arg in ('--dev'):
         populate_test_data()
+
+populate_db()
 
 # TagPopulator()
