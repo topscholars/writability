@@ -17,5 +17,7 @@ export default DS.Model.extend({
 
     // relationships
     draft: DS.belongsTo('draft'),
-    teacher: DS.belongsTo('teacher')
+    teacher: DS.belongsTo('teacher'),
+
+    rubric: DS.belongsTo('rubric')
 });

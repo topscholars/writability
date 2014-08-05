@@ -13,6 +13,7 @@
     "ember-load-initializers": "stefanpenner/ember-load-initializers#0.0.2",
     "ember-qunit-notifications": "^0.0.3",
     "ember-cli-test-loader": "rjackson/ember-cli-test-loader#0.0.2",
+    "ember-data": "components/ember-data#canary",
 
     "modernizr": "~2.7.2",
     "bootstrap": "~3.1.1",
@@ -22,5 +23,8 @@
     "select2": "*",
     "entypo": "*",
     "pickadate": "~3.5.2"
+  },
+  "resolutions": {
+    "ember-data": "canary"
   }
 }

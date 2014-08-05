@@ -43,6 +43,16 @@ var extraAssets = pickFiles(app.trees.vendor.dir,{
     destDir: '/libs'
 });
 
+var fonts = pickFiles(app.trees.vendor.dir,{
+    srcDir: '/',
+    files: [
+		'entypo/font/entypo.*'
+    ],
+    destDir: '/assets'
+});
+
+fonts = flatten(fonts, {destDir: '/assets'});
+
 // This combines the output of Ember CLI
 // and the extraAssets file picking
-module.exports = mergeTrees([app.toTree(), extraAssets]);
+module.exports = mergeTrees([app.toTree(), extraAssets, fonts]);

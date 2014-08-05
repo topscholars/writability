@@ -32,6 +32,7 @@ class Review(StatefulModel):
     # relationships
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     annotations = db.relationship("Annotation", backref="review")
+    rubric = db.relationship("Rubric", backref="review",uselist=False)
 
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
@@ -46,6 +47,8 @@ class Review(StatefulModel):
         return review_type
 
     def change_related_objects(self):
+        # Create new rubric object and associate it with this review
+        # This creates a draft, then draft creats a new review and its associated rubric
         super(Review, self).change_related_objects()
 
         if self.state == "completed":

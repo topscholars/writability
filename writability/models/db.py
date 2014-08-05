@@ -67,3 +67,4 @@ from user import User, Invitation
 from role import Role
 from review import Review
 from annotation import Annotation, Tag
+from rubric import Rubric, RubricCategory, RubricCategoryRubricAssociations
