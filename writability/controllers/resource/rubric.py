@@ -81,15 +81,15 @@ class RubricCategoryRubricAssociationsResource(ItemResource):
         payload = self._get_payload()
 
         grade = payload["grade"]
-        id = payload["id"]
+        id = str(rubric_id)+'-'+str(rubric_category_id)
 
-        try:            
+        try:
             rubric_association = model_class.read_by_filter({'rubric_id':rubric_id,'rubric_category_id':rubric_category_id})[0]
         except:
             rubric_association = None
 
         if rubric_association:
-            item = {resource_name: model_class.update(rubric_id, rubric_category_id, { 'id':id, 'grade' : grade })}            
+            item = {resource_name: model_class.update(rubric_id, rubric_category_id, { 'id':id, 'grade' : grade })}
             return marshal(item, item_field)
         else:
             raise InvalidUsage('Rubric association does not exist.')
@@ -105,9 +105,9 @@ class RubricCategoryRubricAssociationsResource(ItemResource):
             }
         }
 
-        """        
+        """
         json = request.get_json()
-        try:            
+        try:
             payload = json[self.resource_manager.item_resource_name]
         except:
             raise InvalidUsage('Did you pass grade correctly?')
