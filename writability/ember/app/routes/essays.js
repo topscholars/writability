@@ -9,10 +9,10 @@ export default AuthenticatedRoute.extend({
     },
     model: function () {
         if (this.get('currentUser').get('isStudent')) {
-            return this.get('currentStudent').get('theme_essays');
+            return this.get('currentStudent').get('essays');
         } else {
             console.log('in teacher side of essaysroute');
-            return this.get('currentTeacher').get('students').get('theme_essays');
+            return this.get('currentTeacher').get('students').get('essays');
         }
     },
 

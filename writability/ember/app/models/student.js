@@ -9,7 +9,7 @@ export default User.extend({
 
     // relationships
     teacher: DS.belongsTo('teacher'),
-    //essays: DS.hasMany('themeEssay', {async: true}),
+    essays: DS.hasMany('essays', {async: true}),
     theme_essays: DS.hasMany('themeEssay', {async: true}),
     application_essays: DS.hasMany('applicationEssay', {async: true}),
     universities: DS.hasMany('university', {async: true}), // Use async true or ember expects data to already be there
