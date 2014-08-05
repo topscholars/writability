@@ -28,4 +28,6 @@ export default Essay.extend({
     is_in_progress: Ember.computed.equal('state', 'in_progress'),
     is_new_essay: Ember.computed.equal('state', 'new'),
     topicsReadyForApproval: Ember.computed.equal('state', 'added_topics'),
+
+    essayType: 'theme'
 });

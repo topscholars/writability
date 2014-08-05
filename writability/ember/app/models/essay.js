@@ -53,5 +53,7 @@ export default DS.Model.extend({
         } else {
             return 'student';
         }
-    }.property('next_action', 'state')
+    }.property('next_action', 'state'),
+
+    isThemeEssay: Ember.computed.equal('essayType', 'theme')
 });
