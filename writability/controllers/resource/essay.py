@@ -113,7 +113,10 @@ class ApplicationEssayResourceManager(EssayResourceManager):
         self._item_fields.update({
             "theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
-                absolute=True))
+                absolute=True)),
+            "selected_theme_essay": ResourceField(
+                ThemeEssayResourceManager.item_resource_name,
+                absolute=True)
             # 'proposed_topics': fields.List(fields.String)
         })
 
