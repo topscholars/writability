@@ -161,4 +161,4 @@ def initialize(app, api_prefix):
     add_resource_with_endpoint(api, RubricCategoryResource, "/rubric-categories/<int:id>")
 
     api.add_resource(RubricCategoryRubricAssociationsResource,
-        "/rubric-association/<int:rubric_id>-<int:rubric_category_id>")
+        "/rubric-associations/<int:rubric_id>-<int:rubric_category_id>")
