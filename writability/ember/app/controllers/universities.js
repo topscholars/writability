@@ -25,7 +25,7 @@ export default Ember.ArrayController.extend({
         var universitiesPromise = student.get('universities');
         var urlForStudent = '/api/students/' + student.id + '/add-universities';
 
-        return new Promise(function(resolve) {
+        return new Ember.RSVP.Promise(function(resolve) {
             universitiesPromise.then(function(universities) {
                 Ember.$.ajax({
                     url: urlForStudent,
