@@ -67,7 +67,7 @@ class RubricAssocationResourceField(fields.Url):
                 id = str(rub_id)+'-'+str(rub_cat_id)
 
         if rub_id and rub_cat_id:
-            return dict(id=id,rubric_category_id=rub_cat_id, grade=grade)
+            return dict(id=id, rubric_category=rub_cat_id, grade=grade)
             # return super(ResourceField, self).output(key, id)
         else:
             return None
