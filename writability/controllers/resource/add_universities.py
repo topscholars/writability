@@ -77,7 +77,7 @@ class AddUniversitiesResource(Resource):
                 all_themes.add(theme.id)
 
         for theme in all_themes:
-            ae_list = [ae[0].id for ae in app_essay_list if theme in ae[1]]
+            ae_list = [ae[0] for ae in app_essay_list if theme in ae[1]]
             db.session.add(self._create_theme_essay(student, ae_list, theme))
 
         if len(application_essay_templates) > 0:
