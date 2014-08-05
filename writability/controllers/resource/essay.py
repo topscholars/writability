@@ -117,7 +117,7 @@ class ApplicationEssayResourceManager(EssayResourceManager):
             "selected_theme_essay": ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
                 absolute=True),
-            "school_name": fields.String
+            "university_name": fields.String
             # 'proposed_topics': fields.List(fields.String)
         })
 
@@ -146,7 +146,7 @@ class EssayStateAssociationsManager(StatefulResourceManager):
 class EssayStateAssociationsResource(ItemResource):
     """
     This resource allows direct updates of the Application Essay states upon clicking
-    them in the Essays view. 
+    them in the Essays view.
     """
     resource_manager_class = EssayStateAssociationsManager
 

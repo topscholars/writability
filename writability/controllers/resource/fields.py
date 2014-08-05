@@ -108,7 +108,7 @@ class ApplicationEssayResourceField(fields.Url):
                 for ea in sub_obj.essay_associations:
                     state = ea.state   # TODO: (Mike) discuss it with John
         if ae_id:
-            return dict(application_essay_id=ae_id, state=state)
+            return dict(id=ae_id, state=state)
         else:
             return None
 
