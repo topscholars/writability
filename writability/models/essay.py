@@ -134,7 +134,8 @@ class ThemeEssay(StatefulModel, Essay):
         "EssayStateAssociations",
         backref=db.backref("theme_essay"))
 
-    application_essays = association_proxy('essay_associations', 'application_essay')
+    application_essays = association_proxy('essay_associations', 'application_essay',
+        creator=lambda app_essay: EssayStateAssociations(application_essay=app_essay))
 
     @validates('proposed_topics')
     def validate_proposed_topics(self, key, proposed_topics):
@@ -232,6 +233,12 @@ class EssayStateAssociations(StatefulModel):
     # __table_args__ = {'extend_existing': True} #Because table is defined in relationships.py
 
     _STATES = ["selected", "not_selected", "pending"]
+
+    def __init__(self, **object_dict):
+        super(StatefulModel, self).__init__(**object_dict)
+        # if the object is new (no id) and has no state, give it one.
+        if not (self.application_essay_id and self.theme_essay_id) and not self.state:
+            self.state = self._get_default_state()
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
