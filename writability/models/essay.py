@@ -84,7 +84,14 @@ class Essay(BaseModel):
         action = "ERROR"
         # if self.proposed_topics[0] or self.proposed_topics[1]:
         if self.state == "new":
-            action = "Add Topics"
+            if self.isTheme():
+                action = "Add Topics"
+            elif self.isApplication():
+                action = "Write"
+                return "%s Draft %d / %d" % (
+                    action,
+                    existing_drafts or 0,
+                    num_of_drafts or 0)
         elif self.state == "added_topics":  # State change may need added
             action = "Approve Topic"
         elif self.state == "in_progress":
@@ -102,6 +109,10 @@ class Essay(BaseModel):
         else:
             action = "Error"
         return action
+
+    @property
+    def existing_drafts(self):
+        return len(self.drafts)
 
 class ThemeEssay(StatefulModel, Essay):
     __tablename__ = "theme_essay"
@@ -191,15 +202,13 @@ class ThemeEssay(StatefulModel, Essay):
         """Get the allowed initial states."""
         return ["new"]
 
-    @property
-    def existing_drafts(self):
-        return len(self.drafts)
 
-
-class ApplicationEssay(Essay):
+class ApplicationEssay(StatefulModel, Essay):
     # inheritance
     __tablename__ = "application_essay"
     __mapper_args__ = {'polymorphic_identity': 'application_essay'}
+
+    _STATES = ["new", "in_progress", "completed"]
 
     # required fields
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
@@ -208,6 +217,24 @@ class ApplicationEssay(Essay):
 
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
+
+    def _get_next_states(self, state):
+        """Helper function to have subclasses decide next states."""
+        next_states_mapping = {
+            "new": ["in_progress"],
+            "in_progress": ["completed"],
+            "completed": []
+        }
+
+        return next_states_mapping[state]
+
+    def _get_default_state(self):
+        """Get the default new state."""
+        return "new"
+
+    def _get_initial_states(self):
+        """Get the allowed initial states."""
+        return ["new"]
 
     @property
     def university_name(self):
