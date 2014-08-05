@@ -210,7 +210,7 @@ class ApplicationEssay(Essay):
     theme_essays = association_proxy('essay_associations', 'theme_essay')
 
     @property
-    def school_name(self):
+    def university_name(self):
         return self.essay_template.university.name
 
     @property
@@ -311,7 +311,7 @@ class EssayStateAssociations(StatefulModel):
         """
         super(EssayStateAssociations, self).change_related_objects()
 
-        # when an app essay is marked selected for this theme essay, mark the app essay 
+        # when an app essay is marked selected for this theme essay, mark the app essay
         # 'not_selected' for all other theme essays
         if self.state == "selected":
             for esa in EssayStateAssociations.read_by_filter({'application_essay_id': self.application_essay_id}):
