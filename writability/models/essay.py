@@ -30,6 +30,7 @@ class Essay(BaseModel):
     max_words = db.Column(db.Integer)
     num_of_drafts = db.Column(db.Integer)
     due_date = db.Column(db.Date)
+    is_displayed = db.Column(db.Boolean, default=True)
 
     # inheritance
     discriminator = db.Column('type', db.String(50))
@@ -85,7 +86,6 @@ class ThemeEssay(StatefulModel, Essay):
 
     # optional fields
     proposed_topics = db.Column(SerializableStringList, default=["", ""])
-    is_displayed = db.Column(db.Boolean, default=True)
 
     # relationships
     theme_id = db.Column(db.Integer, db.ForeignKey("theme.id"))
@@ -120,6 +120,7 @@ class ThemeEssay(StatefulModel, Essay):
         self.theme = theme_essay_template.theme
         # set a default number of drafts here for now
         self.num_of_drafts = self.num_of_drafts or 3
+        self.is_displayed = self.is_displayed or True
         for ea in self.essay_associations:
             ea.state = "pending"
 
@@ -204,7 +205,6 @@ class ApplicationEssay(Essay):
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     # optional fields
-    is_displayed = db.Column(db.Boolean, default=False)
 
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
@@ -225,6 +225,7 @@ class ApplicationEssay(Essay):
         self.max_words = app_essay_template.max_words
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
+        self.is_displayed = self.is_displayed or False
 
     @property
     def next_action(self):
