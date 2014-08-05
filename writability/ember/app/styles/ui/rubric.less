@@ -1,0 +1,100 @@
+.rubric-slider {
+	.clearfix();
+	position: relative;
+
+	&.selected {
+		&:before {
+			font-family: 'entypo';
+			position: absolute;
+			content: "\e78b";
+			left: -15px;
+			top: -8px;
+			font-size: 40px;
+		}
+	}
+
+	.grade, .description {
+		padding-top: 3px;
+		padding-bottom: 3px;
+	}
+
+	.grade {
+		.clearfix();
+		display: table;
+
+		button {
+			font-size: 16px;
+			line-height: 16px;
+			border: none;
+			display: table-cell;
+			padding: 0;
+			position: absolute;
+			width: 16px;
+
+			&.decrement {
+				left: 0;
+			}
+
+			&.increment {
+				right: 0;
+			}
+		}
+
+		.bar-container {
+			display: table-cell;
+		}
+
+		.bar {
+			// display: table-cell;
+			display: inline-block;
+			background: black;
+			content: '';
+			height: 16px;
+			color: rgba(0,0,0,0);
+		}
+
+		width: 60%;
+		float: left;
+		position: relative;
+	}
+
+	.description {
+		cursor: pointer;
+		padding-left: 5px;
+		width: 40%;
+		float: right;
+		border-left: 2px black solid;
+	}
+}
+
+.rubric-overview {
+	padding-bottom: 20px;
+}
+
+.rubric-detail {
+	width: 100%;
+	border-top: black 1px solid;
+
+	.rubric-criterion {
+		.clearfix();
+
+		padding: 10px inherit;
+
+		span.rubric-criterion-index {
+			float: left;
+			display: block;
+			border: black 2px solid;
+
+			height: 2em;
+			width: 2em;
+			text-align: center;
+			line-height: 2em;
+			margin-right: 0.5em;
+			margin-bottom: 0.2em;
+		}
+	}
+
+	p {
+		line-height: 1.2em;
+	}
+}
