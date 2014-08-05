@@ -51,7 +51,7 @@ class Review(StatefulModel):
         # This creates a draft, then draft creats a new review and its associated rubric
         super(Review, self).change_related_objects()
 
-        if self.state == "completed":
+        if self.state == "completed" and not self.draft.is_final_draft:
             this_essay = essay.Essay.read(self.draft.essay_id)
             this_draft = draft.Draft.read(self.draft_id)
             # add a new draft to this essay
