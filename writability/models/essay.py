@@ -162,7 +162,6 @@ class ThemeEssay(StatefulModel, Essay):
         self.theme = theme_essay_template.theme
         # set a default number of drafts here for now
         self.num_of_drafts = self.num_of_drafts or 3
-        self.is_displayed = self.is_displayed or True
         for ea in self.essay_associations:
             ea.state = "pending"
 
@@ -256,8 +255,6 @@ class ApplicationEssay(StatefulModel, Essay):
         self.max_words = app_essay_template.max_words
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
-        self.is_displayed = self.is_displayed or False
-
 
 class EssayStateAssociations(StatefulModel):
     __tablename__ = 'essay_associations'
