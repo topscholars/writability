@@ -48,7 +48,12 @@ class AddUniversitiesResource(Resource):
                             proposed_topics=['',''])
 
     def post(self, student_id):       
-        university_ids = request.get_json().get('universities')
+        req_json = request.get_json()
+        university_ids = req_json.get('universities')
+        try:
+            use_threading = req_json.get('use_threading')
+        except:
+            use_threading = True
         if university_ids is None:
             return 'Missing "universities" parameter in JSON request', 400
         student = User.query.filter_by(id=student_id).first()
@@ -82,4 +87,6 @@ class AddUniversitiesResource(Resource):
 
         if len(application_essay_templates) > 0:
             db.session.commit()
+
         return 'OK ' + str(len(application_essay_templates))
+        
