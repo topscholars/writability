@@ -21,6 +21,7 @@ export default Ember.ArrayController.extend({
     }.observes("newUniversity"),
 
     attachEssays: function() {
+        var controller = this;
         var student = this.get('student');
         var universitiesPromise = student.get('universities');
         var urlForStudent = '/api/students/' + student.id + '/add-universities';
@@ -34,7 +35,8 @@ export default Ember.ArrayController.extend({
                     dataType: "json",
                     data: JSON.stringify({
                         student_id: student.id,
-                        universities: universities.getEach('id')
+                        universities: universities.getEach('id'),
+                        use_threading: controller.get('use_threading')
                     })
                 }).then(function() { resolve(); });
             });

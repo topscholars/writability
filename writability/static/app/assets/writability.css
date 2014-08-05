@@ -1081,6 +1081,21 @@ input.form-date {
   border: 2px black solid;
   margin-bottom: 15px;
 }
+.form-checkbox {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  display: inline;
+}
+.form-checkbox i {
+  border: 2px solid black;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+}
+.form-checkbox i.inactive {
+  color: rgba(0, 0, 0, 0);
+}
 .rubric-slider {
   zoom: 1;
   position: relative;
@@ -1609,6 +1624,12 @@ input[type="checkbox"]:disabled {
 .list-module .thin-list-item {
   list-style: decimal inside;
   padding: 10px 60px;
+}
+.list-module .thin-list-item label {
+  font-family: 'Rockwell W01', serif;
+  font-size: 40px;
+  background: none;
+  font-size: 0.6em;
 }
 /***********************************************************
 * CORE MODULE: DETAILS
