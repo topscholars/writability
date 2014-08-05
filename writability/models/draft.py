@@ -70,8 +70,8 @@ class Draft(StatefulModel):
                 "annotations": ann_list
             }
 
-            self.review = review.Review(**new_review_params)  # FIXME: This is likely obsolete
-        elif self.state == "reviewed" and self.is_final_draft:
+            self.review = review.Review(**new_review_params)
+        elif self.state == "reviewed" and self.is_final_draft and self.isTheme():
             """
             When a final draft is accepted on a Theme Essay, all of the Application Essays marked "selected" for that
             Theme Essay or any of its merged_theme_essays should show up in the Essays list (have is_displayed set to
@@ -79,10 +79,35 @@ class Draft(StatefulModel):
             objects should be copied into these Application Essays the same way they are for each new Draft currently
             (including Annotations, etc). However, the old Theme Essay should NOT get these copied objects.
             """
-            for esa in EssayStateAssociations.read_by_filter({'application_essay_id': self.essay_id}):
-                esa.state = "selected"
-                esa.application_essay.is_displayed = True
-                esa.theme_essay.is_displayed = False
+            for te_id in [self.essay_id].extend(self.merged_theme_essays):
+                for esa in EssayStateAssociations.read_by_filter({'application_essay_id': self.essay_id, 
+                                                                    'state':'selected',
+                                                                    'theme_essay_id':te_id}):
+                    new_draft_params = {
+                        "essay": esa.application_essay,
+                        "plain_text" : self.plain_text,
+                        "formatted_text" : self.formatted_text,
+                        "word_count" : self.word_count,
+                        "is_final_draft": False
+                    }
+                    new_draft = Draft(**new_draft_params)
+                    db.session.commit()
+
+                    ann_list = [a.create_copy() for a in self.review.annotations if a.state != "approved"]
+                    new_review_params = {
+                        "teacher": self.essay.student.teacher,
+                        "draft": new_draft,
+                        "text": self.review.text,
+                        "review_type": "TEXT_REVIEW",
+                        "annotations": ann_list
+                    }
+
+                    new_draft.review = review.Review(**new_review_params)
+
+                    db.session.add(new_draft.review)
+                    esa.application_essay.is_displayed = True
+                    esa.theme_essay.is_displayed = False
+                    db.session.commit()
 
             db.session.commit()
 

@@ -210,6 +210,10 @@ class ApplicationEssay(Essay):
     theme_essays = association_proxy('essay_associations', 'theme_essay')
 
     @property
+    def school_name(self):
+        return self.essay_template.university.name
+
+    @property
     def selected_theme_essay(self):
         """
         Gets the ThemeEssay for which this ApplicationEssay is selected.

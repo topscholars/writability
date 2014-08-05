@@ -116,7 +116,8 @@ class ApplicationEssayResourceManager(EssayResourceManager):
                 absolute=True)),
             "selected_theme_essay": ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
-                absolute=True)
+                absolute=True),
+            "school_name": fields.String
             # 'proposed_topics': fields.List(fields.String)
         })
 
