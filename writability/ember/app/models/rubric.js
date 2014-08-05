@@ -4,7 +4,7 @@ import DS from 'ember-data';
 var Rubric = DS.Model.extend({
 	review: DS.belongsTo('review'),
 	name: DS.attr(),
-	categories: DS.hasMany('rubric-category')//, {async: true})
+	rubric_associations: DS.hasMany('rubric-association')//, {async: true})
 });
 
 //Rubric.reopenClass({

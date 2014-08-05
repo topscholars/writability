@@ -3,12 +3,12 @@
 		<button class="decrement" {{action 'decrement'}}><i class="icon-minus"></i></button>
 	{{/if}}
 	<div class="bar-container">
-		<div class="bar" {{bind-attr style=barWidth}}>{{category.grade}}</div>
+		<div class="bar" {{bind-attr style=barWidth}}>{{association.grade}}</div>
 	</div>
 	{{#if reviewMode}}
 		<button class="increment" {{action 'increment'}}><i class="icon-plus"></i></button>
 	{{/if}}
 </div>
 <div class="description" {{action 'select'}}>
-	{{category.name}} <span class="percent">({{category.grade}}%)</span>
+	{{association.name}} <span class="percent">({{association.grade}}%)</span>
 </div>
