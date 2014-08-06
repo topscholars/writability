@@ -29,7 +29,10 @@ export default Ember.ArrayController.extend(EssaySortable, {
         selectEssay: function (model) {
             if (this.selectedEssay !== model) {
                 this.set('selectedEssay', model);
-                this.transitionToRoute('essay', model.id);
+
+                if (model.get('isThemeEssay')) {
+                    this.transitionToRoute('theme-essay', model);
+                }
             }
         }
     }

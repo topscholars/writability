@@ -1,5 +1,5 @@
 import DetailsView from 'writability/views/-core/details';
-import TabsView from './essay/tabs';
+import TabsView from './theme-essay/tabs';
 import Ember from 'ember';
 
 export default DetailsView.extend({
