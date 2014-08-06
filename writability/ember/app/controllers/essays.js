@@ -32,6 +32,8 @@ export default Ember.ArrayController.extend(EssaySortable, {
 
                 if (model.get('isThemeEssay')) {
                     this.transitionToRoute('theme-essay', model);
+                } else if (model.get('essayType') === 'application') {
+                    this.transitionToRoute('application-essay', model);
                 }
             }
         }
