@@ -4,7 +4,7 @@ import ApplicationSerializer from './application';
 
 export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
     attrs: {
-        essay_associations: {embedded: 'always'}
+        essay_associations: {serialize: 'no', deserialize: 'records'}
     },
     normalize: function(type, hash, prop) {
         hash.application_essays = [];
