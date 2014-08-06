@@ -2,15 +2,6 @@ import EssayController from './essay';
 
 export default EssayController.extend({
 	actions: {
-	    openDraft: function () {
-	        var that = this;
-	        this.getMostRecentDraft().then(function (draft) {
-	            draft.set('state', 'in_progress');
-	            draft.save().then(function() {
-	                that.transitionToRoute('draft', draft);
-	            });
-	        });
-	    },
 	    submitProposedTopics: function(model) {
 	        var input = {
 	            proposed_topic_0: model.get('proposed_topic_0'),

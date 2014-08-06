@@ -8,5 +8,7 @@ export default Essay.extend({
     university_name: DS.attr(),
     theme_essays: DS.hasMany('themeEssay', {async: true}),
     essay_template: DS.belongsTo('applicationEssayTemplate', {async: true}),
-    essayType: 'application'
+    essayType: 'application',
+
+    is_in_progress: true
 });

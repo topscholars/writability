@@ -10,7 +10,7 @@ export default Essay.extend({
 
     // relationships
     theme: DS.belongsTo('theme', {async: true}),
-    application_essays: DS.hasMany('applicationEssay', {async: true}),
+    // application_essays: DS.hasMany('applicationEssay', {async: true, readOnly: true}),
     selected_essays: DS.attr('array'),
     unselected_essays: DS.attr('array'),
 
