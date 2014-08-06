@@ -217,6 +217,16 @@ class ApplicationEssay(StatefulModel, Essay):
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
 
+    def change_related_objects(self):
+        """Process model to prepare it for adding it db."""
+        super(ApplicationEssay, self).change_related_objects()
+        if self.state == "new" and not self.drafts:
+            new_draft_params = {
+                "essay": self
+            }
+
+            self.drafts.append(Draft(**new_draft_params))
+
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
         next_states_mapping = {
