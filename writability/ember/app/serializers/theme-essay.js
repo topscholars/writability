@@ -1,7 +1,11 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import ApplicationSerializer from './application';
 
-export default ApplicationSerializer.extend({
+export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
+    attrs: {
+        essay_associations: {embedded: 'always'}
+    },
     normalize: function(type, hash, prop) {
         hash.application_essays = [];
         hash.selected_essays = [];
