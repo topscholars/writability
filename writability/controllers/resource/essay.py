@@ -72,8 +72,8 @@ class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
             "merged_theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
                 absolute=True)),
-            "application_essays": fields.List(ApplicationEssayResourceField(
-                ApplicationEssayResourceManager.item_resource_name,
+            "essay_associations": fields.List(ApplicationEssayResourceField(
+                EssayStateAssociationsManager.item_resource_name,
                 absolute=True)),
             "parent_id": fields.Integer
         })
@@ -136,10 +136,12 @@ class EssayStateAssociationsManager(StatefulResourceManager):
     model_class = EssayStateAssociations
 
     def _add_item_fields(self):
-        super(EssayStateAssociationsManager, self)._add_item_fields()
+        # super(EssayStateAssociationsManager, self)._add_item_fields()
         self._item_fields.update({
+            "id": fields.String,
             "theme_essay_id": fields.Integer,
-            "application_essay_id": fields.Integer
+            "application_essay_id": fields.Integer,
+            "state": fields.String
         })
 
 
