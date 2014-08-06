@@ -42,6 +42,10 @@ class Draft(StatefulModel):
         if not self.due_date:
             self.due_date = essay.Essay.read(self.essay_id).due_date
 
+    @property
+    def essay_type(self):
+        return "application" if self.essay.isApplication() else "theme" if self.essay.isTheme() else "ERROR"
+
     def change_related_objects(self):
         """Change any related objects before commit."""
         from .essay import EssayStateAssociations
