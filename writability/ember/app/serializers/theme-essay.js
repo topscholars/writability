@@ -10,14 +10,7 @@ export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
         hash.application_essays = [];
         hash.selected_essays = [];
         hash.unselected_essays = [];
-        // Ember.$.each(hash.application_essays, function(id, value) {
-        //     hash.application_essays.push(id);
-        //     if (value === 'selected') {
-        //         hash.selected_essays.push(id);
-        //     } else if (value === 'not_selected') {
-        //         hash.unselected_essays.push(id);
-        //     }
-        // });
+
         hash.children_essays = hash.merged_theme_essays;
 
         hash.parent = hash.parent_id === 0 ? null : hash.parent_id;
