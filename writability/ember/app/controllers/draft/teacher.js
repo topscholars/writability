@@ -40,7 +40,8 @@ export default DraftController.extend({
     actions: {
 
         next: function () {
-            var draft = this.get('model');
+            var draft = this.get('model'),
+                controller = this;
 
             this.updateEssayDueDate().then(function() {
                 draft.get('review')
@@ -50,15 +51,16 @@ export default DraftController.extend({
                         return review.save();
                     })
                     .then(function (savedReview) {
-                        var essay_id = draft.get('essay.id');
+                        var essay_id = draft.get('essay_id'),
+                            student_id = this.get('student.id');
 
                         if (draft.get('essay_type') === 'application') {
-                            this.transitionToRoute('student.essays.show-application', essay_id);
+                            controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
                         } else if (draft.get('essay_type') === 'theme') {
-                            this.transitionToRoute('student.essays.show-theme', essay_id);
+                            controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
                         }
-                    }.bind(this));
-            }.bind(this));
+                    });
+            });
         },
 
         back: function () {
@@ -69,12 +71,13 @@ export default DraftController.extend({
                     return review.save();
                 })
                 .then(function (savedReview) {
-                    var essay_id = draft.get('essay.id');
+                    var essay_id = draft.get('essay_id'),
+                        student_id = this.get('student.id');
 
                     if (draft.get('essay_type') === 'application') {
-                        this.transitionToRoute('student.essays.show-application', essay_id);
+                        this.transitionToRoute('student.essays.show-application', student_id, essay_id);
                     } else if (draft.get('essay_type') === 'theme') {
-                        this.transitionToRoute('student.essays.show-theme', essay_id);
+                        this.transitionToRoute('student.essays.show-theme', student_id, essay_id);
                     }
                 }.bind(this));
         },
