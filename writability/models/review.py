@@ -50,7 +50,6 @@ class Review(StatefulModel):
         # Create new rubric object and associate it with this review
         # This creates a draft, then draft creats a new review and its associated rubric
         super(Review, self).change_related_objects()
-        import pdb; pdb.set_trace();
 
         if self.state == "completed" and not self.draft.is_final_draft:
             this_essay = essay.Essay.read(self.draft.essay_id)
