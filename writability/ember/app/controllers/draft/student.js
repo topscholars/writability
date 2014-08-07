@@ -20,12 +20,24 @@ export default DraftController.extend({
     }.observes('model'),
 
     refreshAndTransitionEssay: function (draft) {
-        var controller = this,
-            essay = draft.get('essay');
+        var controller = this;
 
-        essay.reload().then(function () {
-            controller.transitionToRoute('essay', essay);
+        draft.get('essay').then(function(essay) {
+            essay.reload().then(function () {
+                var essay_id = draft.get('essay_id'),
+                    essay_type = draft.get('essay_type');
+
+                controller.transitionToEssay(essay_type, essay_id);
+            });
         });
+    },
+
+    transitionToEssay: function (essayType, essayId) {
+        if (essayType === 'application') {
+            this.transitionToRoute('application-essay', essayId);
+        } else if (essayType === 'theme') {
+            this.transitionToRoute('theme-essay', essayId);
+        }
     },
 
     actions: {
@@ -56,13 +68,10 @@ export default DraftController.extend({
             // make sure the draft is saved.
             var draft = this.get('model');
             draft.save().then(function (draft) {
-                var essay_id = draft.get('essay.id');
+                var essay_id = draft.get('essay_id'),
+                    essay_type = draft.get('essay_type');
 
-                if (draft.get('essay_type') === 'application') {
-                    this.transitionToRoute('application-essay', essay_id);
-                } else if (draft.get('essay_type') === 'theme') {
-                    this.transitionToRoute('theme-essay', essay_id);
-                }
+                this.transitionToEssay(essay_type, essay_id);
             }.bind(this));
         }
     }
