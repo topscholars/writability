@@ -4,6 +4,7 @@ import { autosaveTimout } from 'writability/config';
 
 export default Ember.ObjectController.extend({
 
+    rubric: Ember.computed.alias('review.rubric'),
     student: Ember.computed.alias('essay.student'),
 
     isStudent: false,
