@@ -9,17 +9,21 @@ export default Ember.ArrayController.extend(EssaySortable, {
 
     student: Ember.computed.alias('controllers.student.model'),
 
+    displayedEssays: Ember.computed.filter('arrangedContent', function(essay) {
+        return (essay.get('is_displayed'));
+    }).property('arrangedContent', 'arrangedContent.length'),
+
     mergedEssays: function () {
-        return this.get('arrangedContent').filter(function(essay) {
+        return this.get('displayedEssays').filter(function(essay) {
             return (essay.get('parent'));
         });
-    }.property('@each.parent'),
+    }.property('displayedEssays.@each.parent'),
 
     unmergedEssays: function () {
-        return this.get('arrangedContent').filter(function(essay) {
+        return this.get('displayedEssays').filter(function(essay) {
             return (!essay.get('parent'));
         });
-    }.property('@each.parent'),
+    }.property('displayedEssays.@each.parent'),
 
     studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('nextActionAwaits') === 'student');
