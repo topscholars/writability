@@ -50,6 +50,7 @@ class Essay(BaseModel):
             raise ValueError("essay template cannot be empty.")
 
         self.essay_prompt = self.essay_template.essay_prompt
+        self.num_of_drafts = self.num_of_drafts or 3
 
     def isTheme(self):
         return isinstance(self, ThemeEssay)
@@ -161,7 +162,6 @@ class ThemeEssay(StatefulModel, Essay):
         self.context = theme_essay_template.context
         self.theme = theme_essay_template.theme
         # set a default number of drafts here for now
-        self.num_of_drafts = self.num_of_drafts or 3
         for ea in self.essay_associations:
             ea.state = "pending"
 

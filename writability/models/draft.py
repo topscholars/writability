@@ -61,7 +61,7 @@ class Draft(StatefulModel):
                 prev_draft = Draft.read(max([d.id for d in this_essay.drafts if d.id != self.id]))
                 prev_review = prev_draft.review
                 ann_list = [a.create_copy() for a in prev_review.annotations if a.state != "approved"]
-                new_rubric = prev_review.rubric.create_copy()
+                # new_rubric = prev_review.rubric.create_copy()
 
             # first check if there was a previous draft and, if so, copy over 
             # annotations that are not marked "complete" by the teacher
@@ -147,7 +147,6 @@ class Draft(StatefulModel):
                         "plain_text" : self.plain_text,
                         "formatted_text" : self.formatted_text,
                         "word_count" : self.word_count,
-                        "is_final_draft": False
                     }
                     new_draft = Draft(**new_draft_params)
                     db.session.commit()
