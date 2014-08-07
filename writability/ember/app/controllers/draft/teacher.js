@@ -52,7 +52,7 @@ export default DraftController.extend({
                     })
                     .then(function (savedReview) {
                         var essay_id = draft.get('essay_id'),
-                            student_id = this.get('student.id');
+                            student_id = controller.get('student.id');
 
                         if (draft.get('essay_type') === 'application') {
                             controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
