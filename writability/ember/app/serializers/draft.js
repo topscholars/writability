@@ -7,5 +7,8 @@ export default ApplicationSerializer.extend({
         delete hash.essay;
 
         return this._super(type, hash, prop);
+    },
+    attrs: {
+        essay: {deserialize: 'no'}
     }
 });
