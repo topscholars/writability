@@ -58,11 +58,11 @@ export default Ember.ObjectController.extend({
     },
 
     updateEssayDueDate: function() {
-        var essay = this.get('essay');
+        return this.get('essay').then(function(essay) {
+            essay.autoUpdateDueDate();
 
-        essay.autoUpdateDueDate();
-
-        return essay.save();
+            return essay.save();
+        });
     },
 
     actions: {
