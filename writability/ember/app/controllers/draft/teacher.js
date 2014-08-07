@@ -50,8 +50,13 @@ export default DraftController.extend({
                         return review.save();
                     })
                     .then(function (savedReview) {
-                        var essay_id = draft._data.essay.id;
-                        this.transitionToRoute('students');
+                        var essay_id = draft.get('essay.id');
+
+                        if (draft.get('essay_type') === 'application') {
+                            this.transitionToRoute('student.essays.show-application', essay_id);
+                        } else if (draft.get('essay_type') === 'theme') {
+                            this.transitionToRoute('student.essays.show-theme', essay_id);
+                        }
                     }.bind(this));
             }.bind(this));
         },
