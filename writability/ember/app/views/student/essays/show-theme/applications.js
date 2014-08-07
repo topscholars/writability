@@ -4,5 +4,5 @@ export default DetailsListView.extend({
     templateName: 'student/essays/show-theme/applications',
     name: "Applications",
     summaryText: "Click on an application question to exclusively associate it with this essay. Each question must be associated with a single essay.",
-    listItemController: "modules/student/essays/show-theme/_app-item"
+    listItemController: "student/essays/show-theme/application-item"
 });

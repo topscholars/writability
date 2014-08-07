@@ -16,6 +16,7 @@ Router.map(function () {
                 this.resource("student.essays.show-theme", { path: "theme/:theme_essay_id" }, function() {
                     this.route('merge', { path: "/merge" });
                 });
+                this.resource("student.essays.show-application", { path: "application/:application_essay_id" })
             });
         });
     });

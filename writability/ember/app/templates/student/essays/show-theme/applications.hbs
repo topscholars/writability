@@ -1,5 +1,5 @@
 <p>{{view.summaryText}}</p>
 
-{{#each application_essay in application_essays}}
-    {{render 'essay/application-list-item' application_essay}}
+{{#each essay_association in essay_associations itemController=view.listItemController}}
+    {{render 'essay/application-list-item' essay_association}}
 {{/each}}
