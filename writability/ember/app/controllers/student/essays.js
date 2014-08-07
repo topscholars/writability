@@ -37,7 +37,11 @@ export default Ember.ArrayController.extend(EssaySortable, {
         selectEssay: function(model, noTransition) {
             this.set('selectedEssay', model);
             if (!noTransition) {
-                this.transitionToRoute('student.essays.show', model);
+                if (model.get('isThemeEssay')) {
+                    this.transitionToRoute('student.essays.show-theme', model);
+                } else if (model.get('essayType') === 'application') {
+                    this.transitionToRoute('student.essays.show-application', model);
+                }
             }
         },
         toggleMergedEssays: function() {

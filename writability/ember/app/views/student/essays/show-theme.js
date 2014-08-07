@@ -1,5 +1,5 @@
 import DetailsView from 'writability/views/-core/details';
-import StudentEssaysShowTabsView from './show/tabs';
+import StudentEssaysShowTabsView from './show-theme/tabs';
 
 export default DetailsView.extend({
 

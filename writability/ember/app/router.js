@@ -13,7 +13,7 @@ Router.map(function () {
     this.resource('students', function () {
         this.resource('student', {path: '/:id'}, function() {
             this.resource("student.essays", { path: "/essays" }, function() {
-                this.resource("student.essays.show", { path: "/:theme_essay_id" }, function() {
+                this.resource("student.essays.show-theme", { path: "theme/:theme_essay_id" }, function() {
                     this.route('merge', { path: "/merge" });
                 });
             });
