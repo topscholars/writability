@@ -69,7 +69,7 @@ def initialize(app, api_prefix):
 
     # application essay state update
     api.add_resource(EssayStateAssociationsResource,
-        "/theme-essays/<int:themeessay_id>/select-application-essay/<int:appessay_id>")
+        "/essay-associations/<int:themeessay_id>-<int:appessay_id>")
 
     # draft
     add_resource_with_endpoint(api, DraftListResource, "/drafts")
