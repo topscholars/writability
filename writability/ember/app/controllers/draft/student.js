@@ -56,9 +56,13 @@ export default DraftController.extend({
             // make sure the draft is saved.
             var draft = this.get('model');
             draft.save().then(function (draft) {
-                var essay_id = draft._data.essay.id;
-                // Transition to essays page
-                this.transitionToRoute('essay', essay_id);
+                var essay_id = draft.get('essay.id');
+
+                if (draft.get('essay_type') === 'application') {
+                    this.transitionToRoute('application-essay', essay_id);
+                } else if (draft.get('essay_type') === 'theme') {
+                    this.transitionToRoute('theme-essay', essay_id);
+                }
             }.bind(this));
         }
     }
