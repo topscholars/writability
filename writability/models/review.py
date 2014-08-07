@@ -50,6 +50,7 @@ class Review(StatefulModel):
         # Create new rubric object and associate it with this review
         # This creates a draft, then draft creats a new review and its associated rubric
         super(Review, self).change_related_objects()
+        import pdb; pdb.set_trace();
 
         if self.state == "completed" and not self.draft.is_final_draft:
             this_essay = essay.Essay.read(self.draft.essay_id)
@@ -59,8 +60,7 @@ class Review(StatefulModel):
                 "essay": this_essay,
                 "plain_text" : this_draft.plain_text,
                 "formatted_text" : this_draft.formatted_text,
-                "word_count" : this_draft.word_count,
-                "is_final_draft": True if this_essay.existing_drafts == this_essay.num_of_drafts - 1 else False
+                "word_count" : this_draft.word_count
             }
             new_draft = draft.Draft(**new_draft_params)
 
