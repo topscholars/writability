@@ -12,15 +12,7 @@ export default AuthenticatedRoute.extend({
     model: function () {
         var route = this;
         if (this.get('currentUser').get('isStudent')) {
-            var promise = new Ember.RSVP.Promise(function(resolve) {
-                Ember.RSVP.all([
-                    route.get('currentStudent').get('theme_essays'),
-                    route.get('currentStudent').get('application_essays')
-                ]).then(function(data) {
-                    resolve(data[0].content.concat(data[1].content));
-                });
-            });
-            return DS.PromiseArray.create({promise: promise});
+            return this.get('currentStudent.all_essays');
         } else {
             console.log('in teacher side of essaysroute');
             return this.get('currentTeacher').get('students').get('essays');
