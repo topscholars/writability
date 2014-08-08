@@ -19,6 +19,10 @@ BeautifulSoup==3.2.1
 nose
 requests==2.2.1
 
+# Heroku (for db backups)
+heroku==0.1.4
+python-dateutil==1.5
+
 # indirect
 Flask-Login==0.2.10
 Flask-Mail==0.9.0
@@ -38,7 +42,7 @@ six==1.6.1
 # cryptography==0.4
 # pycparser==2.10
 
-jasmine==2.0.0
+# jasmine==2.0.0          # This has a dependency on Django..
 
 # standard
 wsgiref==0.1.2
