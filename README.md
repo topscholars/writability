@@ -54,3 +54,7 @@ To run the populate_db.py script:
 Set the HOST to be the full heroku URL, e.g. "http://writability-staging.herokuapp.com"
 Use $heroku run bash to get into the heroku command line.
 cd into /scripts and run as usual with 'python populate_db.py'
+
+### Refreshing data from Prod
+`heroku run bash db_refresh_from_prod.sh`
+Production DB backups will be stored in the code repo occasionally and after major updates.
