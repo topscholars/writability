@@ -15,6 +15,13 @@ export default DS.Model.extend({
     return result;
   }.property('tag.tag_type'),
 
+  isRubric: function() { // Redundant methods..
+    var model = this;
+    var super_category = model.get('tag.super_category');
+    var result = (super_category === "Rubric" ? true : false);
+    return result;
+  }.property('tag.super_category'),
+
 	isResolved: function() {
 		var state = this.get('state');
 		var result = (state === "resolved" ? true : false);
