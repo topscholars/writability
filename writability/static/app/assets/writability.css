@@ -1810,6 +1810,11 @@ input[type="checkbox"]:disabled {
   width: 27%;
   left: 72%;
 }
+#editor-module .annotations-column p#anno-column-info {
+  margin-left: 25px;
+  top: 15px;
+  font-style: italic;
+}
 .draft-text,
 .cke_textarea_inline {
   font-family: 'Trade Gothic W01', sans-serif;
