@@ -8,6 +8,8 @@ export default DS.Model.extend({
 
 	review: DS.belongsTo('review', {async: true}),
 
+
+  /* Methods for Annotation's underlying Tag's type */
 	isPositive: function() { // Required because handlebar template can't use an attr's value..
 		var model = this;
 		var tag_type = model.get('tag.tag_type');
@@ -18,9 +20,17 @@ export default DS.Model.extend({
   isRubric: function() { // Redundant methods..
     var model = this;
     var super_category = model.get('tag.super_category');
-    var result = (super_category === "Rubric" ? true : false);
+    var result = (super_category === "Rubric" ? true : false); // This breaks on .toLowerCase() for some reason. 
     return result;
   }.property('tag.super_category'),
+
+
+  /* Methods for Annotation's state: 1. New     2. Approved (by student)   3. Resolved (by teacher) */
+  isNew: function() {
+    var state = this.get('state');
+    var result = (state === "new" ? true : false);
+    return result;
+  }.property('state'),
 
 	isResolved: function() {
 		var state = this.get('state');
@@ -34,6 +44,8 @@ export default DS.Model.extend({
     return result;
   }.property('state'),
 
+
+  /* Other */
 	changeTagObserver: function() {
 		var model = this;
 

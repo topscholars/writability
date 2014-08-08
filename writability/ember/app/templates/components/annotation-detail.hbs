@@ -10,16 +10,21 @@
 
 <p class="annotation-details-comment">Original: "{{annotation.original}}"</p>
 
-{{#if isStudent}}
+{{#if isStudent}} <!-- For Students:  -->
   {{#unless annotation.isResolved}}
 	  <button class="annotation-details-button" {{action "resolveAnnotation"}}>Resolve</button>
   {{else}}
     <p class="bold">[Resolved]</p>
   {{/unless}}
-{{else}}
-  {{#unless annotation.isApproved}}
+{{else}}          <!-- For teachers:  -->
+  <!-- Show 'Approve' button only if stud has resolved, and hasn't been approved/  -->
+  {{#if annotation.isNew}}     
+    <p class="bold">[Awaiting Student]</p>
+  {{/if}}
+  {{#if annotation.isResolved}}           
     <button class="annotation-details-button" {{action "approveAnnotation"}}>Approve</button>
-  {{else}}
+  {{/if}}
+  {{#if annotation.isApproved}}     
     <p class="bold">[Approved]</p>
-  {{/unless}}
+  {{/if}}
 {{/if}}
