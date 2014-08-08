@@ -1544,6 +1544,20 @@ input[type="checkbox"]:disabled {
   float: left;
   padding-left: 60px;
   margin-bottom: 25px;
+  width: 100%;
+}
+.list-module .module-title h2 {
+  display: inline;
+}
+.list-module .module-title button {
+  font-size: 16px;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 200px;
+  float: right;
+  margin-right: 41px;
+  /* The .details-group starts at 241px from the right. 241-200=41px. Aug 8 '14*/
+  margin-top: 15px;
 }
 .list-module .list {
   border-top: 1px #afadad solid;
@@ -1772,7 +1786,7 @@ input[type="checkbox"]:disabled {
 }
 #editor-module .summary-column .summary-panel-container .summary-panel .details-field {
   font-size: 13px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 #editor-module .summary-column .summary-panel-container .review-editor {
   font-family: 'Trade Gothic W01', sans-serif;

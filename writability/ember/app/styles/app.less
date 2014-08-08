@@ -518,6 +518,21 @@ button, input[type="checkbox"] {
         float: left;
         padding-left: @bigMargin;
         margin-bottom: @innerPadding;
+        width: 100%; 
+
+        h2 {
+            display: inline;
+        }
+
+        button {
+            font-size: @bodyFontSize;
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 200px;
+            float: right;
+            margin-right: 41px;    /* The .details-group starts at 241px from the right. 241-200=41px. Aug 8 '14*/
+            margin-top: 15px;
+        }
     }
 
     .list {
@@ -795,7 +810,7 @@ button, input[type="checkbox"] {
 
                 .details-field {
                     font-size: @smallBodyFontSize;
-                    margin-bottom: @smallPadding;
+                    margin-bottom: @smallestPadding;
                 }
             }
 
