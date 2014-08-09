@@ -9,7 +9,7 @@ export default Ember.Component.extend({
 	selectedRubricCategory: null,
 
 	saveCategory: function() {
-		if (this.get('association.isDirty') == true) {
+		if (this.get('association.isDirty') === true) {
 			this.get('association').save();
 		}
 	},
