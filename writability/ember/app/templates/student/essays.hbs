@@ -1,11 +1,12 @@
 <div class="module-title">
-	<h2>Essays</h2>
+	<h2 class="inline">Essays</h2>
+  {{#if showMergedEssays}}
+    <button {{action 'toggleMergedEssays'}}>Hide Merged Essays</button>
+  {{else}}
+    <button {{action 'toggleMergedEssays'}}>Show Merged Essays</button>
+  {{/if}}
+  <br />
 	<span class="student-info">{{student.name}}</span>
-	{{#if showMergedEssays}}
-		<button {{action 'toggleMergedEssays'}}>Hide Merged Essays</button>
-	{{else}}
-		<button {{action 'toggleMergedEssays'}}>Show Merged Essays</button>
-	{{/if}}
 </div>
 
 {{view 'student/essays/list'}}
