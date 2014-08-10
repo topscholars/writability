@@ -26,7 +26,10 @@ export default DS.Model.extend({
 
 
   /* Methods for Annotation's state: 1. New     2. Approved (by student)   3. Resolved (by teacher) */
-  isNew: function() {
+  /* This cannot be 'isNew', because that overrides an internal Ember method.
+     When clicking create, this isNew attr returns false ->telling ember that the record exists 
+     and causing a PUT instead of POST when creating. */
+  isNewAnnotation: function() {
     var state = this.get('state');
     var result = (state === "new" ? true : false);
     return result;

@@ -18,7 +18,7 @@
   {{/unless}}
 {{else}}          <!-- For teachers:  -->
   <!-- Show 'Approve' button only if stud has resolved, and hasn't been approved/  -->
-  {{#if annotation.isNew}}     
+  {{#if annotation.isNewAnnotation}}     
     <p class="bold">[Awaiting Student]</p>
   {{/if}}
   {{#if annotation.isResolved}}           
