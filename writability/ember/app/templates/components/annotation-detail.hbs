@@ -14,17 +14,21 @@
   {{#unless annotation.isResolved}}
 	  <button class="annotation-details-button" {{action "resolveAnnotation"}}>Resolve</button>
   {{else}}
-    <p class="bold">[Resolved]</p>
+    <p class="bold annotation-details-comment">[Resolved]</p>
   {{/unless}}
+
 {{else}}          <!-- For teachers:  -->
   <!-- Show 'Approve' button only if stud has resolved, and hasn't been approved/  -->
   {{#if annotation.isNewAnnotation}}     
-    <p class="bold">[Awaiting Student]</p>
+    <p class="bold annotation-details-comment">[Awaiting Student]</p>
+    <button style="margin-top: 15px" class="annotation-details-button" {{action "deleteAnnotation"}}>Delete</button>
   {{/if}}
+  
   {{#if annotation.isResolved}}           
     <button class="annotation-details-button" {{action "approveAnnotation"}}>Approve</button>
   {{/if}}
+
   {{#if annotation.isApproved}}     
-    <p class="bold">[Approved]</p>
+    <p class="bold annotation-details-comment">[Approved]</p>
   {{/if}}
 {{/if}}
