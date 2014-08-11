@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { autosaveTimout } from 'writability/config';
 
 export default Ember.ObjectController.extend({
     currentDraft: function () {
@@ -19,7 +20,7 @@ export default Ember.ObjectController.extend({
 
     saveEssaySettingsObserver: function () {
         if (this.get('model.isDirty')) {
-            Ember.run.debounce(this, this.saveEssaySettings, 500);
+            Ember.run.debounce(this, this.saveEssaySettings, autosaveTimout);
         }
     }.observes('due_date', 'num_of_drafts'),
 

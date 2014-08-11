@@ -45,7 +45,7 @@ export default Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-        Ember.run.debounce(this, this.saveDraft, autosaveTimout, true);
+        Ember.run.debounce(this, this.saveDraft, autosaveTimout);
     }.observes('formatted_text'),
 
     onSuccess: function () {
