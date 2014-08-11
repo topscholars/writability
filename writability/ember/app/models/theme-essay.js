@@ -6,7 +6,6 @@ import DS from 'ember-data';
 export default Essay.extend({
     next_states: DS.attr('array', {readOnly: true}),
     proposed_topics: DS.attr('array'),
-    state: DS.attr('string'),
 
     // relationships
     theme: DS.belongsTo('theme', {async: true}),

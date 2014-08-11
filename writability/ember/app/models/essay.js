@@ -15,6 +15,7 @@ export default DS.Model.extend({
     draft_due_date: DS.attr(null, {readOnly: true}),
     next_action: DS.attr('string', {readOnly: true}),
     is_displayed: DS.attr('boolean'),
+    state: DS.attr('string'),
 
     // relationships
     student: DS.belongsTo('student'),
