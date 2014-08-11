@@ -103,7 +103,7 @@ class ThemeEssayListResource(EssayListResource):
         return marshal(items, list_field)
 
 
-class ApplicationEssayResourceManager(EssayResourceManager):
+class ApplicationEssayResourceManager(StatefulResourceManager, EssayResourceManager):
     item_resource_name = "application_essay"
     list_resource_name = "application_essays"
     model_class = ApplicationEssay
