@@ -34,6 +34,7 @@ class DraftResourceManager(StatefulResourceManager):
             "essay": ResourceField(
                 essay.EssayResourceManager.item_resource_name,
                 absolute=True),
+            "essay_type": fields.String,
             "review": ResourceField(
                 review.ReviewResourceManager.item_resource_name,
                 absolute=True)

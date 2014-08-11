@@ -9,7 +9,9 @@ export default Ember.Component.extend({
 	selectedRubricCategory: null,
 
 	saveCategory: function() {
-		this.get('association').save();
+		if (this.get('association.isDirty') === true) {
+			this.get('association').save();
+		}
 	},
 
 	associationGradeHasChanged: function() {

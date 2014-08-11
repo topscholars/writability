@@ -9,7 +9,7 @@ from flask.ext import restful
 from resource.essay import EssayListResource, EssayResource
 from resource.essay import ThemeEssayListResource, ThemeEssayResource
 from resource.essay import ApplicationEssayListResource
-from resource.essay import ApplicationEssayResource, ApplicationEssayStateResource
+from resource.essay import ApplicationEssayResource, EssayStateAssociationsResource
 from resource.draft import DraftListResource, DraftResource
 from resource.review import ReviewListResource, ReviewResource
 from resource.university import UniversityListResource, UniversityResource
@@ -68,8 +68,8 @@ def initialize(app, api_prefix):
         "/application-essays/<int:id>")
 
     # application essay state update
-    api.add_resource(ApplicationEssayStateResource,
-        "/theme-essays/<int:themeessay_id>/select-application-essay/<int:appessay_id>")
+    api.add_resource(EssayStateAssociationsResource,
+        "/essay-associations/<int:themeessay_id>-<int:appessay_id>")
 
     # draft
     add_resource_with_endpoint(api, DraftListResource, "/drafts")

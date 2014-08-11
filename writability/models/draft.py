@@ -24,13 +24,17 @@ class Draft(StatefulModel):
     formatted_text = db.Column(db.String)
     word_count = db.Column(db.Integer)
     due_date = db.Column(db.Date)
-    is_final_draft = db.Column(db.Boolean, default=False)
 
     # relationships
     essay_id = db.Column(db.Integer, db.ForeignKey("essay.id"))
 
     #non_tag master 
     review = db.relationship("Review", backref="draft", uselist=False)
+
+    @property
+    def is_final_draft(self):
+        this_essay = essay.Essay.read(self.essay_id)
+        return len(this_essay.drafts) >= this_essay.num_of_drafts
     
     def process_before_create(self):
         """Process model to prepare it for adding it db."""
@@ -38,18 +42,26 @@ class Draft(StatefulModel):
         if not self.due_date:
             self.due_date = essay.Essay.read(self.essay_id).due_date
 
+    @property
+    def essay_type(self):
+        return "application" if self.essay.isApplication() else "theme" if self.essay.isTheme() else "ERROR"
+
     def change_related_objects(self):
         """Change any related objects before commit."""
+        from .essay import EssayStateAssociations
+
         super(Draft, self).change_related_objects()
 
         if self.state == "in_progress" and self.review is None:
             this_essay = essay.Essay.read(self.essay_id)
             ann_list = []
             prev_review = None
+            new_rubric = None
             if len(this_essay.drafts) > 1:
                 prev_draft = Draft.read(max([d.id for d in this_essay.drafts if d.id != self.id]))
                 prev_review = prev_draft.review
                 ann_list = [a.create_copy() for a in prev_review.annotations if a.state != "approved"]
+                # new_rubric = prev_review.rubric.create_copy()
 
             # first check if there was a previous draft and, if so, copy over 
             # annotations that are not marked "complete" by the teacher
@@ -64,12 +76,13 @@ class Draft(StatefulModel):
                 "annotations": ann_list
             }
 
-            self.review = review.Review(**new_review_params)  ####********* This is likely obsolete.  ****#######
+            self.review = review.Review(**new_review_params)
 
             db.session.commit()
 
             #rubric_category_list = []
             #rubric_category_list.append( RubricCategory.read_by_filter({'name':'Content'}) )
+            # rubric = _generate_new_rubric(self.review.id)
             try:
                 rubr_cat_content = RubricCategory.read_by_filter({'name':'Content'})[0]
                 rubr_cat_impact = RubricCategory.read_by_filter({'name':'Impact'})[0]
@@ -116,6 +129,45 @@ class Draft(StatefulModel):
                 rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':content_grade}) )
                 rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':impact_grade}) )
                 rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':quality_grade}) )
+
+        elif self.state == "reviewed" and self.is_final_draft and self.isTheme():
+            """
+            When a final draft is accepted on a Theme Essay, all of the Application Essays marked "selected" for that
+            Theme Essay or any of its merged_theme_essays should show up in the Essays list (have is_displayed set to
+            True), and the Theme Essay should be hidden (is_displayed set to False). The most recent Draft and Review
+            objects should be copied into these Application Essays the same way they are for each new Draft currently
+            (including Annotations, etc). However, the old Theme Essay should NOT get these copied objects.
+            """
+            for te_id in [self.essay_id].extend(self.merged_theme_essays):
+                for esa in EssayStateAssociations.read_by_filter({'application_essay_id': self.essay_id, 
+                                                                    'state':'selected',
+                                                                    'theme_essay_id':te_id}):
+                    new_draft_params = {
+                        "essay": esa.application_essay,
+                        "plain_text" : self.plain_text,
+                        "formatted_text" : self.formatted_text,
+                        "word_count" : self.word_count,
+                    }
+                    new_draft = Draft(**new_draft_params)
+                    db.session.commit()
+
+                    ann_list = [a.create_copy() for a in self.review.annotations if a.state != "approved"]
+                    new_review_params = {
+                        "teacher": self.essay.student.teacher,
+                        "draft": new_draft,
+                        "text": self.review.text,
+                        "review_type": "TEXT_REVIEW",
+                        "annotations": ann_list
+                    }
+
+                    new_draft.review = review.Review(**new_review_params)
+
+                    db.session.add(new_draft.review)
+                    esa.application_essay.is_displayed = True
+                    esa.theme_essay.is_displayed = False
+                    db.session.commit()
+
+        
             
             db.session.commit()
 
