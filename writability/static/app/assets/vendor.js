@@ -61059,11 +61059,11 @@ define("ember-data/core",
       /**
         @property VERSION
         @type String
-        @default '1.0.0-beta.9+canary.0deadce5c7'
+        @default '1.0.0-beta.9+canary.20c9acf5d4'
         @static
       */
       DS = Ember.Namespace.create({
-        VERSION: '1.0.0-beta.9+canary.0deadce5c7'
+        VERSION: '1.0.0-beta.9+canary.20c9acf5d4'
       });
 
       if (Ember.libraries) {
@@ -61453,7 +61453,7 @@ define("ember-data/serializers/embedded_records_mixin",
       },
 
       keyForRelationship: function(key, type){
-        if (hasDeserializeRecordsOption(this.attrs, key)) {
+        if (this.hasDeserializeRecordsOption(key)) {
           return this.keyForAttribute(key);
         } else {
           return this._super(key, type) || key;
@@ -61512,12 +61512,12 @@ define("ember-data/serializers/embedded_records_mixin",
       serializeBelongsTo: function(record, json, relationship) {
         var attr = relationship.key;
         var attrs = this.get('attrs');
-        if (noSerializeOptionSpecified(attrs, attr)) {
+        if (this.noSerializeOptionSpecified(attr)) {
           this._super(record, json, relationship);
           return;
         }
-        var includeIds = hasSerializeIdsOption(attrs, attr);
-        var includeRecords = hasSerializeRecordsOption(attrs, attr);
+        var includeIds = this.hasSerializeIdsOption(attr);
+        var includeRecords = this.hasSerializeRecordsOption(attr);
         var embeddedRecord = record.get(attr);
         var key;
         if (includeIds) {
@@ -61622,12 +61622,12 @@ define("ember-data/serializers/embedded_records_mixin",
       serializeHasMany: function(record, json, relationship) {
         var attr = relationship.key;
         var attrs = this.get('attrs');
-        if (noSerializeOptionSpecified(attrs, attr)) {
+        if (this.noSerializeOptionSpecified(attr)) {
           this._super(record, json, relationship);
           return;
         }
-        var includeIds = hasSerializeIdsOption(attrs, attr);
-        var includeRecords = hasSerializeRecordsOption(attrs, attr);
+        var includeIds = this.hasSerializeIdsOption(attr);
+        var includeRecords = this.hasSerializeRecordsOption(attr);
         var key;
         if (includeIds) {
           key = this.keyForRelationship(attr, relationship.kind);
@@ -61672,60 +61672,56 @@ define("ember-data/serializers/embedded_records_mixin",
             }
           }
         }
+      },
+
+      // checks config for attrs option to embedded (always) - serialize and deserialize
+      hasEmbeddedAlwaysOption: function (attr) {
+        var option = this.attrsOption(attr);
+        return option && option.embedded === 'always';
+      },
+
+      // checks config for attrs option to serialize ids
+      hasSerializeRecordsOption: function(attr) {
+        var alwaysEmbed = this.hasEmbeddedAlwaysOption(attr);
+        var option = this.attrsOption(attr);
+        return alwaysEmbed || (option && (option.serialize === 'records'));
+      },
+
+      // checks config for attrs option to serialize records
+      hasSerializeIdsOption: function(attr) {
+        var option = this.attrsOption(attr);
+        return option && (option.serialize === 'ids' || option.serialize === 'id');
+      },
+
+      // checks config for attrs option to serialize records
+      noSerializeOptionSpecified: function(attr) {
+        var option = this.attrsOption(attr);
+        var serializeRecords = this.hasSerializeRecordsOption(attr);
+        var serializeIds = this.hasSerializeIdsOption(attr);
+        return !(option && (option.serialize || option.embedded));
+      },
+
+      // checks config for attrs option to deserialize records
+      // a defined option object for a resource is treated the same as
+      // `deserialize: 'records'`
+      hasDeserializeRecordsOption: function(attr) {
+        var alwaysEmbed = this.hasEmbeddedAlwaysOption(attr);
+        var option = this.attrsOption(attr);
+        return alwaysEmbed || (option && option.deserialize === 'records');
+      },
+
+      attrsOption: function(attr) {
+        var attrs = this.get('attrs');
+        return attrs && (attrs[camelize(attr)] || attrs[attr]);
       }
     });
-
-    // checks config for attrs option to embedded (always) - serialize and deserialize
-    function hasEmbeddedAlwaysOption(attrs, attr) {
-      var option = attrsOption(attrs, attr);
-      return option && option.embedded === 'always';
-    }
-
-    // checks config for attrs option to serialize ids
-    function hasSerializeRecordsOption(attrs, attr) {
-      var alwaysEmbed = hasEmbeddedAlwaysOption(attrs, attr);
-      var option = attrsOption(attrs, attr);
-      return alwaysEmbed || (option && (option.serialize === 'records'));
-    }
-
-    // checks config for attrs option to serialize records
-    function hasSerializeIdsOption(attrs, attr) {
-      var option = attrsOption(attrs, attr);
-      return option && (option.serialize === 'ids' || option.serialize === 'id');
-    }
-
-    // checks config for attrs option to serialize records
-    function noSerializeOptionSpecified(attrs, attr) {
-      var option = attrsOption(attrs, attr);
-      var serializeRecords = hasSerializeRecordsOption(attrs, attr);
-      var serializeIds = hasSerializeIdsOption(attrs, attr);
-      return !(option && (option.serialize || option.embedded));
-    }
-
-    // checks config for attrs option to deserialize records
-    // a defined option object for a resource is treated the same as
-    // `deserialize: 'records'`
-    function hasDeserializeRecordsOption(attrs, attr) {
-      var alwaysEmbed = hasEmbeddedAlwaysOption(attrs, attr);
-      var option = attrsOption(attrs, attr);
-      return alwaysEmbed || (option && option.deserialize === 'records');
-    }
-
-    function attrsOption(attrs, attr) {
-      return attrs && (attrs[camelize(attr)] || attrs[attr]);
-    }
 
     // chooses a relationship kind to branch which function is used to update payload
     // does not change payload if attr is not embedded
     function extractEmbeddedRecords(serializer, store, type, partial) {
-      var attrs = get(serializer, 'attrs');
-
-      if (!attrs) {
-        return partial;
-      }
 
       type.eachRelationship(function(key, relationship) {
-        if (hasDeserializeRecordsOption(attrs, key)) {
+        if (serializer.hasDeserializeRecordsOption(key)) {
           var embeddedType = store.modelFor(relationship.type.typeKey);
           if (relationship.kind === "hasMany") {
             extractEmbeddedHasMany(store, key, embeddedType, partial);
@@ -68965,42 +68961,71 @@ define("ember-data/system/relationships/has_many",
     var setProperties = Ember.setProperties;
     var map = Ember.EnumerableUtils.map;
 
+    /**
+      Returns a computed property that synchronously returns a ManyArray for
+      this relationship. If not all of the records in this relationship are
+      loaded, it will raise an exception.
+    */
+
+    function syncHasMany(type, options, meta) {
+      return Ember.computed('data', function(key) {
+        return buildRelationship(this, key, options, function(store, data) {
+          // Configure the metadata for the computed property to contain
+          // the key.
+          meta.key = key;
+
+          var records = data[key];
+
+          Ember.assert("You looked up the '" + key + "' relationship on '" + this + "' but some of the associated records were not loaded. Either make sure they are all loaded together with the parent record, or specify that the relationship is async (`DS.hasMany({ async: true })`)", Ember.A(records).isEvery('isEmpty', false));
+
+          return store.findMany(this, data[key], typeForRelationshipMeta(store, meta));
+        });
+      }).meta(meta).readOnly();
+    }
+
+    /**
+      Returns a computed property that itself returns a promise that resolves to a
+      ManyArray.
+     */
+
     function asyncHasMany(type, options, meta) {
       return Ember.computed('data', function(key) {
-        var relationship = this._relationships[key];
-        var promiseLabel = "DS: Async hasMany " + this + " : " + key;
-
+        // Configure the metadata for the computed property to contain
+        // the key.
         meta.key = key;
 
-        if (!relationship) {
+        var relationship = buildRelationship(this, key, options, function(store, data) {
+          var link = data.links && data.links[key];
+          var rel;
+          var promiseLabel = "DS: Async hasMany " + this + " : " + key;
           var resolver = Ember.RSVP.defer(promiseLabel);
-          relationship = buildRelationship(this, key, options, function(store, data) {
-            var link = data.links && data.links[key];
-            var rel;
-            if (link) {
-              rel = store.findHasMany(this, link, relationshipFromMeta(store, meta), resolver);
-            } else {
-              //This is a temporary workaround for setting owner on the relationship
-              //until single source of truth lands. It only works for OneToMany atm
-              var records = data[key];
-              var inverse = this.constructor.inverseFor(key);
-              var owner = this;
-              if (inverse && records) {
-                if (inverse.kind === 'belongsTo'){
-                  map(records, function(record){
-                    set(record, inverse.name, owner);
-                  });
-                }
+
+          if (link) {
+            rel = store.findHasMany(this, link, relationshipFromMeta(store, meta), resolver);
+          } else {
+
+            //This is a temporary workaround for setting owner on the relationship
+            //until single source of truth lands. It only works for OneToMany atm
+            var records = data[key];
+            var inverse = this.constructor.inverseFor(key);
+            var owner = this;
+            if (inverse && records) {
+              if (inverse.kind === 'belongsTo'){
+                map(records, function(record){
+                  set(record, inverse.name, owner);
+                });
               }
-              rel = store.findMany(owner, data[key], typeForRelationshipMeta(store, meta), resolver);
             }
-            // cache the promise so we can use it
-            // when we come back and don't need to rebuild
-            // the relationship.
-            set(rel, 'promise', resolver.promise);
-            return rel;
-          });
-        }
+
+            rel = store.findMany(owner, data[key], typeForRelationshipMeta(store, meta), resolver);
+          }
+
+          // Cache the promise so we can use it when we come back and don't
+          // need to rebuild the relationship.
+          set(rel, 'promise', resolver.promise);
+
+          return rel;
+        });
 
         var promise = relationship.get('promise').then(function() {
           return relationship;
@@ -69012,6 +69037,12 @@ define("ember-data/system/relationships/has_many",
       }).meta(meta).readOnly();
     }
 
+    /*
+      Builds the ManyArray for a relationship using the provided callback,
+      but only if it had not been created previously. After building, it
+      sets some metadata on the created ManyArray, such as the record which
+      owns it and the name of the relationship.
+    */
     function buildRelationship(record, key, options, callback) {
       var rels = record._relationships;
 
@@ -69027,30 +69058,6 @@ define("ember-data/system/relationships/has_many",
         name: key,
         isPolymorphic: options.polymorphic
       });
-    }
-
-    function hasRelationship(type, options) {
-      options = options || {};
-
-      var meta = {
-        type: type,
-        isRelationship: true,
-        options: options,
-        kind: 'hasMany',
-        key: null
-      };
-
-      if (options.async) {
-        return asyncHasMany(type, options, meta);
-      }
-
-      return Ember.computed('data', function(key) {
-        return buildRelationship(this, key, options, function(store, data) {
-          var records = data[key];
-          Ember.assert("You looked up the '" + key + "' relationship on '" + this + "' but some of the associated records were not loaded. Either make sure they are all loaded together with the parent record, or specify that the relationship is async (`DS.hasMany({ async: true })`)", Ember.A(records).isEvery('isEmpty', false));
-          return store.findMany(this, data[key], typeForRelationshipMeta(store, meta));
-        });
-      }).meta(meta).readOnly();
     }
 
     /**
@@ -69136,7 +69143,26 @@ define("ember-data/system/relationships/has_many",
         options = type;
         type = undefined;
       }
-      return hasRelationship(type, options);
+
+      options = options || {};
+
+      // Metadata about relationships is stored on the meta of
+      // the relationship. This is used for introspection and
+      // serialization. Note that `key` is populated lazily
+      // the first time the CP is called.
+      var meta = {
+        type: type,
+        isRelationship: true,
+        options: options,
+        kind: 'hasMany',
+        key: null
+      };
+
+      if (options.async) {
+        return asyncHasMany(type, options, meta);
+      } else {
+        return syncHasMany(type, options, meta);
+      }
     }
 
     __exports__["default"] = hasMany;
@@ -69382,9 +69408,9 @@ define("ember-data/system/store",
           newly created record.
         @return {DS.Model} record
       */
-      createRecord: function(typeName, inputPropoperties) {
+      createRecord: function(typeName, inputProperties) {
         var type = this.modelFor(typeName);
-        var properties = copy(inputPropoperties) || {};
+        var properties = copy(inputProperties) || {};
 
         // If the passed properties do not include a primary key,
         // give the adapter an opportunity to generate one. Typically,

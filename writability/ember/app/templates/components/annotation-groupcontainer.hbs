@@ -1,5 +1,5 @@
 {{#each annotation in group.annotations}}
-	<div {{bind-attr class=":annotation-title annotation.isPositive:tag-positive:tag-negative annotation.isResolved:tag-resolved"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>
+	<div {{bind-attr class=":annotation-title annotation.isPositive:tag-positive:tag-negative annotation.isRubric:tag-rubric annotation.isResolved:tag-resolved"}} {{action 'selectAnnotation' annotation}}>{{annotation.tag.name}}</div>
 {{/each}}
 {{#if selectedAnnotation}}
 	{{annotation-detail annotation=selectedAnnotation top=group.top isStudent=isStudent closeAnnotation="closeAnnotation"}}
