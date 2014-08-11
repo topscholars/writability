@@ -58,17 +58,19 @@ export default DraftController.extend({
 
         back: function () {
             // make sure the review is saved.
-            var draft = this.get('model');
+            var draft = this.get('model'),
+                controller = this;
+
             draft.get('review')
                 .then(function (review) {
                     return review.save();
                 })
                 .then(function (savedReview) {
-                    var essay_id = draft._data.essay.id;
-                    // Transition to essays page
-                    // TODO: convert this to essays once it's complete
-                    this.transitionToRoute('students');
-                }.bind(this));
+                    var essay_id = draft.get('essay.id'),
+                        student_id = controller.get('student.id');
+
+                    controller.transitionToRoute('student.essays.show', student_id, essay_id);
+                });
         },
 
         createNewAnnotation: function () {

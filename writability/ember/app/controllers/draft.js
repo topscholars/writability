@@ -4,9 +4,8 @@ import { autosaveTimout } from 'writability/config';
 
 export default Ember.ObjectController.extend({
 
-    rubric: function() {
-        return this.store.find('rubric', 1);
-    }.property(),
+    rubric: Ember.computed.alias('review.rubric'),
+    student: Ember.computed.alias('essay.student'),
 
     isStudent: false,
     isTeacher: false,
