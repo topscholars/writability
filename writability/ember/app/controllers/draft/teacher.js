@@ -52,13 +52,19 @@ export default DraftController.extend({
                     })
                     .then(function (savedReview) {
                         var essay_id = draft.get('essay_id'),
-                            student_id = controller.get('student.id');
+                            student_id = controller.get('student.id'),
+                            essayPromise = draft.get('essay');
 
-                        if (draft.get('essay_type') === 'application') {
-                            controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
-                        } else if (draft.get('essay_type') === 'theme') {
-                            controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
-                        }
+                        // This should really be refactored
+                        essayPromise.then(function(essay) {
+                            essay.reload().then(function() {
+                                if (draft.get('essay_type') === 'application') {
+                                    controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                                } else if (draft.get('essay_type') === 'theme') {
+                                    controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                                }
+                            });
+                        });
                     });
             });
         },
