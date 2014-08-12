@@ -25,7 +25,7 @@ class AddUniversitiesResource(Resource):
         return self._create(ApplicationEssay,
                             student=student.id,
                             essay_template=application_essay_template.id,
-                            is_displayed=False if use_threading else True)
+                            is_displayed=not use_threading)
 
     def _create_theme_essay(self, student, application_essays, theme, use_threading=True):
         essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id': theme})[0].id
@@ -41,7 +41,7 @@ class AddUniversitiesResource(Resource):
                                 student=student.id,
                                 state='new',
                                 proposed_topics=['', ''],
-                                is_displayed=True if use_threading else False)
+                                is_displayed=use_threading)
         except:  # FIXME: too broad exception
             return self._create(ThemeEssay,
                                 theme=theme,
@@ -50,7 +50,7 @@ class AddUniversitiesResource(Resource):
                                 student=student.id,
                                 state='new',
                                 proposed_topics=['', ''],
-                                is_displayed=True if use_threading else False)
+                                is_displayed=use_threading)
 
     def post(self, student_id):
         req_json = request.get_json()
