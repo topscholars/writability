@@ -1,7 +1,6 @@
-import AuthenticatedRoute from './authenticated';
+import AuthenticatedRoute from 'writability/routes/authenticated';
 
 export default AuthenticatedRoute.extend({
-
     model: function () {
         return this.get('currentStudent').get('universities');
     },
@@ -15,6 +14,7 @@ export default AuthenticatedRoute.extend({
     renderTemplate: function () {
         this.render('layouts/main');
         this.render('nav-header', {outlet: 'header'});
+        this.render('universities/add/essay-templates', {into: 'layouts/main', outlet: 'right-side-outlet'});
         this.render({into: 'layouts/main', outlet: 'left-side-outlet'});
     },
 
