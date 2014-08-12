@@ -4,7 +4,7 @@ export default AuthenticatedRoute.extend({
     model: function () {
         var student = this.modelFor('student');
 
-        return student.get('theme_essays');
+        return student.get('all_essays');
     },
 
     renderTemplate: function () {

@@ -4,9 +4,8 @@ import { autosaveTimout } from 'writability/config';
 
 export default Ember.ObjectController.extend({
 
-    rubric: function() {
-        return this.store.find('rubric', 1);
-    }.property(),
+    rubric: Ember.computed.alias('review.rubric'),
+    student: Ember.computed.alias('essay.student'),
 
     isStudent: false,
     isTeacher: false,
@@ -46,7 +45,7 @@ export default Ember.ObjectController.extend({
     },
 
     formattedTextObserver: function () {
-        Ember.run.debounce(this, this.saveDraft, autosaveTimout, true);
+        Ember.run.debounce(this, this.saveDraft, autosaveTimout);
     }.observes('formatted_text'),
 
     onSuccess: function () {
@@ -58,11 +57,11 @@ export default Ember.ObjectController.extend({
     },
 
     updateEssayDueDate: function() {
-        var essay = this.get('essay');
+        return this.get('essay').then(function(essay) {
+            essay.autoUpdateDueDate();
 
-        essay.autoUpdateDueDate();
-
-        return essay.save();
+            return essay.save();
+        });
     },
 
     actions: {

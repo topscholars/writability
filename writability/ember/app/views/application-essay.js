@@ -1,5 +1,5 @@
 import DetailsView from 'writability/views/-core/details';
-import TabsView from './essay/tabs';
+import TabsView from './application-essay/tabs';
 import Ember from 'ember';
 
 export default DetailsView.extend({
@@ -10,7 +10,6 @@ export default DetailsView.extend({
 
     tabs: [
         {key: 'overview', title: 'Overview'},
-        {key: 'application', title: 'Applications'},
     ],
 
     didInsertElement: function () {

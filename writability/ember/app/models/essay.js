@@ -14,6 +14,8 @@ export default DS.Model.extend({
     max_words: DS.attr('number'),
     draft_due_date: DS.attr(null, {readOnly: true}),
     next_action: DS.attr('string', {readOnly: true}),
+    is_displayed: DS.attr('boolean'),
+    state: DS.attr('string'),
 
     // relationships
     student: DS.belongsTo('student'),
@@ -43,7 +45,7 @@ export default DS.Model.extend({
     nextActionAwaits: function () {
         var nextAction = this.get('next_action');
 
-        if (nextAction === undefined) {
+        if (nextAction === undefined || nextAction === null) {
             return null;
         }
 
@@ -52,5 +54,7 @@ export default DS.Model.extend({
         } else {
             return 'student';
         }
-    }.property('next_action', 'state')
+    }.property('next_action', 'state'),
+
+    isThemeEssay: Ember.computed.equal('essayType', 'theme')
 });

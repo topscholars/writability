@@ -6,14 +6,12 @@ This module contains the resource Essay, ThemeEssay, and ApplicationEssay.
 
 """
 from flask import request
-from flask.ext.restful import Resource, fields
-from flask.ext.restful import marshal
+from flask.ext.restful import abort, fields, marshal
 
-from models.essay import Essay, ThemeEssay, ApplicationEssay
-
+from models.essay import Essay, ThemeEssay, ApplicationEssay, EssayStateAssociations
 from .base import ResourceManager, ItemResource, ListResource
 from .base import StatefulResourceManager, InvalidUsage
-from .fields import ResourceField, JSONField
+from .fields import ResourceField, ApplicationEssayResourceField
 import draft
 import theme
 import user
@@ -21,7 +19,6 @@ import essay_template
 
 
 class EssayResourceManager(ResourceManager):
-
     item_resource_name = "essay"
     list_resource_name = "essays"
     model_class = Essay
@@ -38,6 +35,7 @@ class EssayResourceManager(ResourceManager):
             "due_date": fields.String,
             "draft_due_date": fields.String,
             "next_action": fields.String,
+            "is_displayed": fields.Boolean,
             "drafts": fields.List(ResourceField(
                 draft.DraftResourceManager.item_resource_name,
                 absolute=True)),
@@ -51,48 +49,61 @@ class EssayResourceManager(ResourceManager):
 
 
 class EssayResource(ItemResource):
-
     resource_manager_class = EssayResourceManager
 
 
 class EssayListResource(ListResource):
-
     resource_manager_class = EssayResourceManager
 
 
 class ThemeEssayResourceManager(StatefulResourceManager, EssayResourceManager):
-
     item_resource_name = "theme_essay"
     list_resource_name = "theme_essays"
     model_class = ThemeEssay
 
     def _add_item_fields(self):
         super(ThemeEssayResourceManager, self)._add_item_fields()
+
         self._item_fields.update({
             "proposed_topics": fields.List(fields.String),
             "theme": ResourceField(
                 theme.ThemeResourceManager.item_resource_name,
                 absolute=True),
-            "application_essay_states": JSONField,
             "merged_theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
+                absolute=True)),
+            "essay_associations": fields.List(ApplicationEssayResourceField(
+                EssayStateAssociationsManager.item_resource_name,
                 absolute=True)),
             "parent_id": fields.Integer
         })
 
 
 class ThemeEssayResource(EssayResource):
-
     resource_manager_class = ThemeEssayResourceManager
 
 
 class ThemeEssayListResource(EssayListResource):
-
     resource_manager_class = ThemeEssayResourceManager
 
+    def get(self):
+        resource_name = self.resource_manager.list_resource_name
+        model_class = self.resource_manager.model_class
+        list_field = self.resource_manager.list_field
 
-class ApplicationEssayResourceManager(EssayResourceManager):
+        ids = self._get_ids_from_query_params()
 
+        if ids:  # if sent multiple ids then grab the list
+            models = model_class.read_many(ids)
+        else:  # or do a filter
+            query_filters = self._get_query_filters()
+            models = model_class.read_by_filter(query_filters)
+
+        items = {resource_name: models}
+        return marshal(items, list_field)
+
+
+class ApplicationEssayResourceManager(StatefulResourceManager, EssayResourceManager):
     item_resource_name = "application_essay"
     list_resource_name = "application_essays"
     model_class = ApplicationEssay
@@ -102,35 +113,50 @@ class ApplicationEssayResourceManager(EssayResourceManager):
         self._item_fields.update({
             "theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
-                absolute=True))
+                absolute=True)),
+            "selected_theme_essay": ResourceField(
+                ThemeEssayResourceManager.item_resource_name,
+                absolute=True),
+            "university_name": fields.String
             # 'proposed_topics': fields.List(fields.String)
         })
 
 
 class ApplicationEssayResource(EssayResource):
-
     resource_manager_class = ApplicationEssayResourceManager
 
 
 class ApplicationEssayListResource(EssayListResource):
-
     resource_manager_class = ApplicationEssayResourceManager
 
 
-class ApplicationEssayStateResource(ThemeEssayResource):
+class EssayStateAssociationsManager(StatefulResourceManager):
+    item_resource_name = "essaystateassociation"
+    list_resource_name = "essaystateassociations"
+    model_class = EssayStateAssociations
+
+    def _add_item_fields(self):
+        # super(EssayStateAssociationsManager, self)._add_item_fields()
+        self._item_fields.update({
+            "id": fields.String,
+            "theme_essay_id": fields.Integer,
+            "application_essay_id": fields.Integer,
+            "state": fields.String
+        })
+
+
+class EssayStateAssociationsResource(ItemResource):
     """
     This resource allows direct updates of the Application Essay states upon clicking
-    them in the Essays view. 
+    them in the Essays view.
     """
+    resource_manager_class = EssayStateAssociationsManager
+
     def get(self, themeessay_id, appessay_id):
-        # what's the correct way to 404 this?
-        raise NotImplementedError()
-        return None
+        abort(400, message="Bad Request")
 
     def delete(self, themeessay_id, appessay_id):
-        # what's the correct way to 404 this?
-        raise NotImplementedError()
-        return None
+        abort(400, message="Bad Request")
 
     def put(self, themeessay_id, appessay_id):
         resource_name = self.resource_manager.item_resource_name
@@ -140,13 +166,19 @@ class ApplicationEssayStateResource(ThemeEssayResource):
         payload = self._get_payload(appessay_id)
         # print resource_name, id   # TODO KIRK DELETE THESE
         # print payload
+        try:
+            essay_assoc = model_class.read_by_filter({"theme_essay_id": themeessay_id,
+                                                      "application_essay_id": appessay_id})
+            assert len(essay_assoc) == 1
+            essay_assoc = essay_assoc[0]
+        except:  # FIXME: too broad exception
+            essay_assoc = None
 
-        app_essay_states = model_class.read(themeessay_id).application_essay_states
-
-        if appessay_id in app_essay_states:
+        if essay_assoc:
             # Should return a single state. Validated by the model class.
-            app_essay_states[appessay_id] = payload
-            item = {resource_name: model_class.update(themeessay_id, { 'application_essay_states' : app_essay_states })}            
+            # essay_assoc.state = payload
+            item = {resource_name: model_class.update(essay_assoc.application_essay_id, essay_assoc.theme_essay_id,
+                                                      {'state': payload})}
             return marshal(item, item_field)
         else:
             raise InvalidUsage('Did you pass the correct application essay ID in the URL?')
@@ -156,10 +188,10 @@ class ApplicationEssayStateResource(ThemeEssayResource):
         Get the JSON body of the request.
         Should be in the form { "appessay_id" : "NEW_STATE" }
 
-        """        
+        """
         json = request.get_json()
-        try:            
+        try:
             payload = json[str(appessay_id)]
-        except:
+        except:  # FIXME: too broad exception
             raise InvalidUsage('Did you pass the correct application essay ID in the request body?')
         return payload

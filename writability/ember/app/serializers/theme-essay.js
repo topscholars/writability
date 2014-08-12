@@ -1,19 +1,16 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import ApplicationSerializer from './application';
 
-export default ApplicationSerializer.extend({
+export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
+    attrs: {
+        essay_associations: {serialize: 'no', deserialize: 'records'}
+    },
     normalize: function(type, hash, prop) {
         hash.application_essays = [];
         hash.selected_essays = [];
         hash.unselected_essays = [];
-        Ember.$.each(hash.application_essay_states, function(id, value) {
-            hash.application_essays.push(id);
-            if (value === 'selected') {
-                hash.selected_essays.push(id);
-            } else if (value === 'not_selected') {
-                hash.unselected_essays.push(id);
-            }
-        });
+
         hash.children_essays = hash.merged_theme_essays;
 
         hash.parent = hash.parent_id === 0 ? null : hash.parent_id;

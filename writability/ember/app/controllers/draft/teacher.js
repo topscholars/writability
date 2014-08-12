@@ -33,14 +33,15 @@ export default DraftController.extend({
 
     _onReviewChange: function () {
         if (this.get('review.isDirty')) {
-            Ember.run.debounce(this, this.saveReview, autosaveTimout, true);
+            Ember.run.debounce(this, this.saveReview, autosaveTimout);
         }
     }.observes('review.text'),
 
     actions: {
 
         next: function () {
-            var draft = this.get('model');
+            var draft = this.get('model'),
+                controller = this;
 
             this.updateEssayDueDate().then(function() {
                 draft.get('review')
@@ -50,24 +51,42 @@ export default DraftController.extend({
                         return review.save();
                     })
                     .then(function (savedReview) {
-                        var essay_id = draft._data.essay.id;
-                        this.transitionToRoute('students');
-                    }.bind(this));
-            }.bind(this));
+                        var essay_id = draft.get('essay_id'),
+                            student_id = controller.get('student.id'),
+                            essayPromise = draft.get('essay');
+
+                        // This should really be refactored
+                        essayPromise.then(function(essay) {
+                            essay.reload().then(function() {
+                                if (draft.get('essay_type') === 'application') {
+                                    controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                                } else if (draft.get('essay_type') === 'theme') {
+                                    controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                                }
+                            });
+                        });
+                    });
+            });
         },
 
         back: function () {
             // make sure the review is saved.
-            var draft = this.get('model');
+            var draft = this.get('model'),
+                controller = this;
+
             draft.get('review')
                 .then(function (review) {
                     return review.save();
                 })
                 .then(function (savedReview) {
-                    var essay_id = draft._data.essay.id;
-                    // Transition to essays page
-                    // TODO: convert this to essays once it's complete
-                    this.transitionToRoute('students');
+                    var essay_id = draft.get('essay_id'),
+                        student_id = this.get('student.id');
+
+                    if (draft.get('essay_type') === 'application') {
+                        this.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                    } else if (draft.get('essay_type') === 'theme') {
+                        this.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                    }
                 }.bind(this));
         },
 
@@ -112,7 +131,7 @@ export default DraftController.extend({
 
             this.set('formatted_text', newFormattedText);
             this.set('formatted_text_buffer', newFormattedText);
-            Ember.run.debounce(this, this.saveDraft, autosaveTimout, true);
+            Ember.run.debounce(this, this.saveDraft, autosaveTimout);
 
             this.set('newAnnotation', null);
         },

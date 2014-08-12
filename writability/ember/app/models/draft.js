@@ -12,7 +12,16 @@ export default DS.Model.extend({
     state: DS.attr('string'),
 
     // relationships
-    essay: DS.belongsTo('themeEssay'), // TODO: need this for essay.theme
+    essay_id: DS.attr(),
+    essay_type: DS.attr(),
+
+    essay: function() {
+        if (this.get('essay_type') === 'application') {
+            return this.store.find('application-essay', this.get('essay_id'));
+        } else if (this.get('essay_type') === 'theme') {
+            return this.store.find('theme-essay', this.get('essay_id'));
+        }
+    }.property('essay_type', 'essay_id'),
     review: DS.belongsTo('review', {async: true}),
 
     reviewState: Ember.computed.alias('review.state')
