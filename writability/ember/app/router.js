@@ -25,6 +25,7 @@ Router.map(function () {
     this.resource('draft', {path: '/drafts/:id'});
 
     this.resource('universities', function () {
+        this.route('show', {path: '/:university_name'});
         this.route('add', {path: '/setup'});
     });
     // no university item resource

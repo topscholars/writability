@@ -2144,6 +2144,12 @@ input[type="checkbox"]:disabled {
   color: red;
   font-weight: bold;
 }
+p.lead {
+  font-family: 'Rockwell W01', serif;
+  font-size: 40px;
+  font-size: 24px;
+  padding: 25px;
+}
 .instructions {
   padding: 0 40px 15px 40px;
   font-family: 'Trade Gothic W01', sans-serif;
