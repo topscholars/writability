@@ -24,11 +24,6 @@ class Rubric(BaseModel):
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
-    #rubric_categories = db.relationship(
-    #    "RubricCategory",
-    #    backref=db.backref("rubric", uselist=False),
-    #    uselist=True) 
-
 
     rubric_associations = db.relationship(
         "RubricCategoryRubricAssociations",
