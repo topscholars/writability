@@ -13,12 +13,10 @@ export default Ember.Component.extend({
 			this.set('selectedAnnotation', annotation);
 		},
 		closeAnnotation: function () {
-			console.log('annotation-groupcontainer closeAnnotation() action');
 			this.set('selectedAnnotation', null);
 		},
-		deleteAnnotation_GroupContainer: function () {
-			console.log('annotation-groupcontainer deleteAnnotation() action');
-			this.sendAction('deleteAnnotation_GroupContainer'); // Bubbles to annotation-container.js
+		deleteAnnotation_GroupContainer: function (annotation) {
+			this.sendAction('deleteAnnotation_GroupContainer', annotation); // Bubbles to annotation-container.js
 		}
 	}
 });

@@ -31,28 +31,16 @@ export default Ember.Component.extend(Collapsable, {
 			});
 		},
 		closeAnnotation: function () {
-			console.log('annotation-detail closeAnnotation Action');
 			this.sendAction('closeAnnotation');
 		},
 		// For teacher to delete unwanted annotations during their initial review
 		deleteAnnotation: function() {
 			var annotation = this.get('annotation'),
 				component = this;
-			console.log('annotation-detail deleteAnnotation Action');
-			component.sendAction('deleteAnnotation_Detail'); // Bubbles to annotation-groupcontainer.js
-			//debugger
-			
-			//var anno_id = 'annotation-' + annotation.id;
-      //var div_container = $('<div>').html(draft.get('formatted_text')); 	// Holds text from draft textarea
-      //div_container.find(anno_id).removeAttr('id'); 										// Remove annotation (id) from content
-      //var newFormattedText = div_container.html();											// Set draft textarea to new content
+			component.sendAction('deleteAnnotation_Detail', annotation); // Bubbles to annotation-groupcontainer.js
+			// Ends up in teacher controller, removes the underline in draft text & destroys Anno record
 
-      //this.set('formatted_text', newFormattedText);
-      //this.set('formatted_text_buffer', newFormattedText);
-
-      ///////// annotation.destroyRecord();
-
-      //Ember.run.debounce(this, this.saveDraft, 5000, true);						// This should make a save, but is not connected to needed module
+			//component.sendAction('closeAnnotation');
 		}
 	}
 

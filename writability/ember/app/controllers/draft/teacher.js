@@ -126,7 +126,7 @@ export default DraftController.extend({
 
             var stuff = $('<div>').html(this.get('formatted_text'));
             var workingAnnotation = stuff.find('#annotation-in-progress');
-            workingAnnotation.attr('id', anno_id).addClass(tag_type);
+            workingAnnotation.attr('id', anno_id).addClass(tag_type);   // Adds Positive or Negative for the underline color
             var newFormattedText = stuff.html();
 
             this.set('formatted_text', newFormattedText);
@@ -140,8 +140,22 @@ export default DraftController.extend({
             essay.save();
         },
 
-        teacherDeleteAnnotation: function () {
-            console.log('teacher teacherDeleteAnnotation action');
+        teacherDeleteAnnotation: function (annotation) {
+            var anno_id = '#annotation-' + annotation.id;                   // Note inclusion of #, unlike in hasSavedAnnotation()
+            var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
+
+            var annotation_to_remove = div_container.find(anno_id);         //Get text, replace span with text
+            var text = annotation_to_remove.text();
+            annotation_to_remove.replaceWith(text);
+
+            var newFormattedText = div_container.html();                    // Set draft textarea to new content
+
+            this.set('formatted_text', newFormattedText);
+            this.set('formatted_text_buffer', newFormattedText);
+            Ember.run.debounce(this, this.saveDraft, autosaveTimout);
+
+            annotation.destroyRecord();
+
         }
     }
 });
