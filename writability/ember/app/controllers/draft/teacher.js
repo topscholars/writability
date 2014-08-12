@@ -33,7 +33,7 @@ export default DraftController.extend({
 
     _onReviewChange: function () {
         if (this.get('review.isDirty')) {
-            Ember.run.debounce(this, this.saveReview, autosaveTimout, true);
+            Ember.run.debounce(this, this.saveReview, autosaveTimout);
         }
     }.observes('review.text'),
 
@@ -71,7 +71,9 @@ export default DraftController.extend({
 
         back: function () {
             // make sure the review is saved.
-            var draft = this.get('model');
+            var draft = this.get('model'),
+                controller = this;
+
             draft.get('review')
                 .then(function (review) {
                     return review.save();
@@ -129,7 +131,7 @@ export default DraftController.extend({
 
             this.set('formatted_text', newFormattedText);
             this.set('formatted_text_buffer', newFormattedText);
-            Ember.run.debounce(this, this.saveDraft, autosaveTimout, true);
+            Ember.run.debounce(this, this.saveDraft, autosaveTimout);
 
             this.set('newAnnotation', null);
         },
