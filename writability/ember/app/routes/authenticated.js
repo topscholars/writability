@@ -45,5 +45,10 @@ export default Ember.Route.extend({
 
     currentTeacher: function() {
         return this.controllerFor('application').get('currentTeacher');
-    }.property()
+    }.property(),
+
+    setupController: function(controller, model) {
+        controller.set('currentUser', this.get('currentUser'));
+        this._super(controller, model);
+    }
 });
