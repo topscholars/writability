@@ -207,7 +207,7 @@ class ApplicationEssay(StatefulModel, Essay):
     __tablename__ = "application_essay"
     __mapper_args__ = {'polymorphic_identity': 'application_essay'}
 
-    _STATES = ["new", "in_progress", "completed"]
+    _STATES = ["new", "in_progress", "completed", "selected"]
 
     # required fields
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
@@ -232,7 +232,8 @@ class ApplicationEssay(StatefulModel, Essay):
         next_states_mapping = {
             "new": ["in_progress"],
             "in_progress": ["completed"],
-            "completed": []
+            "completed": [],
+            "selected": []
         }
 
         return next_states_mapping[state]
