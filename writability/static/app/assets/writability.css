@@ -1714,6 +1714,9 @@ input[type="checkbox"]:disabled {
   background: none;
   font-size: 0.6em;
 }
+.list-module .thin-list-item label.navigation {
+  float: right;
+}
 /***********************************************************
 * CORE MODULE: DETAILS
 ************************************************************/

@@ -8,14 +8,13 @@ export default AuthenticatedRoute.extend({
     setupController: function(controller, model) {
         controller.set('student', this.get('currentStudent'));
         controller.set('backDisabled', true);
+
+        this.controllerFor('universities').set('addingUniversities', true);
         this._super(controller, model); //Required boilerplate
     },
 
     renderTemplate: function () {
-        this.render('layouts/main');
-        this.render('nav-header', {outlet: 'header'});
         this.render('universities/add/essay-templates', {into: 'layouts/main', outlet: 'right-side-outlet'});
-        this.render({into: 'layouts/main', outlet: 'left-side-outlet'});
     },
 
     actions: {
