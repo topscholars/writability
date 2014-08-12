@@ -1,4 +1,6 @@
 import AuthenticatedRoute from './authenticated';
+import DS from 'ember-data';
+import Ember from 'ember';
 
 export default AuthenticatedRoute.extend({
     beforeModel: function() {
@@ -8,11 +10,12 @@ export default AuthenticatedRoute.extend({
         }
     },
     model: function () {
+        var route = this;
         if (this.get('currentUser').get('isStudent')) {
-            return this.get('currentStudent').get('theme_essays');
+            return this.get('currentStudent.all_essays');
         } else {
             console.log('in teacher side of essaysroute');
-            return this.get('currentTeacher').get('students').get('theme_essays');
+            return this.get('currentTeacher').get('students').get('essays');
         }
     },
 

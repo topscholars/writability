@@ -21,16 +21,19 @@ role_user_associations = db.Table(
 
 # essay_associations: many to many relationship between theme_essay and
 # application_essay.
-essay_associations = db.Table(
-    "essay_associations",
-    db.Column(
-        "application_essay_id",
-        db.Integer,
-        db.ForeignKey("application_essay.id")),
-    db.Column(
-        "theme_essay_id",
-        db.Integer,
-        db.ForeignKey("theme_essay.id")))
+# essay_associations = db.Table(
+#     "essay_associations",
+#     db.Column(
+#         "application_essay_id",
+#         db.Integer,
+#         db.ForeignKey("application_essay.id"),
+#         primary_key=True),
+#     db.Column(
+#         "theme_essay_id",
+#         db.Integer,
+#         db.ForeignKey("theme_essay.id"),
+#         primary_key=True),
+#     extend_existing=True)
 
 # theme_application_template_associations: many to many relationship between
 # theme and application_essay_template.

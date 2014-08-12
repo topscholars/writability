@@ -54,7 +54,7 @@ export default Ember.ObjectController.extend({
             var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);
             this.set('model.selected_essays', newSelectedEssays);
 
-            var selectApplicationEssayUrl = '/api/theme-essays/' + this.get('model.id') + '/select-application-essay/' + applicationEssay.id;
+            var selectApplicationEssayUrl = '/api/essay-associations/' + applicationEssay.id;
             var data = {};
             data[applicationEssay.id] = 'selected';
 

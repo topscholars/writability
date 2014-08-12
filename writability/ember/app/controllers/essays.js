@@ -5,10 +5,13 @@ export default Ember.ArrayController.extend(EssaySortable, {
     // Ember won't accept an array for sorting by state..
     selectedEssay: null,
 
-    unmergedEssays: Ember.computed.filter('arrangedContent', function(essay) {
-        console.log('computed');
-        return (!essay.get('parent'));
+    displayedEssays: Ember.computed.filter('arrangedContent', function(essay) {
+        return (essay.get('is_displayed'));
     }).property('arrangedContent', 'arrangedContent.length'),
+
+    unmergedEssays: Ember.computed.filter('displayedEssays', function(essay) {
+        return (!essay.get('parent'));
+    }).property('displayedEssays', 'displayedEssays.length'),
 
     studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('nextActionAwaits') === 'student');
@@ -26,7 +29,12 @@ export default Ember.ArrayController.extend(EssaySortable, {
         selectEssay: function (model) {
             if (this.selectedEssay !== model) {
                 this.set('selectedEssay', model);
-                this.transitionToRoute('essay', model.id);
+
+                if (model.get('isThemeEssay')) {
+                    this.transitionToRoute('theme-essay', model);
+                } else if (model.get('essayType') === 'application') {
+                    this.transitionToRoute('application-essay', model);
+                }
             }
         }
     }

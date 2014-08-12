@@ -1,5 +1,5 @@
 import DetailsView from 'writability/views/-core/details';
-import StudentEssaysShowTabsView from './show/tabs';
+import StudentEssaysShowTabsView from './show-application/tabs';
 
 export default DetailsView.extend({
 
@@ -8,8 +8,7 @@ export default DetailsView.extend({
     selectedTab: 'overview',
 
     tabs: [
-        {key: 'overview', title: 'Overview'},
-        {key: 'application', title: 'Applications'},
+        {key: 'overview', title: 'Overview'}
     ],
 
     didInsertElement: function () {
