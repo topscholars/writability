@@ -29,8 +29,13 @@ export default Ember.TextField.extend({
 	},
 
 	willInsertElement: function() {
-		var currentMoment = moment(this.get('dateBind'));
-		this.set('value', currentMoment.format(this.get('momentFormat')));
+		if (this.get('dateBind')) {
+			var currentMoment = moment(this.get('dateBind'));
+			this.set('value', currentMoment.format(this.get('momentFormat')));
+		} else {
+			this.set('value', 'Select Due Date');
+		}
+
 	},
 
 	options: function() {
