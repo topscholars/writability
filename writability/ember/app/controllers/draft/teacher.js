@@ -138,6 +138,10 @@ export default DraftController.extend({
 
         saveEssay: function(essay) {
             essay.save();
+        },
+
+        teacherDeleteAnnotation: function () {
+            console.log('teacher teacherDeleteAnnotation action');
         }
     }
 });

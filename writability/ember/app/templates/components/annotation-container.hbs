@@ -3,7 +3,7 @@
 {{/if}}
 
 {{#each annotationGroup in existingAnnotationGroups}}
-	{{annotation-groupcontainer group=annotationGroup isStudent=isStudent}}
+	{{annotation-groupcontainer group=annotationGroup isStudent=isStudent deleteAnnotation_GroupContainer="deleteAnnotation_Container" }}
 {{/each}}
 
 {{#if newAnnotation}}
