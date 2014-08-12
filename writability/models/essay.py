@@ -96,15 +96,14 @@ class Essay(BaseModel):
         elif self.state == "added_topics":  # State change may need added
             action = "Approve Topic"
         elif self.state == "in_progress":
-            if existing_drafts != 0 and existing_drafts < num_of_drafts:
-                if (s == "new") or (s == "in_progress"):
-                    action = "Write"
-                elif s == "submitted":
-                    action = "Review"
-                return "%s Draft %d / %d" % (
-                    action,
-                    existing_drafts,
-                    num_of_drafts)
+            if (s == "new") or (s == "in_progress"):
+                action = "Write"
+            elif s == "submitted":
+                action = "Review"
+            return "%s Draft %d / %d" % (
+                action,
+                existing_drafts,
+                num_of_drafts)
         elif curr_draft.is_final_draft and s == "reviewed":
             action = "Complete"
         else:
@@ -217,10 +216,10 @@ class ApplicationEssay(StatefulModel, Essay):
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
 
-    def change_related_objects(self):
+    def process_before_create(self):
         """Process model to prepare it for adding it db."""
-        super(ApplicationEssay, self).change_related_objects()
-        if self.state == "new" and not self.drafts:
+        super(ApplicationEssay, self).process_before_create()
+        if self.state == "new" and self.is_displayed and not self.drafts:
             new_draft_params = {
                 "essay": self
             }
