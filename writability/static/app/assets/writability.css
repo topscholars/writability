@@ -1207,6 +1207,61 @@ input.form-date {
 .rubric-detail p {
   line-height: 1.2em;
 }
+.student-nav {
+  cursor: pointer;
+  float: left;
+  border-left: 1px #646464 solid;
+  border-right: 1px #646464 solid;
+  line-height: 45px;
+  height: 45px;
+}
+.student-nav:hover {
+  border-right: 1px #646464 solid;
+}
+.student-nav ul.menu-dropdown {
+  zoom: 1;
+  background: black;
+  position: absolute;
+  top: 45px;
+  left: -1px;
+}
+.student-nav ul.menu-dropdown:before {
+  content: '';
+  display: block;
+}
+.student-nav ul.menu-dropdown:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+.student-nav ul.menu-dropdown li {
+  border: 1px #646464 solid;
+  padding: 0 25px;
+  border-top: none;
+}
+.student-nav ul.menu-dropdown li a {
+  padding-top: 0;
+  padding-bottom: 0;
+  background-color: #000000;
+  border: 0px;
+  color: #ffffff;
+  height: 100%;
+  width: 100%;
+  line-height: 45px;
+  height: 45px;
+}
+.student-nav ul.menu-dropdown li a:hover {
+  background-color: #000000;
+  cursor: pointer;
+  color: #afadad;
+}
+.student-nav ul.menu-dropdown li a:active {
+  background-color: #646464;
+  color: #000000;
+}
+.student-nav ul.menu-dropdown li a:disabled {
+  visibility: hidden;
+}
 /*@import "modules";
 @import "partials"; */
 /***********************************************************
@@ -1223,9 +1278,8 @@ input.form-date {
 * Temporary logout button
 **/
 .temp_logout {
-  position: absolute;
-  top: 0;
-  left: 100px;
+  float: right;
+  margin-right: 1em;
   margin-top: 11px;
 }
 .temp_logout a {
@@ -1363,11 +1417,14 @@ input[type="checkbox"]:disabled {
   color: #afadad;
 }
 .nav-button {
+  padding-top: 0;
+  padding-bottom: 0;
   background-color: #000000;
   border: 0px;
   color: #ffffff;
   height: 100%;
   width: 100%;
+  line-height: 45px;
 }
 .nav-button:hover {
   background-color: #000000;
@@ -1525,7 +1582,11 @@ input[type="checkbox"]:disabled {
   z-index: 20;
 }
 #header .header-title {
-  display: table-cell;
+  z-index: 1;
+  position: absolute;
+  height: 100%;
+  line-height: 45px;
+  width: 100%;
   vertical-align: middle;
 }
 #header button {
@@ -1535,13 +1596,18 @@ input[type="checkbox"]:disabled {
 /***********************************************************
 * CORE MODULE: NAV HEADER
 ************************************************************/
-.nav-header .nav-section {
+.nav-header .nav-section,
+#header .nav-section {
+  position: relative;
+  z-index: 2;
   height: 100%;
 }
-.nav-header .left-nav {
+.nav-header .left-nav,
+#header .left-nav {
   float: left;
 }
-.nav-header .right-nav {
+.nav-header .right-nav,
+#header .right-nav {
   float: right;
 }
 /***********************************************************
