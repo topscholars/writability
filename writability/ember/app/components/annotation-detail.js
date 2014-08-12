@@ -40,7 +40,7 @@ export default Ember.Component.extend(Collapsable, {
 			component.sendAction('deleteAnnotation_Detail', annotation); // Bubbles to annotation-groupcontainer.js
 			// Ends up in teacher controller, removes the underline in draft text & destroys Anno record
 
-			//component.sendAction('closeAnnotation');
+			component.sendAction('closeAnnotation'); // Sometimes a ghost annotation-detail view shows after deleting.
 		}
 	}
 
