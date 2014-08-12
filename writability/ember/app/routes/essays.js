@@ -5,8 +5,7 @@ import Ember from 'ember';
 export default AuthenticatedRoute.extend({
     beforeModel: function() {
         if (this.get('currentUser').get('isStudent') && this.get('currentStudent').get('state') !== 'active') {
-                this.transitionTo('universities');
-
+            this.transitionTo('universities.add');
         }
     },
     model: function () {
