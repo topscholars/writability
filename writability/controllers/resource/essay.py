@@ -163,7 +163,7 @@ class EssayStateAssociationsResource(ItemResource):
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
-        payload = self._get_payload(appessay_id)
+        payload = self._get_payload(themeessay_id, appessay_id)
         # print resource_name, id   # TODO KIRK DELETE THESE
         # print payload
         try:
@@ -183,15 +183,15 @@ class EssayStateAssociationsResource(ItemResource):
         else:
             raise InvalidUsage('Did you pass the correct application essay ID in the URL?')
 
-    def _get_payload(self, appessay_id):
+    def _get_payload(self, themeessay_id, appessay_id):
         """
         Get the JSON body of the request.
-        Should be in the form { "appessay_id" : "NEW_STATE" }
+        Should be in the form { "themeessay_id-appessay_id" : "NEW_STATE" }
 
         """
         json = request.get_json()
         try:
-            payload = json[str(appessay_id)]
+            payload = json[str(themeessay_id)+'-'+str(appessay_id)]
         except:  # FIXME: too broad exception
             raise InvalidUsage('Did you pass the correct application essay ID in the request body?')
         return payload

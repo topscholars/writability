@@ -80,55 +80,28 @@ class Draft(StatefulModel):
 
             db.session.commit()
 
-            #rubric_category_list = []
-            #rubric_category_list.append( RubricCategory.read_by_filter({'name':'Content'}) )
-            # rubric = _generate_new_rubric(self.review.id)
-            try:
-                rubr_cat_content = RubricCategory.read_by_filter({'name':'Content'})[0]
-                rubr_cat_impact = RubricCategory.read_by_filter({'name':'Impact'})[0]
-                rubr_cat_quality = RubricCategory.read_by_filter({'name':'Quality'})[0]
-            except:
-                raise ValueError('RubricCategory items are not defined!')
-
             new_rubric_params = {
                 "name": None,
                 "review_id": self.review.id
             }
 
-            rubric = Rubric(**new_rubric_params)
-            db.session.add(rubric)
-            self.review.rubric = rubric
-
             if len(this_essay.drafts) < 2: # If first draft, create new rubric categories
-                rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':0}) )
-                rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':0}) )
-                rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':0}) )
+                new_rubric_params["add_default_rc"] = True
+                new_rubric = Rubric(**new_rubric_params)
             else: # If not first draft, copy old rubric_category assocation grades
-                
                 # For first-time with previous existing reviews (w/ no rubric), create Rubric & rubric_categories
                 if not prev_review.rubric:
-                    prev_review.rubric = Rubric(**new_rubric_params)
-                    if not prev_review.rubric.rubric_associations:
-                        prev_review.rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':0}) )
-                        prev_review.rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':0}) )
-                        prev_review.rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':0}) )
+                    prev_rubric_params = {
+                        "name": None,
+                        "review_id": prev_review.id,
+                        "add_default_rc": True
+                    }
+                    prev_review.rubric = Rubric(**prev_rubric_params)
 
-                rub_cats = prev_review.rubric.rubric_associations
+                new_rubric = prev_review.rubric.create_copy(new_review_id=self.review.id)
 
-                # This returns the grades for different categories on this draft's review's rubric's category_grades
-                try:
-                    content_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_content.id})[0].grade
-                    impact_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_impact.id})[0].grade
-                    quality_grade = RubricCategoryRubricAssociations.read_by_filter({'rubric_id':prev_review.rubric.id, 'rubric_category_id':rubr_cat_quality.id})[0].grade
-                except: # Sets RubricCategoryRubricAssociations grades if RCRAs are not defined on previous review
-                    content_grade = 10
-                    impact_grade = 10
-                    quality_grade = 10
-                    
-                # Create new rubric Categories with grades from prior review/rubric
-                rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_content.id, 'grade':content_grade}) )
-                rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_impact.id, 'grade':impact_grade}) )
-                rubric.rubric_associations.append( RubricCategoryRubricAssociations(**{'rubric_category_id':rubr_cat_quality.id, 'grade':quality_grade}) )
+            db.session.add(new_rubric)
+            self.review.rubric = new_rubric
 
         elif self.state == "reviewed" and self.is_final_draft and self.isTheme():
             """
@@ -138,10 +111,9 @@ class Draft(StatefulModel):
             objects should be copied into these Application Essays the same way they are for each new Draft currently
             (including Annotations, etc). However, the old Theme Essay should NOT get these copied objects.
             """
-            for te_id in [self.essay_id].extend(self.merged_theme_essays):
-                for esa in EssayStateAssociations.read_by_filter({'application_essay_id': self.essay_id, 
-                                                                    'state':'selected',
-                                                                    'theme_essay_id':te_id}):
+            this_essay = essay.Essay.read(self.essay_id)
+            for te in [this_essay].extend(this_essay.merged_theme_essays):
+                for esa in EssayStateAssociations.read_by_filter({'state':'selected','theme_essay_id':te.id}):
                     new_draft_params = {
                         "essay": esa.application_essay,
                         "plain_text" : self.plain_text,
@@ -161,14 +133,22 @@ class Draft(StatefulModel):
                     }
 
                     new_draft.review = review.Review(**new_review_params)
-
                     db.session.add(new_draft.review)
-                    esa.application_essay.is_displayed = True
-                    esa.theme_essay.is_displayed = False
+                    # Commit here so that the review gets an ID
                     db.session.commit()
 
-        
-            
+                    new_rubric_params = {
+                        "name": None,
+                        "review_id": new_draft.review.id
+                    }
+
+                    new_rubric = self.review.rubric.create_copy(new_review_id=new_draft.review.id)
+                    new_draft.review.rubric = new_rubric
+                    db.session.add(new_rubric)
+
+                    esa.application_essay.is_displayed = True
+                    esa.theme_essay.is_displayed = False
+    
             db.session.commit()
 
     def _get_next_states(self, state):

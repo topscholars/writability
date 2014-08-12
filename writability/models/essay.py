@@ -96,15 +96,14 @@ class Essay(BaseModel):
         elif self.state == "added_topics":  # State change may need added
             action = "Approve Topic"
         elif self.state == "in_progress":
-            if existing_drafts != 0 and existing_drafts < num_of_drafts:
-                if (s == "new") or (s == "in_progress"):
-                    action = "Write"
-                elif s == "submitted":
-                    action = "Review"
-                return "%s Draft %d / %d" % (
-                    action,
-                    existing_drafts,
-                    num_of_drafts)
+            if (s == "new") or (s == "in_progress"):
+                action = "Write"
+            elif s == "submitted":
+                action = "Review"
+            return "%s Draft %d / %d" % (
+                action,
+                existing_drafts,
+                num_of_drafts)
         elif curr_draft.is_final_draft and s == "reviewed":
             action = "Complete"
         else:
