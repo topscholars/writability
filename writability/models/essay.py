@@ -219,6 +219,7 @@ class ApplicationEssay(StatefulModel, Essay):
     def change_related_objects(self):
         """Process model to prepare it for adding it db."""
         super(ApplicationEssay, self).change_related_objects()
+        # this is wrong. needs to happen in onboarding only.
         if self.state == "new" and not self.drafts:
             new_draft_params = {
                 "essay": self
