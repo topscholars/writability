@@ -1,0 +1,10 @@
+<div class="main-group">
+    <form class="main-line" {{action 'inviteStudentCont' on='submit'}}>
+        {{!-- it is necessary to use "controller." because this is inside a "with" block in the template,
+              which changes the context. The default context is controller, but now it is set to the
+              parameter of the "with" statement  --}}
+        {{input type="text" placeholder="Student's Email" value=controller.invitedStudentEmail}}
+        <input type="submit" class="inviteStudent" value="+">
+        <!-- onclick="alert('Hit the invitation endpoint!'); return false;"  -->
+    </form>
+</div>

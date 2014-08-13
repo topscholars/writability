@@ -19,6 +19,8 @@ class Annotation(StatefulModel):
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
+    # dom_id is the original ID, used to keep the draft text consistent from draft to draft.
+    dom_id = db.Column(db.Integer)
 
     # optional fields
     comment = db.Column(db.String)
@@ -29,6 +31,21 @@ class Annotation(StatefulModel):
     # relationships
     tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"))
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
+
+    # def process_before_create(self):
+    #     """Process model to prepare it for adding it db."""
+    #     super(Annotation, self).process_before_create()
+    #     if not self.dom_id and self.state == "new":
+    #         self.dom_id = self.id
+
+    @classmethod
+    def create(class_, object_dict):
+        model = super(Annotation, class_).create(object_dict)
+        if (not model.dom_id or model.dom_id == 0) and model.state == "new":
+            db.session.add(model)
+            model.dom_id = model.id
+            db.session.commit()
+        return model
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""
@@ -57,6 +74,7 @@ class Annotation(StatefulModel):
                 "end_index": self.end_index,
                 "state": self.state,
                 "tag_id": self.tag_id,
+                "dom_id": self.dom_id
                 }
         new_anno = Annotation(**params)
         return new_anno

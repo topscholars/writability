@@ -9,7 +9,7 @@ from flask.ext import restful
 from resource.essay import EssayListResource, EssayResource
 from resource.essay import ThemeEssayListResource, ThemeEssayResource
 from resource.essay import ApplicationEssayListResource
-from resource.essay import ApplicationEssayResource, ApplicationEssayStateResource
+from resource.essay import ApplicationEssayResource, EssayStateAssociationsResource
 from resource.draft import DraftListResource, DraftResource
 from resource.review import ReviewListResource, ReviewResource
 from resource.university import UniversityListResource, UniversityResource
@@ -27,7 +27,8 @@ from resource.user import InvitationListResource, InvitationResource
 from resource.role import RoleListResource, RoleResource
 from resource.annotation import AnnotationResource, AnnotationListResource, TagResource, TagListResource
 from resource.add_universities import AddUniversitiesResource
-
+from resource.rubric import RubricListResource, RubricResource, RubricCategoryResource, RubricCategoryListResource, CriterionResource, CriterionListResource
+from resource.rubric import RubricCategoryRubricAssociationsResource
 
 def add_resource_with_endpoint(api, resource_class, path):
     """Help add a resource by standardizing the external interation."""
@@ -67,8 +68,8 @@ def initialize(app, api_prefix):
         "/application-essays/<int:id>")
 
     # application essay state update
-    api.add_resource(ApplicationEssayStateResource,
-        "/theme-essays/<int:themeessay_id>/select-application-essay/<int:appessay_id>")
+    api.add_resource(EssayStateAssociationsResource,
+        "/essay-associations/<int:themeessay_id>-<int:appessay_id>")
 
     # draft
     add_resource_with_endpoint(api, DraftListResource, "/drafts")
@@ -150,3 +151,14 @@ def initialize(app, api_prefix):
     # role
     add_resource_with_endpoint(api, RoleListResource, "/roles")
     add_resource_with_endpoint(api, RoleResource, "/roles/<int:id>")
+
+    # rubric, criterion
+    add_resource_with_endpoint(api, RubricListResource, "/rubrics")
+    add_resource_with_endpoint(api, RubricResource, "/rubrics/<int:id>")
+    add_resource_with_endpoint(api, CriterionListResource, "/criteria")
+    add_resource_with_endpoint(api, CriterionResource, "/criteria/<int:id>")
+    add_resource_with_endpoint(api, RubricCategoryListResource, "/rubric-categories")
+    add_resource_with_endpoint(api, RubricCategoryResource, "/rubric-categories/<int:id>")
+
+    api.add_resource(RubricCategoryRubricAssociationsResource,
+        "/rubric-associations/<int:rubric_id>-<int:rubric_category_id>")

@@ -1,0 +1,33 @@
+<!-- <div class="list-style-group">{{id}} +7</div> -->
+<div class="main-group">
+  {{#if isThemeEssay}}
+    <div class="main-line">{{theme.name}}</div>
+    <div class="sub-line">{{theme.category}}</div>
+  {{else}}
+    <div class="main-line">{{university_name}}</div>
+    <div class="sub-line">{{abstract-words essay_prompt 15}}</div>
+  {{/if}}
+</div>
+<div class="arrow-icon">&gt;</div>
+<div class="details-group">
+    <div class="next-action">{{next_action}}</div>
+    <div class="draft-due">
+        Next Due:
+                  {{#if next_due_date}}
+                    {{format-date next_due_date}}
+                  {{else}}
+                    {{#if due_date}}
+                      {{format-date due_date}}
+                    {{else}}
+                      N/A
+                    {{/if}}
+                  {{/if}}
+    </div>
+    <div class="essay-due">
+      Essay Due:  {{#if due_date}}
+                    {{format-date due_date}}
+                  {{else}}
+                    N/A
+                  {{/if}}
+    </div>
+</div>

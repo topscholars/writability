@@ -1,0 +1,15 @@
+{{#if tag}}
+<div class="annotation-create">
+	<span {{bind-attr class=":annotation-create-tag-selected tag.isPositive:tag-positive:tag-negative tag.isRubric:tag-rubric"}}>{{tag.name}} <i class="icon-info-circled" {{action "toggleCollapse"}}></i></span>
+
+	{{#general-collapse isActive=collapseActive}}
+		{{annotation.tag.description}}
+	{{/general-collapse}}
+
+	{{textarea value=comment class="annotation-create-comment"}}
+
+	<button class="annotation-create-button" {{action "saveAnnotation"}}>Tag It</button>
+</div>
+{{else}}
+	{{autosuggest-tag data=tags value=tagId}}
+{{/if}}

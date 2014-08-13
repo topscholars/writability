@@ -88,6 +88,7 @@ class BaseModel(db.Model):
 
         model.change_related_objects()
         db.session.commit()
+
         return model
 
     @classmethod

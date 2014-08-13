@@ -1,0 +1,5 @@
+<p>{{view.summaryText}}</p>
+
+{{#each essay_association in essay_associations itemController=view.listItemController}}
+    {{render 'essay/application-list-item' essay_association}}
+{{/each}}

@@ -8,10 +8,20 @@ psycopg2==2.5.2
 # Flask-SSLify==0.1.4
 # pyOpenSSL==0.14
 
+# migrations
+Flask-Migrate==1.2.0
+Flask-Script==2.0.5
+alembic==0.6.5
+Mako==1.0.0
+
 # dev
 BeautifulSoup==3.2.1
 nose
 requests==2.2.1
+
+# Heroku (for db backups)
+heroku==0.1.4
+python-dateutil==1.5
 
 # indirect
 Flask-Login==0.2.10
@@ -32,7 +42,7 @@ six==1.6.1
 # cryptography==0.4
 # pycparser==2.10
 
-jasmine==2.0.0
+# jasmine==2.0.0          # This has a dependency on Django..
 
 # standard
 wsgiref==0.1.2

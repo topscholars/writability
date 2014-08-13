@@ -1,8 +1,8 @@
 """
-controllers.resource.draft
+controllers.resource.review
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This module contains the resource Draft.
+This module contains the resource Review.
 
 """
 from flask.ext.restful import fields
@@ -11,7 +11,7 @@ from models.review import Review
 
 from .base import StatefulResourceManager, ItemResource, ListResource
 from .fields import ResourceField
-import draft, user, annotation
+import draft, user, annotation, rubric
 
 
 class ReviewResourceManager(StatefulResourceManager):
@@ -29,6 +29,9 @@ class ReviewResourceManager(StatefulResourceManager):
             "review_type": fields.String,
             "draft": ResourceField(
                 draft.DraftResourceManager.item_resource_name,
+                absolute=True),
+            "rubric": ResourceField(
+                rubric.RubricResourceManager.item_resource_name,
                 absolute=True),
             "teacher": ResourceField(
                 user.TeacherResourceManager.item_resource_name,
