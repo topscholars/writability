@@ -21,24 +21,5 @@ export default Ember.ArrayController.extend({
 	            }).then(function() { resolve(); });
 	        });
 	    });
-	},
-
-	actions: {
-	    next: function() {
-	        var controller = this;
-	        var student = this.get('student');
-
-	        this.attachEssays().then(function() {
-	            student.set('state', 'active');
-	            return student.save();
-	        }).then(function() {
-	            controller.transitionToRoute('essays');
-	        });
-	    },
-	    removeUniversity: function(universitiy) {
-	        var student = this.get('student');
-
-	    	student.get('universities').removeObject(universitiy);
-	    }
 	}
 });

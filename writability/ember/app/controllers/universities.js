@@ -18,14 +18,5 @@ export default Ember.ArrayController.extend({
         if (newUniversity) {
             this.send('selectedUniversity', this.get('newUniversity'), this);
         }
-    }.observes("newUniversity"),
-
-    actions: {
-        removeUniversity: function(universitiy) {
-            var student = this.get('student');
-
-            student.get('universities').removeObject(universitiy);
-            student.save();
-        }
-    }
+    }.observes("newUniversity")
 });
