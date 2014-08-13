@@ -1,0 +1,76 @@
+{% extends "layout.jinja" %}
+{% from "security/_macros.html" import render_field %}
+
+{% block title %}Writability{% endblock %}
+
+{% block page_css %}
+<!-- <link type="text/css" rel="stylesheet" href="/static/css/pages/landing.css" /> -->
+{% endblock%}
+
+{% block content %}
+<header id="header" class="landing-header">
+  <div class="header-left-group header-title"><div class="icon"></div></div>
+  <div class="header-right-group header-title">
+    <a class="header-link" href="/login">Login</a>
+  </div>
+</header>
+
+<div id="layout-container">
+  <div id="landing-layout" class="layout">
+    <section id="landing-module" class="module">
+      <div class="landing-content">
+        <div class="landing-logo"></div>
+        <p>Need help with your writing? We'll work with you on your writing
+        technique and also help you craft a great college application essay.
+        </p>
+        <button class="button modal-toggle">Sign Up</button>
+      </div>
+    </section>
+  </div>
+</div>
+<div id="modal-container">
+  <section id="modal-module" class="landing-modal module">
+    <div class="modal-content">
+      <div class="modal-title">Sign Up</div>
+      <button class="close-button">X</button>
+      <form action="{{ url_for_security('login') }}" method="POST" name="register_user_form">
+        {{ login_user_form.hidden_tag() }}
+        <ol>
+          <li>
+            {{ render_field(login_user_form.email, type="email", class="single-column", placeholder="Email") }}
+            {% if login_user_form.email and login_user_form.email.errors %}
+              <ul class="registration-errors">
+              {% for error in login_user_form.email.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+          <li>
+            {{ render_field(login_user_form.email, type="password", class="single-column", placeholder="Password") }}
+            {% if login_user_form.password and login_user_form.password.errors %}
+              <ul class="registration-errors">
+              {% for error in login_user_form.password.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+          <li>
+            <label class="double-column">
+              <a href="/"><i class="icon-left-open"></i> Back</a>
+            </label>
+            <button name="submit" type="submit" value="Login" class="double-column">Login <i class="icon-right-open"></i></button>
+          </li>
+        </ol>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/libs/jquery/dist/jquery.min.js"></script>
+<script src="/static/landing/landing.js"></script>
+
+{% endblock %}
