@@ -28,7 +28,6 @@ class SpecialProgram(BaseModel):
 
     # relationships
     university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
-    # application_essay_templates = db.relationship(
-    #     "SpecialProgram",
-    #     uselist=False,
-    #     backref="special_program")
+    application_essay_templates = db.relationship(
+        "ApplicationEssayTemplate",
+        backref=db.backref("special_program"))

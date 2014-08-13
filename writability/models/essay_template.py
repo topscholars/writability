@@ -66,7 +66,7 @@ class ApplicationEssayTemplate(EssayTemplate):
 
     # relationships
     university_id = db.Column(db.Integer, db.ForeignKey("university.id"))
-    special_program_id = db.Column(db.Integer, db.ForeignKey("special_program.id"), nullable=True)
+    special_program_id = db.Column(db.Integer, db.ForeignKey("special_program.id"), nullable=True, default=None)
     themes = db.relationship(
         "Theme",
         secondary=theme_application_template_associations,
