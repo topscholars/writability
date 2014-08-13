@@ -1306,6 +1306,9 @@ input.form-date {
 .alert-danger .alert-link {
   color: #843534;
 }
+.alert {
+  margin-top: 40px !important;
+}
 .alert button {
   font-size: inherit;
   background: none;
