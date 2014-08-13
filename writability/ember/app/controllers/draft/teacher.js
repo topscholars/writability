@@ -58,6 +58,8 @@ export default DraftController.extend({
                         // This should really be refactored
                         essayPromise.then(function(essay) {
                             essay.reload().then(function() {
+                                controller.send('alert', 'Review submitted.', 'success');
+
                                 if (draft.get('essay_type') === 'application') {
                                     controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
                                 } else if (draft.get('essay_type') === 'theme') {
