@@ -131,8 +131,8 @@ class ApplicationEssayListResource(EssayListResource):
 
 
 class EssayStateAssociationsManager(StatefulResourceManager):
-    item_resource_name = "essaystateassociation"
-    list_resource_name = "essaystateassociations"
+    item_resource_name = "essay_association"
+    list_resource_name = "essay_associations"
     model_class = EssayStateAssociations
 
     def _add_item_fields(self):
@@ -191,7 +191,7 @@ class EssayStateAssociationsResource(ItemResource):
         """
         json = request.get_json()
         try:
-            payload = json[str(themeessay_id)+'-'+str(appessay_id)]
+            payload = json[self.resource_manager.item_resource_name]['state']
         except:  # FIXME: too broad exception
             raise InvalidUsage('Did you pass the correct application essay ID in the request body?')
         return payload

@@ -50,23 +50,9 @@ export default Ember.ObjectController.extend({
             var draft = this.get('recentDraft');
             this.transitionToRoute('draft', draft);
         },
-        selectApplicationEssay: function(applicationEssay) {
-            var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);
-            this.set('model.selected_essays', newSelectedEssays);
-
-            var selectApplicationEssayUrl = '/api/essay-associations/' + applicationEssay.id;
-            var data = {};
-            data[applicationEssay.id] = 'selected';
-
-            var selectApplicationEssayPromise = new Ember.RSVP.Promise(function(resolve) {
-                Ember.$.ajax({
-                    url: selectApplicationEssayUrl,
-                    method: 'PUT',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(data)
-                }).then(function(data) { resolve(); });
-            });
+        selectApplicationEssay: function(applicationEssayAssociation) {
+            applicationEssayAssociation.set('state', 'selected');
+            applicationEssayAssociation.save();
         }
     }
 });
