@@ -1,6 +1,13 @@
 <!-- <div class="list-style-group">@{{index}}</div> -->
-<div class="main-group">
+<div class="main-group university-item">
     <div class="main-line">
-    	{{#link-to 'universities.show' name}}{{name}}{{/link-to}}
+    	{{#if addingUniversities}}
+			{{university.name}}
+			<button class="remove" {{action 'removeUniversity' university}}>
+				<i class="icon-cancel"></i>
+			</button>
+    	{{else}}
+    		{{#link-to 'universities.show' university.name}}{{university.name}}{{/link-to}}
+    	{{/if}}
     </div>
 </div>

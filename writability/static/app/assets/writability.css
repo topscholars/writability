@@ -1262,6 +1262,17 @@ input.form-date {
 .student-nav ul.menu-dropdown li a:disabled {
   visibility: hidden;
 }
+.university-item button.remove {
+  padding: 0;
+  border: none;
+  background: none;
+  float: right;
+  font-family: 'Rockwell W01', serif;
+  font-size: 40px;
+}
+.university-item button.remove:hover {
+  color: #333;
+}
 /*@import "modules";
 @import "partials"; */
 /***********************************************************
