@@ -25,6 +25,8 @@ export default EditorView.extend({
 
     didInsertElement: function() {
         this.activatePanel('review');
+
+        this.get('controller').send('alert', 'Draft will autosave every 5 seconds');
     },
 
     actions: {
