@@ -29,6 +29,8 @@ from resource.annotation import AnnotationResource, AnnotationListResource, TagR
 from resource.add_universities import AddUniversitiesResource
 from resource.rubric import RubricListResource, RubricResource, RubricCategoryResource, RubricCategoryListResource, CriterionResource, CriterionListResource
 from resource.rubric import RubricCategoryRubricAssociationsResource
+from resource.special_program import SpecialProgramListResource
+
 
 def add_resource_with_endpoint(api, resource_class, path):
     """Help add a resource by standardizing the external interation."""
@@ -93,6 +95,9 @@ def initialize(app, api_prefix):
         api,
         UniversityResource,
         "/universities/<int:id>")
+
+    # special program
+    add_resource_with_endpoint(api, SpecialProgramListResource, "/special-programs")
 
     # theme
     add_resource_with_endpoint(api, ThemeListResource, "/themes")

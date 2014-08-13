@@ -30,10 +30,14 @@ class AddUniversitiesResource(Resource):
     def _create_theme_essay(self, student, application_essays, theme, use_threading=True):
         essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id': theme})[0].id
         try:
-            existing_theme_essay = \
-                ThemeEssay.read_by_filter({'student_id': student.id, 'essay_template_id': essay_template_id})[0]
+            existing_theme_essay = ThemeEssay.read_by_filter({
+                'student_id': student.id,
+                'essay_template_id': essay_template_id
+            })[0]
+
             app_essays = existing_theme_essay.application_essays
             app_essays.extend(application_essays)
+
             return self._update(ThemeEssay, existing_theme_essay.id,
                                 theme=theme,
                                 application_essays=app_essays,
@@ -42,7 +46,7 @@ class AddUniversitiesResource(Resource):
                                 state='new',
                                 proposed_topics=['', ''],
                                 is_displayed=use_threading)
-        except:  # FIXME: too broad exception
+        except IndexError:
             return self._create(ThemeEssay,
                                 theme=theme,
                                 application_essays=application_essays,
@@ -62,15 +66,21 @@ class AddUniversitiesResource(Resource):
             use_threading = req_json.get('use_threading')
         except:  # FIXME: too broad exception clause
             use_threading = True
+
         if university_ids is None:
             return 'Missing "universities" parameter in JSON request', 400
+
         student = User.query.filter_by(id=student_id).first()
+
         required_application_essay_templates = []
         for university_id in university_ids:
             required_application_essay_templates.extend(
-                ApplicationEssayTemplate.query.filter_by(university_id=university_id))
+                ApplicationEssayTemplate.query.filter_by(university_id=university_id)
+            )
+
         existing_application_essay_template_ids = [application_essay.essay_template_id
                                                    for application_essay in student.application_essays]
+
         application_essay_templates = [x for x in required_application_essay_templates
                                        if x.id not in existing_application_essay_template_ids]
 

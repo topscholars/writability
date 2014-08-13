@@ -10,7 +10,6 @@ from .base import BaseModel
 
 
 class University(BaseModel):
-
     # required fields
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
@@ -19,8 +18,13 @@ class University(BaseModel):
     logo_url = db.Column(db.String)
 
     # inheritance
+
     # relationships
     application_essay_templates = db.relationship(
         "ApplicationEssayTemplate",
         backref="university")
+    special_programs = db.relationship(
+        "SpecialProgram",
+        backref="university")
+
     # students: don't explicitly declare it but it's here
