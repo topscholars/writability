@@ -36,7 +36,7 @@ export default Ember.ObjectController.extend({
             }
         },
         mergeEssay: function(model) {
-            this.transitionToRoute('student.essays.show.merge');
+            this.transitionToRoute('student.essays.show-theme.merge');
         },
         splitEssay: function(model) {
             var oldParent = model.get('parent');
