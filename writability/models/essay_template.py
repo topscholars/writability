@@ -19,13 +19,19 @@ class ChoiceGroup(BaseModel):
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
+    choice_group_id = db.Column(db.Integer)
     num_required_essays = db.Column(db.Integer, nullable=False, unique=True)
 
     # relationships
+    university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
+    university = db.relationship(
+        "University",
+        backref=db.backref("choice_group"),
+        uselist=True)
+
     application_essay_templates = db.relationship(
         "ApplicationEssayTemplate",
         backref=db.backref("choice_group"))
-
 
 class EssayTemplate(BaseModel):
 

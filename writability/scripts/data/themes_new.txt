@@ -1,0 +1,72 @@
+Major   Major
+School   School
+
+Challenge   General
+Challenge   Ethics
+Challenge   Failure
+Challenge   Risk
+Challenge   Enemy
+Challenge   Intellect
+
+Belief  General
+Belief  World
+Belief  Values
+Belief  Diversity
+Belief  Ethics
+Belief  Passion
+Belief  Change
+
+Community   Define
+Community   Describe
+Community   Importance
+Community   Contribute
+Community   Diversity
+Community   Challenges
+
+Global  Describe
+Global  Contribute
+Global  Diversity
+Global  Opinion
+Global  Challenges
+
+Future  Goals
+Future  World Vision
+Future  Career
+Future  Opinion
+
+Education   Define
+Education   Passion
+Education   Curious
+Education   School
+Education   Beyond School
+Education   Issue
+Education   Technology
+
+Major   Why
+Major   Passion
+Major   Brainstorm
+Major   Inspiration
+
+Inspiration Art
+Inspiration Literature
+Inspiration Music
+Inspiration Movie
+Inspiration History
+Inspiration Person
+Inspiration Other
+
+Experience  Life Event
+Experience  Accomplishment
+Experience  Leader
+Experience  Beyond School
+Experience  Work/Internship
+Experience  Research
+Experience  Summer
+
+Personality Autobiography
+Personality Unique
+Personality Passion
+Personality Creativity
+Personality Roommate
+Personality Place
+Personality Fun

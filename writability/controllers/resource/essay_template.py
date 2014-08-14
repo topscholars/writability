@@ -9,6 +9,7 @@ ApplicationEssayTemplate.
 from flask.ext.restful import fields
 
 from models.essay_template import EssayTemplate, ThemeEssayTemplate, ApplicationEssayTemplate, ChoiceGroup
+import university
 
 import theme
 import university
@@ -25,7 +26,11 @@ class ChoiceGroupResourceManager(ResourceManager):
         super(ChoiceGroupResourceManager, self)._add_item_fields()
 
         self._item_fields.update({
-            "num_required_essays": fields.Integer
+            "num_required_essays": fields.Integer,
+            "university": ResourceField(
+                university.UniversityResourceManager.item_resource_name,
+                absolute=True),
+            "choice_group_id": fields.Integer
         })
 
 

@@ -12,7 +12,7 @@ from .fields import ResourceField
 from models.user import User
 
 from models.special_program import SpecialProgram
-
+from university import UniversityResourceManager
 
 class SpecialProgramResourceManager(ResourceManager):
     item_resource_name = "special_program"
@@ -29,7 +29,10 @@ class SpecialProgramResourceManager(ResourceManager):
             "description": fields.String,
             "application_essay_templates": ResourceField(
                 ApplicationEssayTemplateResourceManager.item_resource_name,
-                absolute=True)
+                absolute=True),
+            "university": ResourceField(
+                UniversityResourceManager.item_resource_name,
+                absolute=True),
         })
 
 

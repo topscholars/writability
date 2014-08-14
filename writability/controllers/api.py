@@ -100,6 +100,7 @@ def initialize(app, api_prefix):
 
     # choice groups
     add_resource_with_endpoint(api, ChoiceGroupListResource, "/choice-groups")
+    add_resource_with_endpoint(api, ChoiceGroupResource, "/choice-groups/<int:id>")
 
     # essay template
     add_resource_with_endpoint(
