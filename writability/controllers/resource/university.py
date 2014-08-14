@@ -11,7 +11,9 @@ from models.university import University
 
 from .base import ResourceManager, ItemResource, ListResource
 from .fields import ResourceField
+
 import essay_template
+from special_program import SpecialProgramResourceManager
 
 
 class UniversityResourceManager(ResourceManager):
@@ -25,6 +27,10 @@ class UniversityResourceManager(ResourceManager):
         self._item_fields.update({
             "name": fields.String,
             "logo_url": fields.String,
+            "use_common_app": fields.Boolean,
+            "special_programs": fields.List(ResourceField(
+                SpecialProgramResourceManager.item_resource_name, absolute=True)
+            ),
             "application_essay_templates": fields.List(ResourceField(
                 essay_template.ApplicationEssayTemplateResourceManager.item_resource_name,
                 absolute=True))

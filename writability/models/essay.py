@@ -115,6 +115,7 @@ class Essay(BaseModel):
     def existing_drafts(self):
         return len(self.drafts)
 
+
 class ThemeEssay(StatefulModel, Essay):
     __tablename__ = "theme_essay"
 
@@ -147,7 +148,8 @@ class ThemeEssay(StatefulModel, Essay):
         backref=db.backref("theme_essay"))
 
     application_essays = association_proxy('essay_associations', 'application_essay',
-        creator=lambda app_essay: EssayStateAssociations(application_essay=app_essay))
+                                           creator=lambda app_essay: EssayStateAssociations(
+                                               application_essay=app_essay))
 
     @validates('proposed_topics')
     def validate_proposed_topics(self, key, proposed_topics):
@@ -213,6 +215,7 @@ class ApplicationEssay(StatefulModel, Essay):
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     # optional fields
+    onboarding_is_selected = db.Column(db.Boolean, nullable=False, default=False)
 
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
@@ -265,6 +268,7 @@ class ApplicationEssay(StatefulModel, Essay):
         self.max_words = app_essay_template.max_words
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
+
 
 class EssayStateAssociations(StatefulModel):
     __tablename__ = 'essay_associations'
@@ -322,7 +326,7 @@ class EssayStateAssociations(StatefulModel):
 
     application_essay = db.relationship(
         "ApplicationEssay",
-        backref=db.backref("essay_associations"))  #, lazy="dynamic" -> removed
+        backref=db.backref("essay_associations"))  # , lazy="dynamic" -> removed
     # theme_essay: don't explicitly declare it but it's here'
 
     # this needs to be a list?

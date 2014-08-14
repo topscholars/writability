@@ -24,7 +24,7 @@ class ResourceField(fields.Url):
             obj_id = obj[key].id
         else:  # else, just grab the id from the object
             sub_obj = getattr(obj, key)
-            if sub_obj:
+            if sub_obj and hasattr(sub_obj, 'id'):
                 obj_id = sub_obj.id
 
         if obj_id:
