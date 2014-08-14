@@ -21,7 +21,6 @@ export default AuthenticatedRoute.extend({
 
 	afterModel: function(promises, transition) {
 		if (this.getApplicationEssays(promises).length < 1) {
-			debugger;
 			transition.send('alert', 'Please finish adding universities', 'danger');
 			this.transitionTo('universities.add');
 		}
