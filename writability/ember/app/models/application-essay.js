@@ -10,5 +10,7 @@ export default Essay.extend({
     essay_template: DS.belongsTo('applicationEssayTemplate', {async: true}),
     essayType: 'application',
 
+    onboarding_is_selected: DS.attr(),
+
     is_in_progress: true
 });

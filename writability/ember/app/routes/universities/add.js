@@ -34,10 +34,7 @@ export default AuthenticatedRoute.extend({
             var student = controller.get('student');
 
             controller.attachEssays().then(function() {
-                student.set('state', 'active');
-                return student.save();
-            }).then(function() {
-                controller.transitionToRoute('essays');
+                controller.transitionToRoute('universities.index');
             });
         },
         removeUniversity: function(universitiy) {
