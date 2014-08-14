@@ -13,7 +13,6 @@ from .base import ResourceManager, ItemResource, ListResource
 from .fields import ResourceField
 
 import essay_template
-from special_program import SpecialProgramResourceManager
 
 
 class UniversityResourceManager(ResourceManager):
@@ -23,6 +22,8 @@ class UniversityResourceManager(ResourceManager):
     model_class = University
 
     def _add_item_fields(self):
+        from special_program import SpecialProgramResourceManager
+
         super(UniversityResourceManager, self)._add_item_fields()
         self._item_fields.update({
             "name": fields.String,

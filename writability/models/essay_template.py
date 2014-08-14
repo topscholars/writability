@@ -11,7 +11,7 @@ universities' applications.
 from .db import db
 from .base import BaseModel
 from .relationships import theme_application_template_associations
-
+from sqlalchemy.orm import validates
 
 class ChoiceGroup(BaseModel):
     __mapper_args__ = {'polymorphic_identity': 'choice_group'}
@@ -77,6 +77,7 @@ class ApplicationEssayTemplate(EssayTemplate):
 
     # optional fields
     due_date = db.Column(db.Date)
+    requirement_type = db.Column(db.String(20), nullable=False, server_default='Required', default='Required')
 
     # relationships
     university_id = db.Column(db.Integer, db.ForeignKey("university.id"))
@@ -86,3 +87,8 @@ class ApplicationEssayTemplate(EssayTemplate):
         "Theme",
         secondary=theme_application_template_associations,
         backref=db.backref("application_essay_templates", lazy="dynamic"))
+
+    @validates('requirement_type')
+    def validate_requirement_type(self, key, requirement_type):
+        assert requirement_type in ['Choice','Required','Optional']
+        return requirement_type
