@@ -51,7 +51,9 @@ class Review(StatefulModel):
         # This creates a draft, then draft creats a new review and its associated rubric
         super(Review, self).change_related_objects()
 
-        if self.state == "completed" and not self.draft.is_final_draft:
+        this_draft = self.draft
+
+        if self.state == "completed" and not this_draft.is_final_draft:
             this_essay = essay.Essay.read(self.draft.essay_id)
             this_draft = draft.Draft.read(self.draft_id)
             # add a new draft to this essay
@@ -62,6 +64,57 @@ class Review(StatefulModel):
                 "word_count" : this_draft.word_count
             }
             new_draft = draft.Draft(**new_draft_params)
+
+        elif self.state == "completed" and this_draft.is_final_draft and this_draft.essay.isTheme():
+
+            """
+            When a final draft is accepted on a Theme Essay, all of the Application Essays marked "selected" for that
+            Theme Essay or any of its merged_theme_essays should show up in the Essays list (have is_displayed set to
+            True), and the Theme Essay should be hidden (is_displayed set to False). The most recent Draft and Review
+            objects should be copied into these Application Essays the same way they are for each new Draft currently
+            (including Annotations, etc). However, the old Theme Essay should NOT get these copied objects.
+            """
+            this_essay = this_draft.essay
+            te_list = [this_essay]
+            te_list.extend(this_essay.merged_theme_essays)
+            for te in te_list:
+                for esa in [e for e in te.essay_associations if e.state=="selected"]:
+                    new_draft_params = {
+                        "essay": esa.application_essay,
+                        "plain_text" : this_draft.plain_text,
+                        "formatted_text" : this_draft.formatted_text,
+                        "word_count" : this_draft.word_count,
+                    }
+                    new_draft = draft.Draft(**new_draft_params)
+                    db.session.commit()
+
+                    ann_list = [a.create_copy() for a in self.annotations if a.state != "approved"]
+                    new_review_params = {
+                        "teacher": this_essay.student.teacher,
+                        "draft": new_draft,
+                        "text": self.text,
+                        "review_type": "TEXT_REVIEW",
+                        "annotations": ann_list
+                    }
+
+                    new_draft.review = Review(**new_review_params)
+                    db.session.add(new_draft.review)
+                    # Commit here so that the review gets an ID
+                    db.session.commit()
+
+                    new_rubric_params = {
+                        "name": None,
+                        "review_id": new_draft.review.id
+                    }
+
+                    new_rubric = self.rubric.create_copy(new_review_id=new_draft.review.id)
+                    new_draft.review.rubric = new_rubric
+                    db.session.add(new_rubric)
+
+                    esa.application_essay.is_displayed = True
+                    esa.theme_essay.is_displayed = False
+    
+            db.session.commit()
 
     def _get_next_states(self, state):
         """Helper function to have subclasses decide next states."""

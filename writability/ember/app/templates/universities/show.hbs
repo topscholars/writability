@@ -1,0 +1,20 @@
+<div class="universities-title">{{universityName}}</div>
+
+<ul class="tab-content">
+	{{#each application_essay in universityApplicationEssays}}
+		<li
+			{{bind-attr class=":tab-list-item application_essay.onboarding_is_selected:selected:unselected"}}
+			{{action 'toggleApplicationEssay' application_essay}}>
+			<div class="tab-li-field app-text">{{application_essay.essay_template.university.name}}:</div>
+			<div class="tab-li-field">{{application_essay.essay_prompt}}</div>
+			{{#if application_essay.theme_essays}}
+				<div class="tab-li-field">Also with:
+				{{#each theme_essay in application_essay.theme_essays}}
+					{{theme_essay.essay_template.theme.name}}
+					({{theme_essay.essay_template.theme.category}}),
+				{{/each}}
+				</div>
+			{{/if}}
+		</li>
+	{{/each}}
+</ul>

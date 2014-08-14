@@ -24,7 +24,7 @@ app.import('vendor/pickadate/lib/picker.js');
 app.import('vendor/pickadate/lib/picker.date.js');
 app.import('vendor/validatorjs/dist/validator.min.js');
 app.import('vendor/select2/select2.js');
-
+app.import('vendor/bootstrap.growl/dist/bootstrap-growl.js');
 
 // This takes files from the bower directory and then copys
 // them to the compiled directory in a libs directory

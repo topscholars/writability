@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { autosaveTimout } from 'writability/config';
 
 export default Ember.ObjectController.extend({
     currentDraft: function () {
@@ -19,7 +20,7 @@ export default Ember.ObjectController.extend({
 
     saveEssaySettingsObserver: function () {
         if (this.get('model.isDirty')) {
-            Ember.run.debounce(this, this.saveEssaySettings, 500);
+            Ember.run.debounce(this, this.saveEssaySettings, autosaveTimout);
         }
     }.observes('due_date', 'num_of_drafts'),
 
@@ -35,7 +36,7 @@ export default Ember.ObjectController.extend({
             }
         },
         mergeEssay: function(model) {
-            this.transitionToRoute('student.essays.show.merge');
+            this.transitionToRoute('student.essays.show-theme.merge');
         },
         splitEssay: function(model) {
             var oldParent = model.get('parent');
@@ -49,23 +50,9 @@ export default Ember.ObjectController.extend({
             var draft = this.get('recentDraft');
             this.transitionToRoute('draft', draft);
         },
-        selectApplicationEssay: function(applicationEssay) {
-            var newSelectedEssays = this.get('model.selected_essays').concat([applicationEssay.id]);
-            this.set('model.selected_essays', newSelectedEssays);
-
-            var selectApplicationEssayUrl = '/api/essay-associations/' + applicationEssay.id;
-            var data = {};
-            data[applicationEssay.id] = 'selected';
-
-            var selectApplicationEssayPromise = new Ember.RSVP.Promise(function(resolve) {
-                Ember.$.ajax({
-                    url: selectApplicationEssayUrl,
-                    method: 'PUT',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(data)
-                }).then(function(data) { resolve(); });
-            });
+        selectApplicationEssay: function(applicationEssayAssociation) {
+            applicationEssayAssociation.set('state', 'selected');
+            applicationEssayAssociation.save();
         }
     }
 });

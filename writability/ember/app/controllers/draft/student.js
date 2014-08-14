@@ -27,6 +27,7 @@ export default DraftController.extend({
                 var essay_id = draft.get('essay_id'),
                     essay_type = draft.get('essay_type');
 
+                controller.send('alert', 'Draft submitted.', 'success');
                 controller.transitionToEssay(essay_type, essay_id);
             });
         });

@@ -28,6 +28,21 @@ export default AuthenticatedRoute.extend({
                     controller.universityHasBeenSelected();
                 });
             });
+        },
+        next: function() {
+            var controller = this.controllerFor('universities.add');
+            var student = controller.get('student');
+
+            controller.attachEssays().then(function() {
+                controller.transitionToRoute('universities.index');
+            });
+        },
+        removeUniversity: function(universitiy) {
+            var controller = this.controllerFor('universities.add');
+            var student = controller.get('student');
+
+            student.get('universities').removeObject(universitiy);
+            student.save();
         }
     }
 });

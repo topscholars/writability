@@ -24,11 +24,6 @@ class Rubric(BaseModel):
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
-    #rubric_categories = db.relationship(
-    #    "RubricCategory",
-    #    backref=db.backref("rubric", uselist=False),
-    #    uselist=True) 
-
 
     rubric_associations = db.relationship(
         "RubricCategoryRubricAssociations",
@@ -42,6 +37,41 @@ class Rubric(BaseModel):
     # relationships
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
 
+    def __init__(self, **object_dict):
+        add_default_rc = object_dict.pop('add_default_rc',False)
+        super(Rubric, self).__init__(**object_dict)
+        # Give it default rubric category associations if add_default_rc.
+        if add_default_rc:
+            try:
+                rubr_cat_content = RubricCategory.read_by_filter({'name':'Content'})[0]
+                rubr_cat_impact = RubricCategory.read_by_filter({'name':'Impact'})[0]
+                rubr_cat_quality = RubricCategory.read_by_filter({'name':'Quality'})[0]
+                default_cat_list = [rubr_cat_content, rubr_cat_impact, rubr_cat_quality]
+            except:
+                raise ValueError('RubricCategory items are not defined!')
+
+            for rc in default_cat_list:
+                ra_params = {'rubric_category_id':rc.id, 'grade':0}
+                self.rubric_associations.append(RubricCategoryRubricAssociations(**ra_params))
+
+    def create_copy(self, new_review_id=None):
+        '''
+        Creates a new rubric attached to new_review_id. Existing grades are carried over.
+        '''
+        new_rubric_params = {
+            "name": None,
+            "review_id": new_review_id
+        }
+        new_rubric = Rubric(**new_rubric_params)
+
+        for ra in self.rubric_associations:
+            ra_params = {
+                "rubric_category_id": ra.rubric_category_id,
+                "grade" : ra.grade
+            }
+            new_rubric.rubric_associations.append(RubricCategoryRubricAssociations(**ra_params))
+
+        return new_rubric
 
 class RubricCategory(BaseModel): # Impact, Content, and Quality.
     __tablename__ = 'rubric_category'

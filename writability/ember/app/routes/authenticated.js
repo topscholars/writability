@@ -50,5 +50,7 @@ export default Ember.Route.extend({
     setupController: function(controller, model) {
         this._super(controller, model);
         controller.set('applicationUser', this.get('currentUser'));
+        controller.set('applicationStudent', this.get('currentStudent'));
+        controller.set('applicationTeacher', this.get('currentTeacher'));
     }
 });
