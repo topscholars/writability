@@ -21,13 +21,13 @@ class AddUniversitiesResource(Resource):
     def _update(self, model, id, **kwargs):
         return model.update(id, kwargs)
 
-    def _create_application_essay(self, student, application_essay_template, use_threading=True):
+    def _create_application_essay(self, student, application_essay_template):
         return self._create(ApplicationEssay,
                             student=student.id,
                             essay_template=application_essay_template.id,
-                            is_displayed=not use_threading)
+                            is_displayed=False)
 
-    def _create_theme_essay(self, student, application_essays, theme, use_threading=True):
+    def _create_theme_essay(self, student, application_essays, theme):
         essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id': theme})[0].id
         try:
             existing_theme_essay = ThemeEssay.read_by_filter({
@@ -45,7 +45,7 @@ class AddUniversitiesResource(Resource):
                                 student=student.id,
                                 state='new',
                                 proposed_topics=['', ''],
-                                is_displayed=use_threading)
+                                is_displayed=False)
         except IndexError:
             return self._create(ThemeEssay,
                                 theme=theme,
@@ -54,18 +54,11 @@ class AddUniversitiesResource(Resource):
                                 student=student.id,
                                 state='new',
                                 proposed_topics=['', ''],
-                                is_displayed=use_threading)
+                                is_displayed=False)
 
     def post(self, student_id):
         req_json = request.get_json()
         university_ids = req_json.get('universities')
-
-        # use_threading: parameter from university onboarding page.
-        # when False, we skip straight to the application essay process.
-        try:
-            use_threading = req_json.get('use_threading')
-        except:  # FIXME: too broad exception clause
-            use_threading = True
 
         if university_ids is None:
             return 'Missing "universities" parameter in JSON request', 400
@@ -89,7 +82,7 @@ class AddUniversitiesResource(Resource):
 
         app_essay_list = []  # (app_essay, [theme1,theme2,etc])
         for application_essay_template in application_essay_templates:
-            application_essay = self._create_application_essay(student, application_essay_template, use_threading)
+            application_essay = self._create_application_essay(student, application_essay_template)
             db.session.add(application_essay)
             db.session.flush()
             db.session.refresh(application_essay)  # make sure 'id' field is set properly
@@ -101,7 +94,7 @@ class AddUniversitiesResource(Resource):
 
         for theme in all_themes:
             ae_list = [ae[0] for ae in app_essay_list if theme in ae[1]]
-            db.session.add(self._create_theme_essay(student, ae_list, theme, use_threading))
+            db.session.add(self._create_theme_essay(student, ae_list, theme))
 
         if len(application_essay_templates) > 0:
             db.session.commit()
