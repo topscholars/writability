@@ -9,7 +9,6 @@ from flask.ext.restful import fields
 
 from .base import ResourceManager, ItemResource, ListResource
 from .fields import ResourceField
-from .essay import ApplicationEssayResourceManager
 from models.user import User
 
 from models.special_program import SpecialProgram
@@ -37,10 +36,14 @@ class SpecialProgramResourceManager(ResourceManager):
 class SpecialProgramListResource(ListResource):
     resource_manager_class = SpecialProgramResourceManager
 
+
 class SpecialProgramResource(ItemResource):
     resource_manager_class = SpecialProgramResourceManager
 
+
 class SpecialProgramSetResource(ItemResource):
+    from .essay import ApplicationEssayResourceManager
+
     resource_manager_class = ApplicationEssayResourceManager
 
     def get(self, student_id, sp_id):
@@ -74,9 +77,9 @@ class SpecialProgramSetResource(ItemResource):
         Get the JSON body of the request.
         Should be in the form
         {
-            “special_program”: <int>,
-            “student”: <int>,
-            “checked”: <boolean>
+            "special_program": <int>,
+            "student": <int>,
+            "checked": <boolean>
         }
 
         """
