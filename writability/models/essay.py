@@ -209,12 +209,13 @@ class ApplicationEssay(StatefulModel, Essay):
     __tablename__ = "application_essay"
     __mapper_args__ = {'polymorphic_identity': 'application_essay'}
 
-    _STATES = ["new", "in_progress", "completed", "selected"]
+    _STATES = ["new", "in_progress", "completed"]
 
     # required fields
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     # optional fields
+    onboarding_is_selected = db.Column(db.Boolean, nullable=False, default=False)
 
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
@@ -234,8 +235,7 @@ class ApplicationEssay(StatefulModel, Essay):
         next_states_mapping = {
             "new": ["in_progress"],
             "in_progress": ["completed"],
-            "completed": [],
-            "selected": []
+            "completed": []
         }
 
         return next_states_mapping[state]
