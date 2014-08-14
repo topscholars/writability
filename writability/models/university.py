@@ -16,6 +16,7 @@ class University(BaseModel):
 
     # optional fields
     logo_url = db.Column(db.String)
+    use_common_app = db.Column(db.Boolean, nullable=False, default=False)
 
     # inheritance
 

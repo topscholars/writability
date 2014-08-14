@@ -63,7 +63,6 @@ class ApplicationEssayTemplate(EssayTemplate):
 
     # optional fields
     due_date = db.Column(db.Date)
-    use_common_app = db.Column(db.Boolean, nullable=False, default=False)
 
     # relationships
     university_id = db.Column(db.Integer, db.ForeignKey("university.id"))
