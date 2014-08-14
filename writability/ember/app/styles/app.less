@@ -19,6 +19,10 @@
 @import "ui/university-list";
 /*@import "modules";
 @import "partials"; */
+@import "vendor/bootstrap/less/variables.less";
+@import "vendor/bootstrap/less/mixins.less";
+@import "vendor/bootstrap/less/alerts.less";
+@import "ui/alerts";
 
 /***********************************************************
 * COLOR DEFINITIONS
@@ -1160,3 +1164,14 @@ p.lead {
 @import "./ui/merge";
 @import (inline) "vendor/pickadate/lib/compressed/themes/classic.css";
 @import (inline) "vendor/pickadate/lib/compressed/themes/classic.date.css";
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}

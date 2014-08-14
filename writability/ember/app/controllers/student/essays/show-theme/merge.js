@@ -17,14 +17,14 @@ export default Ember.Controller.extend({
 	},
 
 	transitionBack: function() {
-		this.transitionToRoute('student.essays.show');
+		this.transitionToRoute('student.essays.show-theme');
 		this.send('closeModal');
 	},
 
 	actions: {
 		closeModal: function() {
 			this.get('parentEssay').reload().then(function() {
-				this.transitionToRoute('student.essays.show');
+				this.transitionToRoute('student.essays.show-theme');
 			}.bind(this));
 
 			return true;

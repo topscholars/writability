@@ -40,20 +40,20 @@ export default Ember.ObjectController.extend({
     saveDraft: function() {
         var draft = this.get('model');
         if (draft.get('isDirty')) {
-            draft.save().then(this.onSuccess, this.onFailure);
+            draft.save().then(this.onSuccess.bind(this), this.onFailure.bind(this));
         }
     },
 
     formattedTextObserver: function () {
-        Ember.run.debounce(this, this.saveDraft, autosaveTimout, true);
+        Ember.run.debounce(this, this.saveDraft, autosaveTimout);
     }.observes('formatted_text'),
 
     onSuccess: function () {
-        console.log("Saved draft to server.");
+        this.send('alert', 'Draft Saved.', 'success');
     },
 
     onFailure: function () {
-        console.log("Failure to sync draft to server.");
+        this.send('alert', 'Failure saving draft.', 'danger');
     },
 
     updateEssayDueDate: function() {

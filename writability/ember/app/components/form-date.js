@@ -33,7 +33,7 @@ export default Ember.TextField.extend({
 			var currentMoment = moment(this.get('dateBind'));
 			this.set('value', currentMoment.format(this.get('momentFormat')));
 		} else {
-			this.set('value', 'Select Due Date');
+			this.set('value', 'Select Date');
 		}
 
 	},
