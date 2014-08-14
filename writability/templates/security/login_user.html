@@ -47,7 +47,7 @@
             {% endif %}
           </li>
           <li>
-            {{ render_field(login_user_form.email, type="password", class="single-column", placeholder="Password") }}
+            {{ render_field(login_user_form.password, type="password", class="single-column", placeholder="Password") }}
             {% if login_user_form.password and login_user_form.password.errors %}
               <ul class="registration-errors">
               {% for error in login_user_form.password.errors %}
