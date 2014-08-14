@@ -43,6 +43,31 @@ export default DraftController.extend({
             var draft = this.get('model'),
                 controller = this;
 
+            //// Need to remove obsolete Annotation spans from draft content on save.
+            //// This includes of the type id='annotation-99' and 'annotation-in-progress'
+            //var existing_annotations_objs = draft.get('review.annotations');     //undefined
+            //var existing_annotations = draft.get('review.annotations.@each.id'); // Class object..
+            //console.log(existing_annotations);
+            //$('*[id*=annotation-]:visible').each(function() {
+            //    var annotation_span = this;
+            //    var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
+            //    
+            //    debugger
+            //    if (existing_annotations.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
+            //        $(annotation_span).replaceWith(annotation_span.contents());
+            //    }
+            //});
+
+            //// Remove any in progress annotations
+            //var currentInProgress = $('#annotation-in-progress');
+            //if (currentInProgress.length > 0) {
+            //    $(currentInProgress).replaceWith(currentInProgress.contents());
+            //}
+            //debugger
+
+            //draft.save();
+            //debugger
+
             this.updateEssayDueDate().then(function() {
                 draft.get('review')
                     .then(function (review) {

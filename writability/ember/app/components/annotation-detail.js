@@ -34,6 +34,7 @@ export default Ember.Component.extend(Collapsable, {
 			this.sendAction('closeAnnotation');
 		},
 		// For teacher to delete unwanted annotations during their initial review
+		// DO NOT USE TO REMOVE APPROVED ANNOTATIONS - WE WANT THE DATA RECORD
 		deleteAnnotation: function() {
 			var annotation = this.get('annotation'),
 				component = this;

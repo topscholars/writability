@@ -57,6 +57,7 @@ class Draft(StatefulModel):
             ann_list = []
             prev_review = None
             new_rubric = None
+            #import pdb; pdb.set_trace();
             if len(this_essay.drafts) > 1:
                 prev_draft = Draft.read(max([d.id for d in this_essay.drafts if d.id != self.id]))
                 prev_review = prev_draft.review
