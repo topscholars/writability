@@ -13,6 +13,20 @@ from .base import BaseModel
 from .relationships import theme_application_template_associations
 
 
+class ChoiceGroup(BaseModel):
+    __mapper_args__ = {'polymorphic_identity': 'choice_group'}
+    __tablename__ = 'choice_group'
+
+    # required fields
+    id = db.Column(db.Integer, primary_key=True)
+    num_required_essays = db.Column(db.Integer, nullable=False, unique=True)
+
+    # relationships
+    application_essay_templates = db.relationship(
+        "ApplicationEssayTemplate",
+        backref=db.backref("choice_group"))
+
+
 class EssayTemplate(BaseModel):
 
     # required fields
@@ -26,7 +40,7 @@ class EssayTemplate(BaseModel):
     __mapper_args__ = {'polymorphic_on': discriminator}
 
     # relationships
-    # TODO: this request could will get super expensive
+    # FIXME: this request could will get super expensive
     essays = db.relationship("Essay", backref="essay_template")
 
 
@@ -67,6 +81,7 @@ class ApplicationEssayTemplate(EssayTemplate):
     # relationships
     university_id = db.Column(db.Integer, db.ForeignKey("university.id"))
     special_program_id = db.Column(db.Integer, db.ForeignKey("special_program.id"), nullable=True, default=None)
+    choice_group_id = db.Column(db.Integer, db.ForeignKey("choice_group.id"), nullable=True, default=None)
     themes = db.relationship(
         "Theme",
         secondary=theme_application_template_associations,
