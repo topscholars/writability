@@ -77,7 +77,7 @@ class ApplicationEssayTemplate(EssayTemplate):
 
     # optional fields
     due_date = db.Column(db.Date)
-    requirement_type = db.Column(db.String)
+    requirement_type = db.Column(db.String(20), nullable=False, server_default='Required', default='Required')
 
     # relationships
     university_id = db.Column(db.Integer, db.ForeignKey("university.id"))
