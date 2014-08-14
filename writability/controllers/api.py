@@ -29,7 +29,7 @@ from resource.annotation import AnnotationResource, AnnotationListResource, TagR
 from resource.add_universities import AddUniversitiesResource
 from resource.rubric import RubricListResource, RubricResource, RubricCategoryResource, RubricCategoryListResource, CriterionResource, CriterionListResource
 from resource.rubric import RubricCategoryRubricAssociationsResource
-from resource.special_program import SpecialProgramListResource, SpecialProgramResource
+from resource.special_program import SpecialProgramListResource, SpecialProgramResource, SpecialProgramSetResource
 
 
 def add_resource_with_endpoint(api, resource_class, path):
@@ -146,6 +146,8 @@ def initialize(app, api_prefix):
     add_resource_with_endpoint(api, StudentResource, "/students/<int:id>")
     add_resource_with_endpoint(api, AddUniversitiesResource,
                                "/students/<int:student_id>/add-universities")
+    api.add_resource(SpecialProgramSetResource,
+        "/students/<int:student_id>/special-programs/<int:sp_id>")
 
     # invitation
     add_resource_with_endpoint(api, InvitationListResource, "/invitations")
