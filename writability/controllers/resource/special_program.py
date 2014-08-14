@@ -60,15 +60,19 @@ class SpecialProgramSetResource(ItemResource):
         payload = self._get_payload()
 
         essay_templates = SpecialProgram.read(sp_id).application_essay_templates
-        essays = [e for e in User.read(student_id).essays 
-                  if e.essay_template in essay_templates and 
-                  e.essay_template.requirement_type == 'Required' and 
-                  not e.essay_template.choice_group_id]
+        app_essays = [e for e in User.read(student_id).essays if e.isApplication()]
+        checked = payload["checked"]
 
-        for essay in essays:
-            # This doesn't work. How do we update multiple Application Essay classes here??
-            item = {resource_name: model_class.update(essay.id,{'onboarding_is_selected': True})}
-            return marshal(item, item_field)
+        essays_to_update = [e for e in app_essays if e.essay_template in essay_templates and
+                            e.essay_template.requirement_type == 'Required']
+
+        if app_essays:
+            for essay in essays_to_update:
+                # If checked, set all Required essays_to_update. If not checked, unset all essays_to_update.
+                if checked and essay.essay_template.requirement_type != 'Required':
+                    continue
+                item = {resource_name: model_class.update(essay.id,{'onboarding_is_selected': checked})}
+            return marshal({resource_name: app_essays}, item_field)
         else:
             raise InvalidUsage('Did you pass the correct IDs in the URL?')
 
