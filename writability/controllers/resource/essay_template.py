@@ -108,6 +108,7 @@ class ApplicationEssayTemplateResourceManager(EssayTemplateResourceManager):
             "university": ResourceField(
                 university.UniversityResourceManager.item_resource_name,
                 absolute=True),
+            "requirement_type": fields.String,
             "special_program": ResourceField(
                 SpecialProgramResourceManager.item_resource_name,
                 absolute=True),
