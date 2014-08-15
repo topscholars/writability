@@ -30,7 +30,7 @@ class ChoiceGroupResourceManager(ResourceManager):
             "university": ResourceField(
                 university.UniversityResourceManager.item_resource_name,
                 absolute=True),
-            "choice_group_id": fields.Integer
+            "cg_id": fields.Integer
         })
 
 

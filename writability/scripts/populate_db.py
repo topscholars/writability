@@ -277,7 +277,7 @@ class ApplicationEssayTemplatePopulator(Populator):
     _FILE_PATH = "data/application-essay-templates.csv"
 
     def _construct_payload(self, line):
-        columns = line.split(',', 8)
+        columns = line.split('\t', 8)
 
         # university
         uni = columns[0].strip()
@@ -321,10 +321,11 @@ class ApplicationEssayTemplatePopulator(Populator):
 
         # # choice group
         choice_group_id = columns[6].strip()
-
-        # # num_of_choices
         num_required_essays = columns[7].strip()
-
+        if choice_group_id and choice_group_id != '':
+            internal_cg_id = self._add_or_get_choice_group(choice_group_id,num_required_essays,uni_id)
+        else:
+            internal_cg_id = None
         # essay_prompt
         essay_prompt = columns[8].strip().strip("\"")
 
@@ -334,7 +335,9 @@ class ApplicationEssayTemplatePopulator(Populator):
                 "max_words": max_words,
                 "themes": themes,
                 "essay_prompt": essay_prompt,
-                "special_program": sp_id
+                "special_program": sp_id,
+                "requirement_type": requirement_type,
+                "choice_group": internal_cg_id
             }
         }
 
@@ -369,6 +372,38 @@ class ApplicationEssayTemplatePopulator(Populator):
                 sp_id = self._get_field_with_query_url(url, "special_programs", "id")
 
                 return sp_id
+        else:
+            return None
+
+    def _add_or_get_choice_group(self, choice_group_id, num_required_essays, uni_id):
+        if choice_group_id:
+            _QUERY_URL = "{}choice-groups?".format(ROOT_URL)
+            _QUERY_STRING = "cg_id={}&university_id={}".format(choice_group_id,uni_id)
+            url = _QUERY_URL + _QUERY_STRING
+
+            cg_id = self._get_field_with_query_url(url, "choice_groups", "id")
+
+            if cg_id:
+                return cg_id
+            else:
+                payload = {
+                    "choice_group" : {
+                        "cg_id" : choice_group_id,
+                        "num_required_essays": num_required_essays,
+                        "university": uni_id
+                     }
+                }
+                resp = requests.post(
+                    url,
+                    data=json.dumps(payload),
+                    headers=HEADERS)
+
+                if resp.status_code != 201:
+                    return None
+
+                cg_id = self._get_field_with_query_url(url, "choice_groups", "id")
+
+                return cg_id
         else:
             return None
 
