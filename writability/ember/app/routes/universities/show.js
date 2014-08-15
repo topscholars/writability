@@ -6,12 +6,6 @@ export default AuthenticatedRoute.extend({
 		return promises[1].filterBy('university_name', promises[0]);
 	},
 
-	beforeModel: function() {
-		if (this.get('currentStudent.universities.length') < 1) {
-			this.transitionTo('universities.add');
-		}
-	},
-
 	model: function (params) {
 		var universityName = params.university_name,
 			applicationEssays = this.get('currentStudent.application_essays');
