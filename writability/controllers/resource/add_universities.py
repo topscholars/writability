@@ -23,11 +23,12 @@ class AddUniversitiesResource(Resource):
         return model.update(id, kwargs)
 
     def _create_application_essay(self, student, application_essay_template):
+        aet = application_essay_template
         return self._create(ApplicationEssay,
                             student=student.id,
                             essay_template=application_essay_template.id,
                             is_displayed=False,
-                            onboarding_is_selected=True if not application_essay_template.special_program else False)
+                            onboarding_is_selected=True if not aet.special_program and aet.requirement_type == 'Required' else False)
 
     def _create_theme_essay(self, student, application_essays, theme):
         essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id': theme})[0].id
