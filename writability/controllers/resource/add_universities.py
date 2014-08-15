@@ -1,6 +1,6 @@
 from flask import request
 
-from flask.ext.restful import Resource
+from flask.ext.restful import Resource, marshal
 
 from .user import User
 
@@ -9,7 +9,9 @@ from models.essay import ApplicationEssay, ThemeEssay
 from models.user import User
 from models.essay_template import ApplicationEssayTemplate, ThemeEssayTemplate
 from essay import EssayResourceManager
-from base import ItemResource
+from base import ItemResource, ListResource
+from .base import InvalidUsage
+
 
 class AddUniversitiesResource(Resource):
     @classmethod
@@ -105,7 +107,7 @@ class AddUniversitiesResource(Resource):
         return 'OK ' + str(len(application_essay_templates))
 
 
-class SetEssayDisplayResource(ItemResource):
+class SetEssayDisplayResource(ListResource):
     """
     This resource sets the is_displayed parameter on a student's essays.
     """
@@ -121,21 +123,25 @@ class SetEssayDisplayResource(ItemResource):
         resource_name = self.resource_manager.item_resource_name
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
+        list_field = self.resource_manager.list_field
 
         use_threading = self._get_payload()
-        app_essays = [e for e in User.read(student_id).application_essays if e.onboarding_is_selected]
+        student = User.read(student_id)
+        app_essays = [e for e in student.application_essays if e.onboarding_is_selected]
 
         if use_threading:
             # set every theme essay with an application essay in app_essays is_displayed
-            theme_essays = [e for e in User.read(student_id).theme_essays if list(e.application_essays & app_essays)]
+            theme_essays = [e for e in student.theme_essays if list(set(e.application_essays) & set(app_essays))]
             for e in theme_essays:
-                item = {"theme_essay": ThemeEssay.update((e.id),{'is_displayed': True})}
-            return marshal({"theme_essays": theme_essays}, item_field)
+                item = {"theme_essay": ThemeEssay.update(e.id,{'is_displayed': True})}
+                User.update(student.id, {'onboarded': True})
+            return "success"
         else:
             # set everything in app_essays is_displayed
             for e in app_essays:
-                item = {"application_essay": ApplicationEssay.update((e.id),{'is_displayed': True})}
-            return marshal({"application_essays": app_essays}, item_field)
+                item = {"application_essay": ApplicationEssay.update(e.id,{'is_displayed': True})}
+                User.update(student.id, {'onboarded': True})
+            return "success"
 
     def _get_payload(self):
         """
