@@ -120,9 +120,8 @@ class SetEssayDisplayResource(ListResource):
         abort(400, message="Bad Request")
 
     def put(self, student_id):
-        resource_name = self.resource_manager.item_resource_name
+        resource_name = self.resource_manager.list_resource_name
         model_class = self.resource_manager.model_class
-        item_field = self.resource_manager.item_field
         list_field = self.resource_manager.list_field
 
         use_threading = self._get_payload()
@@ -135,13 +134,13 @@ class SetEssayDisplayResource(ListResource):
             for e in theme_essays:
                 item = {"theme_essay": ThemeEssay.update(e.id,{'is_displayed': True})}
                 User.update(student.id, {'onboarded': True})
-            return "success"
+            return marshal({resource_name: app_essays}, list_field)
         else:
             # set everything in app_essays is_displayed
             for e in app_essays:
                 item = {"application_essay": ApplicationEssay.update(e.id,{'is_displayed': True})}
                 User.update(student.id, {'onboarded': True})
-            return "success"
+            return marshal({resource_name: app_essays}, list_field)
 
     def _get_payload(self):
         """
