@@ -219,6 +219,14 @@ class ApplicationEssay(StatefulModel, Essay):
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
 
+    @property
+    def choice_group(self):
+        return self.essay_template.choice_group.id
+
+    @property
+    def requirement_type(self):
+        return self.essay_template.requirement_type
+
     def change_related_objects(self):
         super(ApplicationEssay, self).change_related_objects()
         if self.state == "new" and self.is_displayed and not self.drafts:
