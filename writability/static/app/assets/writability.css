@@ -1910,7 +1910,6 @@ input[type="checkbox"]:disabled {
   border: 4px #000000 solid;
 }
 .details-module .tab-content .tab-list-item.unselected {
-  text-decoration: line-through;
   color: #afadad;
   border-color: #afadad;
 }
