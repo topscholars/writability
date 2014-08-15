@@ -20,10 +20,10 @@ export default AuthenticatedRoute.extend({
 	},
 
 	afterModel: function(promises, transition) {
-		if (this.getApplicationEssays(promises).length < 1) {
-			transition.send('alert', 'Please finish adding universities', 'danger');
-			this.transitionTo('universities.add');
-		}
+		// if (this.getApplicationEssays(promises).length < 1) {
+		// 	transition.send('alert', 'Please finish adding universities', 'danger');
+		// 	this.transitionTo('universities.add');
+		// }
 	},
 
 	setupController: function(controller, promises) {
