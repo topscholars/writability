@@ -5,7 +5,8 @@ controllers.resource.special_program
 This module contains the resource SpecialProgram.
 
 """
-from flask.ext.restful import fields
+from flask.ext.restful import fields, marshal
+from flask import request
 
 from .base import ResourceManager, ItemResource, ListResource
 from .fields import ResourceField
@@ -44,7 +45,7 @@ class SpecialProgramResource(ItemResource):
     resource_manager_class = SpecialProgramResourceManager
 
 
-class SpecialProgramSetResource(ItemResource):
+class SpecialProgramSetResource(ListResource):
     from .essay import ApplicationEssayResourceManager
 
     resource_manager_class = ApplicationEssayResourceManager
@@ -56,18 +57,16 @@ class SpecialProgramSetResource(ItemResource):
         abort(400, message="Bad Request")
 
     def put(self, student_id, sp_id):
-        resource_name = self.resource_manager.item_resource_name
+        resource_name = self.resource_manager.list_resource_name
         model_class = self.resource_manager.model_class
-        item_field = self.resource_manager.item_field
-
-        payload = self._get_payload()
+        list_field = self.resource_manager.list_field
 
         essay_templates = SpecialProgram.read(sp_id).application_essay_templates
-        app_essays = [e for e in User.read(student_id).essays if e.isApplication()]
-        checked = payload["checked"]
+        app_essays = [e for e in User.read(student_id).essays if e.isApplication() 
+                        and e.essay_template in essay_templates]
+        checked = self._get_payload()
 
-        essays_to_update = [e for e in app_essays if e.essay_template in essay_templates and
-                            e.essay_template.requirement_type == 'Required']
+        essays_to_update = [e for e in app_essays if e.essay_template.requirement_type == 'Required']
 
         if app_essays:
             for essay in essays_to_update:
@@ -75,7 +74,7 @@ class SpecialProgramSetResource(ItemResource):
                 if checked and essay.essay_template.requirement_type != 'Required':
                     continue
                 item = {resource_name: model_class.update(essay.id,{'onboarding_is_selected': checked})}
-            return marshal({resource_name: app_essays}, item_field)
+            return marshal({resource_name: app_essays}, list_field)
         else:
             raise InvalidUsage('Did you pass the correct IDs in the URL?')
 
@@ -84,17 +83,13 @@ class SpecialProgramSetResource(ItemResource):
         Get the JSON body of the request.
         Should be in the form
         {
-            "special_program": <int>,
-            "student": <int>,
             "checked": <boolean>
         }
 
         """
         json = request.get_json()
         try:
-            sp = json["special_program"]
-            student = json["student"]
             checked = json["checked"]
         except (KeyError, IndexError) as e:  # FIXME: too broad exception
             raise InvalidUsage('Did you pass a special program, student, and checked in the request?')
-        return json
+        return checked
