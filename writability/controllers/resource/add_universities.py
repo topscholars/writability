@@ -8,7 +8,8 @@ from models.db import db
 from models.essay import ApplicationEssay, ThemeEssay
 from models.user import User
 from models.essay_template import ApplicationEssayTemplate, ThemeEssayTemplate
-
+from essay import EssayResourceManager
+from base import ItemResource
 
 class AddUniversitiesResource(Resource):
     @classmethod
@@ -25,7 +26,8 @@ class AddUniversitiesResource(Resource):
         return self._create(ApplicationEssay,
                             student=student.id,
                             essay_template=application_essay_template.id,
-                            is_displayed=False)
+                            is_displayed=False,
+                            onboarding_is_selected=True if not application_essay_template.special_program else False)
 
     def _create_theme_essay(self, student, application_essays, theme):
         essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id': theme})[0].id
@@ -100,3 +102,52 @@ class AddUniversitiesResource(Resource):
             db.session.commit()
 
         return 'OK ' + str(len(application_essay_templates))
+
+
+class SetEssayDisplayResource(ItemResource):
+    """
+    This resource sets the is_displayed parameter on a student's essays.
+    """
+    resource_manager_class = EssayResourceManager
+
+    def get(self, student_id):
+        abort(400, message="Bad Request")
+
+    def delete(self, student_id):
+        abort(400, message="Bad Request")
+
+    def put(self, student_id):
+        resource_name = self.resource_manager.item_resource_name
+        model_class = self.resource_manager.model_class
+        item_field = self.resource_manager.item_field
+
+        use_threading = self._get_payload()
+        app_essays = [e for e in User.read(student_id).application_essays if e.onboarding_is_selected]
+
+        if use_threading:
+            # set every theme essay with an application essay in app_essays is_displayed
+            theme_essays = [e for e in User.read(student_id).theme_essays if list(e.application_essays & app_essays)]
+            for e in theme_essays:
+                item = {"theme_essay": ThemeEssay.update((e.id),{'is_displayed': True})}
+            return marshal({"theme_essays": theme_essays}, item_field)
+        else:
+            # set everything in app_essays is_displayed
+            for e in app_essays:
+                item = {"application_essay": ApplicationEssay.update((e.id),{'is_displayed': True})}
+            return marshal({"application_essays": app_essays}, item_field)
+
+    def _get_payload(self):
+        """
+        Get the JSON body of the request.
+        Should be in the form 
+        { 
+          "use_threading": <boolean>
+        }
+
+        """
+        json = request.get_json()
+        try:
+            payload = json['use_threading']
+        except:  # FIXME: too broad exception
+            raise InvalidUsage('Did you pass use_threading?')
+        return payload

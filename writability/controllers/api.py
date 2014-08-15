@@ -20,7 +20,7 @@ from resource.user import UserListResource, UserResource, TeacherListResource, T
     StudentResource, InvitationListResource, InvitationResource
 from resource.role import RoleListResource, RoleResource
 from resource.annotation import AnnotationResource, AnnotationListResource, TagResource, TagListResource
-from resource.add_universities import AddUniversitiesResource
+from resource.add_universities import AddUniversitiesResource, SetEssayDisplayResource
 from resource.rubric import RubricListResource, RubricResource, RubricCategoryResource, RubricCategoryListResource, \
     CriterionResource, CriterionListResource, RubricCategoryRubricAssociationsResource
 from resource.special_program import SpecialProgramListResource, SpecialProgramResource, SpecialProgramSetResource
@@ -146,6 +146,8 @@ def initialize(app, api_prefix):
                                "/students/<int:student_id>/add-universities")
     api.add_resource(SpecialProgramSetResource,
         "/students/<int:student_id>/special-programs/<int:sp_id>")
+    api.add_resource(SetEssayDisplayResource,
+        "/students/<int:student_id>/set-essay-display")
 
     # invitation
     add_resource_with_endpoint(api, InvitationListResource, "/invitations")
