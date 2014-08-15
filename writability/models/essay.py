@@ -219,9 +219,8 @@ class ApplicationEssay(StatefulModel, Essay):
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
 
-    def process_before_create(self):
-        """Process model to prepare it for adding it db."""
-        super(ApplicationEssay, self).process_before_create()
+    def change_related_objects(self):
+        super(ApplicationEssay, self).change_related_objects()
         if self.state == "new" and self.is_displayed and not self.drafts:
             new_draft_params = {
                 "essay": self
