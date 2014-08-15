@@ -32,11 +32,13 @@ export default AuthenticatedRoute.extend({
         next: function() {
             var route = this;
             var controller = this.controllerFor('universities.add');
-            var student = controller.get('student');
+            var student = this.get('currentStudent');
 
             controller.attachEssays().then(function() {
-                route.get('currentStudent').reload().then(function() {
-                    route.transitionTo('universities.index');
+                route.transitionTo('universities');
+
+                student.reload().then(function() {
+                    route.store.find('application-essay');
                 });
             });
         },
