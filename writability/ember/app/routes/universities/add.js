@@ -30,11 +30,14 @@ export default AuthenticatedRoute.extend({
             });
         },
         next: function() {
+            var route = this;
             var controller = this.controllerFor('universities.add');
             var student = controller.get('student');
 
             controller.attachEssays().then(function() {
-                controller.transitionToRoute('universities.index');
+                route.get('currentStudent').reload().then(function() {
+                    route.transitionTo('universities.index');
+                });
             });
         },
         removeUniversity: function(universitiy) {
