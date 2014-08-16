@@ -2350,6 +2350,7 @@ input.form-date {
 .university-essay-selection .title-section {
   border-bottom: 1px #afadad solid;
   background: white;
+  position: relative;
   z-index: 2;
 }
 .special-program h3,
