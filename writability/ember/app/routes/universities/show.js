@@ -26,8 +26,7 @@ export default AuthenticatedRoute.extend({
 
 		controller.set('applicationEssays', applicationEssays);
 		controller.set('universityName', universityName);
-		controller.set('universityApplicationEssays', this.getApplicationEssays(promises));
-	    this._super(controller, null);
+	    this._super(controller, this.getApplicationEssays(promises));
 	},
 
     renderTemplate: function () {
