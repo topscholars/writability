@@ -120,7 +120,8 @@ class ApplicationEssayResourceManager(StatefulResourceManager, EssayResourceMana
                 absolute=True),
             "university_name": fields.String,
             "choice_group": fields.Integer,
-            "requirement_type": fields.String
+            "requirement_type": fields.String,
+            "special_program": fields.Integer
             # 'proposed_topics': fields.List(fields.String)
         })
 

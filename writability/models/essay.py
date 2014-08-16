@@ -227,6 +227,10 @@ class ApplicationEssay(StatefulModel, Essay):
     def requirement_type(self):
         return self.essay_template.requirement_type
 
+    @property
+    def special_program(self):
+        return self.essay_template.special_program.id
+
     def change_related_objects(self):
         super(ApplicationEssay, self).change_related_objects()
         if self.state == "new" and self.is_displayed and not self.drafts:
