@@ -671,21 +671,22 @@ def delete_users():
 
 
 def populate_db():
-    RubricCategoryPopulator()
-    CriteriaPopulator()
+    ##RubricCategoryPopulator()
+    ##CriteriaPopulator()
+    ApplicationEssayTemplatePopulator()
 
 def populate_test_data():
-    ## For deploy Aug 16
+    ## Damnit people - don't leave in a 'for deploy' comment if you rename that main method for a script.
     #  # predefined
-    ##RolePopulator()
-    ##UniversityPopulator()
-    ##ThemePopulator()
-    ##ThemeEssayTemplatePopulator()
+    RolePopulator()
+    UniversityPopulator()
+    ThemePopulator()
+    ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
-    ##TagPopulator()
+    TagPopulator()
     #  # custom data
-    ##delete_users()
-    ##UserPopulator()
+    delete_users()
+    UserPopulator()
     #  DraftPopulator()
     #  ReviewPopulator()
     #  AnnotationPopulator()
