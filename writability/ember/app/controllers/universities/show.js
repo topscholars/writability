@@ -32,6 +32,14 @@ export default Ember.ArrayController.extend({
 	}.property('noProgramEssays.length'),
 
 	requiredEssays: function() {
+		return this.get('noChoiceEssays').filterBy('requirement_type', 'Required');
+	}.property('noChoiceEssays.length'),
+
+	optionalEssays: function() {
+		return this.get('noChoiceEssays').filterBy('requirement_type', 'Optional');
+	}.property('noChoiceEssays.length'),
+
+	noChoiceEssays: function() {
 		return this.get('noProgramEssays').filter(function(essay) {
 			if (essay.get('choice_group')) {
 				return false;
@@ -49,12 +57,16 @@ export default Ember.ArrayController.extend({
 
 	actions: {
 		toggleApplicationEssay: function (applicationEssay) {
-			var controller = this;
-			applicationEssay.toggleProperty('onboarding_is_selected');
+			if (applicationEssay.get('requirement_type') !== 'Required') {
+				var controller = this;
+				applicationEssay.toggleProperty('onboarding_is_selected');
 
-			applicationEssay.save().then(function() {
-				controller.send('alert', 'Application Essay Selected');
-			});
+				applicationEssay.save().then(function() {
+					controller.send('alert', 'Application Essay Selected');
+				});
+			} else {
+				this.send('alert', 'This essay is required', 'warning');
+			}
 		}
 	}
 });

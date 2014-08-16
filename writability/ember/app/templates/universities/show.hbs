@@ -8,7 +8,10 @@
 	{{#if requiredEssays}}
 		{{render 'universities/show/application-essay-group' requiredEssays title="Required Essays"}}
 	{{/if}}
+	{{#if optionalEssays}}
+		{{render 'universities/show/application-essay-group' optionalEssays title="Optional Essays"}}
+	{{/if}}
 	{{#if choiceEssays}}
-		{{render 'universities/show/choice-group' choiceEssays title="Optional Essays"}}
+		{{render 'universities/show/choice-group' choiceEssays title="Choice Essays"}}
 	{{/if}}
 </ul>
