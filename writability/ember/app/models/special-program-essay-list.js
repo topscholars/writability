@@ -24,11 +24,12 @@ export default Ember.Object.extend({
 		});
 	}.property('content.length'),
 
-	manualIsActive: null,
+	currentEssayState: null,
+	showCheck: null,
 
 	showEssays: function() {
-		if (this.get('manualIsActive') !== null) {
-			return this.get('manualIsActive');
+		if (this.get('showCheck') !== null) {
+			return this.get('showCheck');
 		}
 
 		var show = false;
@@ -40,9 +41,10 @@ export default Ember.Object.extend({
 		});
 
 		if (show) {
-			this.set('manualIsActive', true);
+			this.set('currentEssayState', true);
+			this.set('showCheck', true);
 		}
 
 		return show;
-	}.property('content.length', 'content.@each.onboarding_is_selected', 'manualIsActive')
+	}.property('content.length', 'content.@each.onboarding_is_selected', 'showCheck')
 });

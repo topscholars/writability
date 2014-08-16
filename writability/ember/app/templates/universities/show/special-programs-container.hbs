@@ -1,6 +1,6 @@
 {{#each programGroup in programGroupings}}
 
-	{{form-checkbox checked=programGroup.manualIsActive}} {{programGroup.specialProgram.name}}
+	{{form-checkbox checked=programGroup.showCheck}} {{programGroup.specialProgram.name}}
 
 	{{#if programGroup.showEssays}}
 		{{#if programGroup.requiredEssays}}
