@@ -2330,12 +2330,51 @@ input.form-date {
 .university-item button.remove:hover {
   color: #333;
 }
+.university-essay-selection .tab-content {
+  padding: 40px;
+  margin-top: -120px;
+  padding-top: 120px;
+}
+.university-essay-selection .universities-title {
+  font-family: 'Rockwell W01', serif;
+  font-size: 52px;
+  padding: 40px;
+  padding-bottom: 0;
+}
+.university-essay-selection .universities-sub-title {
+  font-family: 'Rockwell W01', serif;
+  font-size: 24px;
+  padding-left: 40px;
+  padding-bottom: 1px;
+}
+.university-essay-selection .title-section {
+  border-bottom: 1px #afadad solid;
+  background: white;
+  z-index: 2;
+}
+.special-program h3,
+.university-application-essay-group h3 {
+  font-family: 'Rockwell W01', serif;
+  font-size: 24px;
+}
+.special-program {
+  display: block;
+  width: 100%;
+  margin-bottom: 25px;
+}
+.university-application-essay-group {
+  margin-top: 25px;
+}
+.university-application-essay-group:first-of-type {
+  margin-top: 0;
+}
 .special-program .university-application-essay-group {
   border: 1px black solid;
   padding: 15px;
 }
 .university-application-essay-group .choice-group {
   border: 1px black solid;
+  margin-top: 15px;
   padding: 15px;
 }
 .university-application-essay-group .choice-group i.icon-check {
