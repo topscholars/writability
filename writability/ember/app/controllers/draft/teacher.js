@@ -43,31 +43,44 @@ export default DraftController.extend({
             var draft = this.get('model'),
                 controller = this;
 
-            //// Need to remove obsolete Annotation spans from draft content on save.
-            //// This includes of the type id='annotation-99' and 'annotation-in-progress'
-            //var existing_annotations_objs = draft.get('review.annotations');     //undefined
-            //var existing_annotations = draft.get('review.annotations.@each.id'); // Class object..
-            //console.log(existing_annotations);
-            //$('*[id*=annotation-]:visible').each(function() {
-            //    var annotation_span = this;
-            //    var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
-            //    
-            //    debugger
-            //    if (existing_annotations.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
-            //        $(annotation_span).replaceWith(annotation_span.contents());
-            //    }
-            //});
+            //// Removes obsolete Annotation spans from draft content on save.
+            //// This includes both types: id='annotation-99' and 'annotation-in-progress'
+            //// This works but the review submission breaks for some reason.
+            
+            //var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
+            //
+            //var annotation_objs;
+            //var annotation_ids
+            //draft.get('review')
+            //    .then( function(review) { review.get('annotations')
+            //        .then( function(annotations) {
+            //            annotation_objs = annotations; // Array of Anno IDs. ["45","47"..]
+            //            annotation_ids = annotation_objs.mapBy('id');
+            //        
+            //            // Remove annotations from content that dont exist in DB
+            //            div_container.find( 'span[id*=annotation-]' ).each(function() {
+            //                var annotation_span = $(this);
+            //                var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
+            //                if (annotation_ids.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
+            //                    annotation_span.replaceWith(annotation_span.contents());
+            //                }
+            //            });
 
-            //// Remove any in progress annotations
-            //var currentInProgress = $('#annotation-in-progress');
-            //if (currentInProgress.length > 0) {
-            //    $(currentInProgress).replaceWith(currentInProgress.contents());
-            //}
-            //debugger
+            //            // Remove any in progress annotations (should be max of 1)
+            //            var currentInProgress = div_container.find('#annotation-in-progress');
+            //            if (currentInProgress.length > 0) {
+            //                currentInProgress.replaceWith(currentInProgress.contents());
+            //            }
+            //            var newFormattedText = div_container.html();
 
-            //draft.save();
-            //debugger
+            //            controller.set('formatted_text', newFormattedText);
+            //            controller.set('formatted_text_buffer', newFormattedText);
+            //            Ember.run.debounce(controller, controller.saveDraft, 1);
+            //        })  
+            //    });
+            //console.log('passed draftsave');
 
+            //// Original handling without change to Draft Content
             this.updateEssayDueDate().then(function() {
                 draft.get('review')
                     .then(function (review) {
