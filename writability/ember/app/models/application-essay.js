@@ -12,5 +12,11 @@ export default Essay.extend({
 
     onboarding_is_selected: DS.attr(),
 
-    is_in_progress: true
+    is_in_progress: true,
+
+    choice_group: DS.belongsTo('choice-group', {async: true}),
+    choice_group_id: DS.attr(),
+    special_program: DS.belongsTo('special-program', {async: true}),
+    requirement_type: DS.attr('string'),
+
 });
