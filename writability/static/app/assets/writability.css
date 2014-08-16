@@ -736,6 +736,18 @@ input[type="checkbox"]:disabled {
 #loading-container .module .double-column:first-child {
   border-right: 1px #afadad solid;
 }
+#modal-container .module .double-column a,
+#loading-container .module .double-column a {
+  color: white;
+}
+#modal-container .module .double-column a:hover,
+#loading-container .module .double-column a:hover {
+  text-decoration: none;
+}
+#modal-container .module button.double-column,
+#loading-container .module button.double-column {
+  text-align: right;
+}
 #modal-container .module input,
 #loading-container .module input,
 #modal-container .module button,
