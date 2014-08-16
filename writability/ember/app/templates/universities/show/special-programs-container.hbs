@@ -6,8 +6,11 @@
 			{{#if programGroup.requiredEssays}}
 				{{render 'universities/show/application-essay-group' programGroup.requiredEssays title="Required Essays"}}
 			{{/if}}
+			{{#if programGroup.optionalEssays}}
+				{{render 'universities/show/application-essay-group' programGroup.optionalEssays title="Optional Essays"}}
+			{{/if}}
 			{{#if programGroup.choiceEssays}}
-				{{render 'universities/show/choice-group' programGroup.choiceEssays title="Optional Essays"}}
+				{{render 'universities/show/choice-group' programGroup.choiceEssays title="Choice Essays"}}
 			{{/if}}
 		{{/if}}
 	</div>

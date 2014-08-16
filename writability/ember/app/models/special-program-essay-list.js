@@ -14,7 +14,7 @@ export default Ember.Object.extend({
 		});
 	}.property('content.length'),
 
-	requiredEssays: function() {
+	noChoiceEssays: function() {
 		return this.get('content').filter(function(essay) {
 			if (essay.get('choice_group')) {
 				return false;
@@ -23,6 +23,14 @@ export default Ember.Object.extend({
 			}
 		});
 	}.property('content.length'),
+
+	requiredEssays: function() {
+		return this.get('noChoiceEssays').filterBy('requirement_type', 'Required');
+	}.property('noChoiceEssays.length'),
+
+	optionalEssays: function() {
+		return this.get('noChoiceEssays').filterBy('requirement_type', 'Optional');
+	}.property('noChoiceEssays.length'),
 
 	currentEssayState: null,
 	showCheck: null,
