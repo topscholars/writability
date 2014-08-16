@@ -9,7 +9,8 @@ export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
         choice_group: {serialize: 'no'},
         choice_group_id: {serialize: 'no'},
         requirement_type: {serialize: 'no'},
-        special_program: {serialize: 'no'}
+        special_program: {serialize: 'no'},
+        special_program_id: {serialize: 'no'}
     },
 
     normalize: function(type, hash, prop) {
@@ -21,6 +22,8 @@ export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
 
         if (hash.special_program === 0) {
         	delete hash.special_program;
+        } else {
+            hash.special_program_id = hash.special_program;
         }
 
         return this._super(type, hash, prop);

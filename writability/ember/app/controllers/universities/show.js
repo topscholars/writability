@@ -2,24 +2,24 @@ import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
 	noProgramEssays: function() {
-		return this.get('model').filter(function(essay) {
+		return this.get('content').filter(function(essay) {
 			if (essay.get('special_program')) {
 				return false;
 			} else {
 				return true;
 			}
 		});
-	}.property('model.length'),
+	}.property('content.length'),
 
 	programEssays: function() {
-		return this.get('model').filter(function(essay) {
+		return this.get('content').filter(function(essay) {
 			if (essay.get('special_program')) {
 				return true;
 			} else {
 				return false;
 			}
 		});
-	}.property('model.length'),
+	}.property('content.length'),
 
 	choiceEssays: function() {
 		return this.get('noProgramEssays').filter(function(essay) {

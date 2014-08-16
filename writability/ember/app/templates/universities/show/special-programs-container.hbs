@@ -1,0 +1,13 @@
+{{#each programGroup in programGroupings}}
+
+	{{form-checkbox checked=programGroup.manualIsActive}} {{programGroup.specialProgram.name}}
+
+	{{#if programGroup.showEssays}}
+		{{#if programGroup.requiredEssays}}
+			{{render 'universities/show/application-essay-group' programGroup.requiredEssays title="Required Essays"}}
+		{{/if}}
+		{{#if programGroup.choiceEssays}}
+			{{render 'universities/show/choice-group' programGroup.choiceEssays title="Optional Essays"}}
+		{{/if}}
+	{{/if}}
+{{/each}}

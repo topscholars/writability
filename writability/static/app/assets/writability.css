@@ -2330,6 +2330,10 @@ input.form-date {
 .university-item button.remove:hover {
   color: #333;
 }
+.special-program .university-application-essay-group {
+  border: 1px black solid;
+  padding: 15px;
+}
 .university-application-essay-group .choice-group {
   border: 1px black solid;
   padding: 15px;

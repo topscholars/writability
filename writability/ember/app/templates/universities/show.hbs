@@ -1,6 +1,7 @@
 <div class="universities-title">{{universityName}}</div>
 
 <ul class="tab-content">
+	{{render 'universities/show/special-programs-container' programEssays}}
 	{{render 'universities/show/application-essay-group' requiredEssays title="Required Essays"}}
 	{{render 'universities/show/choice-group' choiceEssays title="Optional Essays"}}
 </ul>

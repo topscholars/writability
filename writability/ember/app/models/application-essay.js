@@ -17,6 +17,7 @@ export default Essay.extend({
     choice_group: DS.belongsTo('choice-group', {async: true}),
     choice_group_id: DS.attr(),
     special_program: DS.belongsTo('special-program', {async: true}),
+    special_program_id: DS.attr(),
     requirement_type: DS.attr('string'),
 
 });

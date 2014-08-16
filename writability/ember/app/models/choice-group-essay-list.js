@@ -5,8 +5,6 @@ export default Ember.Object.extend({
 	content: [],
 
 	selectedEssays: function() {
-		console.log('selectedEssays calculated');
-
 		return this.get('content').filterBy('onboarding_is_selected', true);
 	}.property('content.@each.onboarding_is_selected'),
 
