@@ -30,7 +30,7 @@ export default AuthenticatedRoute.extend({
 
     renderTemplate: function () {
         this.render('layouts/editor');
-        this.render('nav-header', {outlet: 'header', controller: 'nav-header', content: this.get('currentUser')});
+        this.render('nav-header', {outlet: 'header', content: this.get('currentUser')});
         this.render({
             controller: this.controllerName,
             into: 'layouts/editor',
