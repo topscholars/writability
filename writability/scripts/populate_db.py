@@ -675,17 +675,17 @@ def populate_db():
     CriteriaPopulator()
 
 def populate_test_data():
-    ## For deploy Aug 2
+    ## For deploy Aug 16
     #  # predefined
-    RolePopulator()
-    UniversityPopulator()
-    ThemePopulator()
-    ThemeEssayTemplatePopulator()
+    ##RolePopulator()
+    ##UniversityPopulator()
+    ##ThemePopulator()
+    ##ThemeEssayTemplatePopulator()
     ApplicationEssayTemplatePopulator()
-    TagPopulator()
+    ##TagPopulator()
     #  # custom data
-    delete_users()
-    UserPopulator()
+    ##delete_users()
+    ##UserPopulator()
     #  DraftPopulator()
     #  ReviewPopulator()
     #  AnnotationPopulator()
