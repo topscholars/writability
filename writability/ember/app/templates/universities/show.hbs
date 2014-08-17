@@ -1,0 +1,17 @@
+<div class="title-section">
+	<h2 class="universities-title">{{universityName}}</h2>
+	<h3 class="universities-sub-title">Essay Selection</h3>
+</div>
+
+<ul class="tab-content">
+	{{render 'universities/show/special-programs-container' programEssays}}
+	{{#if requiredEssays}}
+		{{render 'universities/show/application-essay-group' requiredEssays title="Required Essays"}}
+	{{/if}}
+	{{#if optionalEssays}}
+		{{render 'universities/show/application-essay-group' optionalEssays title="Optional Essays"}}
+	{{/if}}
+	{{#if choiceEssays}}
+		{{render 'universities/show/choice-group' choiceEssays title="Choice Essays"}}
+	{{/if}}
+</ul>

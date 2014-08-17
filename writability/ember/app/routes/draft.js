@@ -17,7 +17,8 @@ export default AuthenticatedRoute.extend({
     },
 
     setupController: function(controller, model) {
-        controller.set('model', model); //Required boilerplate
+        this._super(controller, model);
+
         // controller.set('backDisabled', true);
         // controller.set('nextDisabled', true); // Use same for next button in other views
         if (this.get('currentUser.isStudent')) {
@@ -29,7 +30,7 @@ export default AuthenticatedRoute.extend({
 
     renderTemplate: function () {
         this.render('layouts/editor');
-        this.render('nav-header', {outlet: 'header'});
+        this.render('nav-header', {outlet: 'header', content: this.get('currentUser')});
         this.render({
             controller: this.controllerName,
             into: 'layouts/editor',

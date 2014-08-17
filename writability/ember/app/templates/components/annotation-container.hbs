@@ -1,7 +1,3 @@
-{{#if isStudent}}
-    <p id="anno-column-info">Your essay will auto-save!</p>
-{{/if}}
-
 {{#each annotationGroup in existingAnnotationGroups}}
 	{{annotation-groupcontainer group=annotationGroup isStudent=isStudent deleteAnnotation_GroupContainer="deleteAnnotation_Container" }}
 {{/each}}

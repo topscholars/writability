@@ -1,0 +1,32 @@
+.student-nav {
+	cursor: pointer;
+	float: left;
+
+	border-left: @thinBorder @greyDark solid;
+	border-right: @thinBorder @greyDark solid;
+	&:hover {
+	    border-right: @thinBorder @greyDark solid;
+	}
+	line-height: @headerHeight;
+	height: @headerHeight;
+
+	ul.menu-dropdown {
+		.clearfix();
+		background: black;
+
+		position: absolute;
+		top: @headerHeight;
+		left: -1px;
+
+		li {
+			border: @thinBorder @greyDark solid;
+			padding: 0 25px;
+			border-top: none;
+
+			a {
+				.nav-button();
+				height: @headerHeight;
+			}
+		}
+	}
+}

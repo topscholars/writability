@@ -96,15 +96,14 @@ class Essay(BaseModel):
         elif self.state == "added_topics":  # State change may need added
             action = "Approve Topic"
         elif self.state == "in_progress":
-            if existing_drafts != 0 and existing_drafts < num_of_drafts:
-                if (s == "new") or (s == "in_progress"):
-                    action = "Write"
-                elif s == "submitted":
-                    action = "Review"
-                return "%s Draft %d / %d" % (
-                    action,
-                    existing_drafts,
-                    num_of_drafts)
+            if (s == "new") or (s == "in_progress"):
+                action = "Write"
+            elif s == "submitted":
+                action = "Review"
+            return "%s Draft %d / %d" % (
+                action,
+                existing_drafts,
+                num_of_drafts)
         elif curr_draft.is_final_draft and s == "reviewed":
             action = "Complete"
         else:
@@ -114,6 +113,7 @@ class Essay(BaseModel):
     @property
     def existing_drafts(self):
         return len(self.drafts)
+
 
 class ThemeEssay(StatefulModel, Essay):
     __tablename__ = "theme_essay"
@@ -147,7 +147,8 @@ class ThemeEssay(StatefulModel, Essay):
         backref=db.backref("theme_essay"))
 
     application_essays = association_proxy('essay_associations', 'application_essay',
-        creator=lambda app_essay: EssayStateAssociations(application_essay=app_essay))
+                                           creator=lambda app_essay: EssayStateAssociations(
+                                               application_essay=app_essay))
 
     @validates('proposed_topics')
     def validate_proposed_topics(self, key, proposed_topics):
@@ -213,14 +214,26 @@ class ApplicationEssay(StatefulModel, Essay):
     id = db.Column(db.Integer, db.ForeignKey('essay.id'), primary_key=True)
 
     # optional fields
+    onboarding_is_selected = db.Column(db.Boolean, nullable=False, default=False)
 
     # relationships
     theme_essays = association_proxy('essay_associations', 'theme_essay')
 
+    @property
+    def choice_group(self):
+        return self.essay_template.choice_group.id
+
+    @property
+    def requirement_type(self):
+        return self.essay_template.requirement_type
+
+    @property
+    def special_program(self):
+        return self.essay_template.special_program.id
+
     def change_related_objects(self):
-        """Process model to prepare it for adding it db."""
         super(ApplicationEssay, self).change_related_objects()
-        if self.state == "new" and not self.drafts:
+        if self.state == "new" and self.is_displayed and not self.drafts:
             new_draft_params = {
                 "essay": self
             }
@@ -265,6 +278,7 @@ class ApplicationEssay(StatefulModel, Essay):
         self.max_words = app_essay_template.max_words
         self.due_date = self.essay_template.due_date
         self.university = app_essay_template.university
+
 
 class EssayStateAssociations(StatefulModel):
     __tablename__ = 'essay_associations'
@@ -322,7 +336,7 @@ class EssayStateAssociations(StatefulModel):
 
     application_essay = db.relationship(
         "ApplicationEssay",
-        backref=db.backref("essay_associations"))  #, lazy="dynamic" -> removed
+        backref=db.backref("essay_associations"))  # , lazy="dynamic" -> removed
     # theme_essay: don't explicitly declare it but it's here'
 
     # this needs to be a list?

@@ -111,13 +111,17 @@ class ApplicationEssayResourceManager(StatefulResourceManager, EssayResourceMana
     def _add_item_fields(self):
         super(ApplicationEssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "onboarding_is_selected": fields.Boolean,
             "theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
                 absolute=True)),
             "selected_theme_essay": ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
                 absolute=True),
-            "university_name": fields.String
+            "university_name": fields.String,
+            "choice_group": fields.Integer,
+            "requirement_type": fields.String,
+            "special_program": fields.Integer
             # 'proposed_topics': fields.List(fields.String)
         })
 
@@ -131,8 +135,8 @@ class ApplicationEssayListResource(EssayListResource):
 
 
 class EssayStateAssociationsManager(StatefulResourceManager):
-    item_resource_name = "essaystateassociation"
-    list_resource_name = "essaystateassociations"
+    item_resource_name = "essay_association"
+    list_resource_name = "essay_associations"
     model_class = EssayStateAssociations
 
     def _add_item_fields(self):
@@ -163,7 +167,7 @@ class EssayStateAssociationsResource(ItemResource):
         model_class = self.resource_manager.model_class
         item_field = self.resource_manager.item_field
 
-        payload = self._get_payload(appessay_id)
+        payload = self._get_payload(themeessay_id, appessay_id)
         # print resource_name, id   # TODO KIRK DELETE THESE
         # print payload
         try:
@@ -183,15 +187,15 @@ class EssayStateAssociationsResource(ItemResource):
         else:
             raise InvalidUsage('Did you pass the correct application essay ID in the URL?')
 
-    def _get_payload(self, appessay_id):
+    def _get_payload(self, themeessay_id, appessay_id):
         """
         Get the JSON body of the request.
-        Should be in the form { "appessay_id" : "NEW_STATE" }
+        Should be in the form { "themeessay_id-appessay_id" : "NEW_STATE" }
 
         """
         json = request.get_json()
         try:
-            payload = json[str(appessay_id)]
+            payload = json[self.resource_manager.item_resource_name]['state']
         except:  # FIXME: too broad exception
             raise InvalidUsage('Did you pass the correct application essay ID in the request body?')
         return payload

@@ -129,7 +129,7 @@ class UniversityPopulator(Populator):
 class ThemePopulator(Populator):
 
     _PATH = "themes"
-    _FILE_PATH = "data/themes.txt"
+    _FILE_PATH = "data/themes_new.txt"
 
     def _construct_payload(self, line):
         tokens = line.split(' ', 1)
@@ -277,7 +277,7 @@ class ApplicationEssayTemplatePopulator(Populator):
     _FILE_PATH = "data/application-essay-templates.csv"
 
     def _construct_payload(self, line):
-        columns = line.split(',', 4)
+        columns = line.split('\t', 8)
 
         # university
         uni = columns[0].strip()
@@ -287,35 +287,125 @@ class ApplicationEssayTemplatePopulator(Populator):
         max_chars = columns[1].strip()
         max_words = columns[2].strip()
         if not max_words:
-            max_words = int(max_chars) / 5
-        max_words = int(max_words)
+            try:
+                max_words = int(max_chars) / 5
+            except ValueError:
+                max_words = 0
+        try:
+            max_words = int(max_words)
+        except ValueError:
+            max_words = 0
 
         # theme
         themecats = columns[3].split(';')
         themes = []
         for tc in themecats:
-            tokens = tc.split('-')
-            category = tokens[0].strip()
-            name = tokens[1].strip()
-            theme_id = self._get_theme_id(name, category)
-            if theme_id:
-                themes.append(theme_id)
-        if not themes:
-            return False
+            try:
+                tokens = tc.split('-')
+                category = tokens[0].strip()
+                name = tokens[1].strip()
+                theme_id = self._get_theme_id(name, category)
+                if theme_id:
+                    themes.append(theme_id)
+            except IndexError:
+                pass
+        # if not themes:
+        #     return False
 
+        # special program
+        special_program = columns[4].strip()
+        sp_id = self._add_or_get_special_program(special_program,uni_id)
+
+        # requirement type
+        requirement_type = columns[5].strip()
+
+        # # choice group
+        choice_group_id = columns[6].strip()
+        num_required_essays = columns[7].strip()
+        if choice_group_id and choice_group_id != '':
+            internal_cg_id = self._add_or_get_choice_group(choice_group_id,num_required_essays,uni_id)
+        else:
+            internal_cg_id = None
         # essay_prompt
-        essay_prompt = columns[4].strip().strip("\"")
+        essay_prompt = columns[8].strip().strip("\"")
 
         payload = {
             "application_essay_template": {
                 "university": uni_id,
                 "max_words": max_words,
                 "themes": themes,
-                "essay_prompt": essay_prompt
+                "essay_prompt": essay_prompt,
+                "special_program": sp_id,
+                "requirement_type": requirement_type,
+                "choice_group": internal_cg_id
             }
         }
 
         return payload
+
+    def _add_or_get_special_program(self, special_program, uni_id):
+        if special_program:
+            _QUERY_URL = "{}special-programs?".format(ROOT_URL)
+            _QUERY_STRING = "name={}".format(special_program)
+            url = _QUERY_URL + _QUERY_STRING
+
+            sp_id = self._get_field_with_query_url(url, "special_programs", "id")
+
+            if sp_id:
+                return sp_id
+            else:
+                payload = {
+                    "special_program" : {
+                        "name" : special_program,
+                        "description": special_program,
+                        "university": uni_id
+                     }
+                }
+                resp = requests.post(
+                    url,
+                    data=json.dumps(payload),
+                    headers=HEADERS)
+
+                if resp.status_code != 201:
+                    return None
+
+                sp_id = self._get_field_with_query_url(url, "special_programs", "id")
+
+                return sp_id
+        else:
+            return None
+
+    def _add_or_get_choice_group(self, choice_group_id, num_required_essays, uni_id):
+        if choice_group_id:
+            _QUERY_URL = "{}choice-groups?".format(ROOT_URL)
+            _QUERY_STRING = "cg_id={}&university_id={}".format(choice_group_id,uni_id)
+            url = _QUERY_URL + _QUERY_STRING
+
+            cg_id = self._get_field_with_query_url(url, "choice_groups", "id")
+
+            if cg_id:
+                return cg_id
+            else:
+                payload = {
+                    "choice_group" : {
+                        "cg_id" : choice_group_id,
+                        "num_required_essays": num_required_essays,
+                        "university": uni_id
+                     }
+                }
+                resp = requests.post(
+                    url,
+                    data=json.dumps(payload),
+                    headers=HEADERS)
+
+                if resp.status_code != 201:
+                    return None
+
+                cg_id = self._get_field_with_query_url(url, "choice_groups", "id")
+
+                return cg_id
+        else:
+            return None
 
     def _get_theme_id(self, theme_name, category_name):
         _THEME_QUERY_URL = "{}themes?".format(ROOT_URL)
@@ -581,11 +671,12 @@ def delete_users():
 
 
 def populate_db():
-    RubricCategoryPopulator()
-    CriteriaPopulator()
+    ##RubricCategoryPopulator()
+    ##CriteriaPopulator()
+    ApplicationEssayTemplatePopulator()
 
 def populate_test_data():
-    ## For deploy Aug 2
+    ## Damnit people - don't leave in a 'for deploy' comment if you rename that main method for a script.
     #  # predefined
     RolePopulator()
     UniversityPopulator()
@@ -607,5 +698,4 @@ for arg in sys.argv:
         populate_test_data()
 
 populate_db()
-
-# TagPopulator()
+# ApplicationEssayTemplatePopulator()

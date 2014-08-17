@@ -15,6 +15,7 @@ export default User.extend({
     application_essays: DS.hasMany('applicationEssay', {async: true}),
     universities: DS.hasMany('university', {async: true}), // Use async true or ember expects data to already be there
     roles: DS.attr(null, {readOnly: true}),
+    onboarded: DS.attr('boolean'),
 
     all_essays: function () {
         var model = this;

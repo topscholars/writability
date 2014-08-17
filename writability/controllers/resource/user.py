@@ -99,6 +99,7 @@ class StudentResourceManager(UserResourceManager):
     def _add_item_fields(self):
         super(StudentResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "onboarded": fields.Boolean,
             "teacher": ResourceField(
                 TeacherResourceManager.item_resource_name,
                 absolute=True),

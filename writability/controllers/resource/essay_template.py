@@ -8,13 +8,38 @@ ApplicationEssayTemplate.
 """
 from flask.ext.restful import fields
 
-from models.essay_template import EssayTemplate, ThemeEssayTemplate
-from models.essay_template import ApplicationEssayTemplate
+from models.essay_template import EssayTemplate, ThemeEssayTemplate, ApplicationEssayTemplate, ChoiceGroup
+import university
 
-from .base import ResourceManager, ItemResource, ListResource
-from .fields import ResourceField
 import theme
 import university
+from .base import ResourceManager, ItemResource, ListResource
+from .fields import ResourceField
+
+
+class ChoiceGroupResourceManager(ResourceManager):
+    item_resource_name = "choice_group"
+    list_resource_name = "choice_groups"
+    model_class = ChoiceGroup
+
+    def _add_item_fields(self):
+        super(ChoiceGroupResourceManager, self)._add_item_fields()
+
+        self._item_fields.update({
+            "num_required_essays": fields.Integer,
+            "university": ResourceField(
+                university.UniversityResourceManager.item_resource_name,
+                absolute=True),
+            "cg_id": fields.Integer
+        })
+
+
+class ChoiceGroupListResource(ListResource):
+    resource_manager_class = ChoiceGroupResourceManager
+
+
+class ChoiceGroupResource(ItemResource):
+    resource_manager_class = ChoiceGroupResourceManager
 
 
 class EssayTemplateResourceManager(ResourceManager):
@@ -75,11 +100,20 @@ class ApplicationEssayTemplateResourceManager(EssayTemplateResourceManager):
     model_class = ApplicationEssayTemplate
 
     def _add_item_fields(self):
+        from .special_program import SpecialProgramResourceManager
+
         super(ApplicationEssayTemplateResourceManager, self)._add_item_fields()
         self._item_fields.update({
             "max_words": fields.Integer,
             "university": ResourceField(
                 university.UniversityResourceManager.item_resource_name,
+                absolute=True),
+            "requirement_type": fields.String,
+            "special_program": ResourceField(
+                SpecialProgramResourceManager.item_resource_name,
+                absolute=True),
+            "choice_group": ResourceField(
+                ChoiceGroupResourceManager.item_resource_name,
                 absolute=True),
             "themes": fields.List(ResourceField(
                 theme.ThemeResourceManager.item_resource_name,

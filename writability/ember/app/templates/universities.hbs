@@ -1,11 +1,42 @@
 <div class="module-title">{{view.title}}</div>
 <ol class="list">
 
-{{#each}}
-    {{view view.listItem classNameBindings="isSelected" }}
+{{#each university in this}}
+	{{view view.listItem classNameBindings="isSelected"}}
 {{/each}}
 
 
-{{view view.optionsItem}}
-{{view view.newItem}}
+{{#if addingUniversities}}
+	{{view view.newItem}}
+	{{#if content.length}}
+		<div class="ember-view list-item thin-list-item new-item">
+			<div class="main-group">
+				<div class="main-line">
+					<label>
+						{{#link-to 'universities'}}
+							<i class="icon-right-open"></i> View all universities
+						{{/link-to}}
+					</label>
+				</div>
+			</div>
+		</div>
+	{{/if}}
+{{else}}
+	{{#if currentUser.isOnboarded}}
+	{{else}}
+		{{view view.optionsItem}}
+	{{/if}}
+
+	<div class="ember-view list-item thin-list-item new-item">
+		<div class="main-group">
+			<div class="main-line">
+				<label class="navigation">
+					{{#link-to 'universities.add'}}
+						Add More Universities <i class="icon-right-open"></i>
+					{{/link-to}}
+				</label>
+			</div>
+		</div>
+	</div>
+{{/if}}
 </ol>

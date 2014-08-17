@@ -18,5 +18,15 @@ export default AuthenticatedRoute.extend({
         closeLoading: function() {
             this.controllerFor('application').set('loadingActive', false);
         },
+
+        alert: function (message, type, length) {
+            length = length || 2000;
+            type = type || 'info';
+
+            $.growl(message, {
+                type: type,
+                delay: length
+            });
+        }
     }
 });
