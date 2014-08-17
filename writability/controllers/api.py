@@ -6,29 +6,25 @@ This module contains the Flask-RESTful hook and loads all api URLs.
 
 """
 from flask.ext import restful
-from resource.essay import EssayListResource, EssayResource
-from resource.essay import ThemeEssayListResource, ThemeEssayResource
-from resource.essay import ApplicationEssayListResource
-from resource.essay import ApplicationEssayResource, EssayStateAssociationsResource
+
+from resource.essay import EssayListResource, EssayResource, ThemeEssayListResource, ThemeEssayResource, \
+    ApplicationEssayListResource, ApplicationEssayResource, EssayStateAssociationsResource
 from resource.draft import DraftListResource, DraftResource
 from resource.review import ReviewListResource, ReviewResource
 from resource.university import UniversityListResource, UniversityResource
 from resource.theme import ThemeListResource, ThemeResource
-from resource.essay_template import EssayTemplateListResource
-from resource.essay_template import EssayTemplateResource
-from resource.essay_template import ThemeEssayTemplateListResource
-from resource.essay_template import ThemeEssayTemplateResource
-from resource.essay_template import ApplicationEssayTemplateListResource
-from resource.essay_template import ApplicationEssayTemplateResource
-from resource.user import UserListResource, UserResource
-from resource.user import TeacherListResource, TeacherResource
-from resource.user import StudentListResource, StudentResource
-from resource.user import InvitationListResource, InvitationResource
+from resource.essay_template import EssayTemplateListResource, EssayTemplateResource, ThemeEssayTemplateListResource,\
+    ThemeEssayTemplateResource, ApplicationEssayTemplateListResource, ApplicationEssayTemplateResource, \
+    ChoiceGroupResource, ChoiceGroupListResource
+from resource.user import UserListResource, UserResource, TeacherListResource, TeacherResource, StudentListResource, \
+    StudentResource, InvitationListResource, InvitationResource
 from resource.role import RoleListResource, RoleResource
 from resource.annotation import AnnotationResource, AnnotationListResource, TagResource, TagListResource
-from resource.add_universities import AddUniversitiesResource
-from resource.rubric import RubricListResource, RubricResource, RubricCategoryResource, RubricCategoryListResource, CriterionResource, CriterionListResource
-from resource.rubric import RubricCategoryRubricAssociationsResource
+from resource.add_universities import AddUniversitiesResource, SetEssayDisplayResource
+from resource.rubric import RubricListResource, RubricResource, RubricCategoryResource, RubricCategoryListResource, \
+    CriterionResource, CriterionListResource, RubricCategoryRubricAssociationsResource
+from resource.special_program import SpecialProgramListResource, SpecialProgramResource, SpecialProgramSetResource
+
 
 def add_resource_with_endpoint(api, resource_class, path):
     """Help add a resource by standardizing the external interation."""
@@ -94,9 +90,17 @@ def initialize(app, api_prefix):
         UniversityResource,
         "/universities/<int:id>")
 
+    # special program
+    add_resource_with_endpoint(api, SpecialProgramListResource, "/special-programs")
+    add_resource_with_endpoint(api, SpecialProgramResource, "/special-programs/<int:id>")
+
     # theme
     add_resource_with_endpoint(api, ThemeListResource, "/themes")
     add_resource_with_endpoint(api, ThemeResource, "/themes/<int:id>")
+
+    # choice groups
+    add_resource_with_endpoint(api, ChoiceGroupListResource, "/choice-groups")
+    add_resource_with_endpoint(api, ChoiceGroupResource, "/choice-groups/<int:id>")
 
     # essay template
     add_resource_with_endpoint(
@@ -140,6 +144,10 @@ def initialize(app, api_prefix):
     add_resource_with_endpoint(api, StudentResource, "/students/<int:id>")
     add_resource_with_endpoint(api, AddUniversitiesResource,
                                "/students/<int:student_id>/add-universities")
+    api.add_resource(SpecialProgramSetResource,
+        "/students/<int:student_id>/special-programs/<int:sp_id>")
+    api.add_resource(SetEssayDisplayResource,
+        "/students/<int:student_id>/set-essay-display")
 
     # invitation
     add_resource_with_endpoint(api, InvitationListResource, "/invitations")

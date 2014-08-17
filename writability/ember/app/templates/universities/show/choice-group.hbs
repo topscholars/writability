@@ -1,0 +1,13 @@
+{{#each group in choiceGroupings}}
+	<div class="choice-group">
+		<p class="rules">
+			Choose {{group.choiceGroup.num_required_essays}} out of {{group.content.length}}
+			{{#if group.requiredSelected}}
+				<i class="icon-check"></i>
+			{{else}}
+				<i class="icon-cancel"></i>
+			{{/if}}
+		</p>
+		{{render 'universities/show/application-essay-group' group.content}}
+	</div>
+{{/each}}

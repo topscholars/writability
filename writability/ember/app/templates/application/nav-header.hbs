@@ -1,6 +1,11 @@
+<div class="header-title">{{view.title}}</div>
+
 <div class="nav-section left-nav">{{view 'application/left-nav-button'}}</div>
-<div class="temp_logout">
+
+{{view 'application/student-nav'}}
+
+<div class="nav-section right-nav">{{view 'application/right-nav-button'}}</div>
+
+<div class="nav-section temp_logout">
   <a href="/logout">Logout</a>
 </div>
-<div class="header-title">{{view.title}}</div>
-<div class="nav-section right-nav">{{view 'application/right-nav-button'}}</div>

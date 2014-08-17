@@ -10,17 +10,10 @@
 @import (inline) "reset.css";
 /* @import "../../libs/bootstrap/less/bootstrap"; */
 @import "functions";
-@import "components";
-@import "ui/select2";
-@import "ui/annotations";
-@import "ui/form/all";
-@import "ui/rubric";
-/*@import "modules";
-@import "partials"; */
 @import "vendor/bootstrap/less/variables.less";
 @import "vendor/bootstrap/less/mixins.less";
 @import "vendor/bootstrap/less/alerts.less";
-@import "ui/alerts";
+@import "components";
 
 /***********************************************************
 * COLOR DEFINITIONS
@@ -70,9 +63,9 @@
 * Temporary logout button
 **/
 .temp_logout {
-    position:absolute;
-    top:0;
-    left:100px;
+    float: right;
+    margin-right: 1em;
+
     margin-top: 11px;
     a {
         color: @greyDark;
@@ -313,11 +306,14 @@ button, input[type="checkbox"] {
 }
 
 .nav-button {
+    padding-top: 0;
+    padding-bottom: 0;
     background-color: @black;
     border: 0px;
     color: @white;
     height: 100%;
     width: 100%;
+    line-height: @headerHeight;
 
     &:hover {
         background-color: @black;
@@ -491,7 +487,11 @@ button, input[type="checkbox"] {
     z-index: 20;
 
     .header-title {
-        display: table-cell;
+        z-index: 1;
+        position: absolute;
+        height: 100%;
+        line-height: @headerHeight;
+        width: 100%;
         vertical-align: middle;
     }
 
@@ -503,8 +503,10 @@ button, input[type="checkbox"] {
 /***********************************************************
 * CORE MODULE: NAV HEADER
 ************************************************************/
-.nav-header  {
+.nav-header, #header  {
     .nav-section {
+        position: relative;
+        z-index: 2;
         height: 100%;
     }
 
@@ -631,6 +633,10 @@ button, input[type="checkbox"] {
             .itemHeaderText();
             background: none;
             font-size: 0.6em;
+
+            &.navigation {
+                float: right;
+            }
         }
     }
 }
@@ -709,7 +715,6 @@ button, input[type="checkbox"] {
             }
 
             &.unselected {
-                text-decoration: line-through;
                 color: @grey;
                 border-color: @grey;
 
@@ -1148,10 +1153,26 @@ button, input[type="checkbox"] {
     font-weight: bold;
 }
 
+p.lead {
+    .itemHeaderText();
+    font-size: @smallHeaderFontSize;
+
+    padding: @innerPadding;
+}
+
 @import "./ui/icons";
 @import "./ui/merge";
 @import (inline) "vendor/pickadate/lib/compressed/themes/classic.css";
 @import (inline) "vendor/pickadate/lib/compressed/themes/classic.date.css";
+@import "ui/select2";
+@import "ui/annotations";
+@import "ui/form/all";
+@import "ui/rubric";
+@import "ui/student-nav";
+@import "ui/university-list";
+/*@import "modules";
+@import "partials"; */
+@import "ui/alerts";
 
 .sr-only {
     position: absolute;
