@@ -23,6 +23,9 @@ export default Ember.Component.extend({
 	actions: {
 		hasSavedAnnotation: function(annotation) {
 			this.sendAction('hasSavedAnnotation', annotation);
+		},
+		deleteAnnotation_Container: function(annotation) {
+			this.sendAction('deleteAnnotation_Container', annotation);
 		}
 	}
 });

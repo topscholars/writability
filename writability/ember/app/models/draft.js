@@ -24,5 +24,15 @@ export default DS.Model.extend({
     }.property('essay_type', 'essay_id'),
     review: DS.belongsTo('review', {async: true}),
 
-    reviewState: Ember.computed.alias('review.state')
+    reviewState: Ember.computed.alias('review.state'),
+
+    //// For potential use to return array of IDs
+    //active_annotation_ids: function() {
+    //    this.get('review').then( function(review) )
+    //    if (this.get('essay_type') === 'application') {
+    //        return this.store.find('application-essay', this.get('essay_id'));
+    //    } else if (this.get('essay_type') === 'theme') {
+    //        return this.store.find('theme-essay', this.get('essay_id'));
+    //    }
+    //}.property('essay_type', 'essay_id'),
 });

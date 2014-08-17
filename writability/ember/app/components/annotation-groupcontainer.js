@@ -14,6 +14,9 @@ export default Ember.Component.extend({
 		},
 		closeAnnotation: function () {
 			this.set('selectedAnnotation', null);
+		},
+		deleteAnnotation_GroupContainer: function (annotation) {
+			this.sendAction('deleteAnnotation_GroupContainer', annotation); // Bubbles to annotation-container.js
 		}
 	}
 });

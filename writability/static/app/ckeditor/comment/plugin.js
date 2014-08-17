@@ -51,7 +51,7 @@ CKEDITOR.plugins.add( 'comment', {
         //Define a button associated with the above command
         // This creates a button named 'Comment' with 3 properties
         editor.ui.addButton( 'Comment', {
-            label: 'Insert Comment YAY!',
+            label: 'Insert Comment',
             command: 'insertComment'
             //toolbar: 'insert'           // This is a toolbar group the button is inserted into
         });
