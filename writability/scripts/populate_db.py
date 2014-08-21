@@ -119,7 +119,16 @@ class UniversityPopulator(Populator):
     _FILE_PATH = "data/universities.txt"
 
     def _construct_payload(self, line):
-        payload = {"university": {"name": line}}
+        tokens = line.split('\t', 1)
+        name = tokens[0].strip()
+        use_common_app = tokens[1].strip()
+
+        payload = {
+            "university": {
+                "name": name,
+                "use_common_app": use_common_app
+            }
+        }
         return payload
 
     def _get_title(self, payload):
@@ -233,7 +242,7 @@ class ThemeEssayTemplatePopulator(Populator):
     _FILE_PATH = "data/theme-essay-templates.csv"
 
     def _construct_payload(self, line):
-        columns = line.split(',', 3)
+        columns = line.split(',', 4)
 
         # theme
         category = columns[0].strip()
@@ -249,8 +258,12 @@ class ThemeEssayTemplatePopulator(Populator):
         # essay_prompt
         essay_prompt = columns[3][:-1].strip()
 
+        te_id = columns[4].strip()
+        print(te_id)
+
         payload = {
             "theme_essay_template": {
+                "id": te_id,
                 "theme": theme_id,
                 "audience": audience,
                 "context": context,
@@ -274,10 +287,10 @@ class ThemeEssayTemplatePopulator(Populator):
 class ApplicationEssayTemplatePopulator(Populator):
 
     _PATH = "application-essay-templates"
-    _FILE_PATH = "data/application-essay-templates.csv"
+    _FILE_PATH = "data/application-essay-templates.txt"
 
     def _construct_payload(self, line):
-        columns = line.split('\t', 8)
+        columns = line.split('\t', 9)
 
         # university
         uni = columns[0].strip()
@@ -329,8 +342,12 @@ class ApplicationEssayTemplatePopulator(Populator):
         # essay_prompt
         essay_prompt = columns[8].strip().strip("\"")
 
+        # id - now set outside of db
+        aet_id = columns[9].strip()
+
         payload = {
             "application_essay_template": {
+                "id": aet_id,
                 "university": uni_id,
                 "max_words": max_words,
                 "themes": themes,
@@ -671,9 +688,10 @@ def delete_users():
 
 
 def populate_db():
+    pass
     ##RubricCategoryPopulator()
     ##CriteriaPopulator()
-    ApplicationEssayTemplatePopulator()
+    # ApplicationEssayTemplatePopulator()
 
 def populate_test_data():
     ## Damnit people - don't leave in a 'for deploy' comment if you rename that main method for a script.
@@ -686,7 +704,7 @@ def populate_test_data():
     TagPopulator()
     #  # custom data
     delete_users()
-    UserPopulator()
+    # UserPopulator()
     #  DraftPopulator()
     #  ReviewPopulator()
     #  AnnotationPopulator()
@@ -697,5 +715,6 @@ for arg in sys.argv:
     if arg in ('--dev'):
         populate_test_data()
 
-populate_db()
+# populate_db()
+
 # ApplicationEssayTemplatePopulator()
