@@ -68,3 +68,4 @@ from role import Role
 from review import Review
 from annotation import Annotation, Tag
 from rubric import Rubric, RubricCategory, RubricCategoryRubricAssociations
+from special_program import SpecialProgram

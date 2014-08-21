@@ -1,0 +1,14 @@
+{{#if applicationUser.isStudent}}
+<div class="nav-section student-nav">
+	<button class="menu nav-button" {{action 'toggleMenu' target="view"}}>
+		<i class="icon-menu"></i>
+	</button>
+	{{#general-collapse isActive=view.showNav}}
+		<ul class="menu-dropdown">
+			<li>{{#link-to 'universities'}}Universities{{/link-to}}</li>
+			<li>{{#link-to 'essays'}}Essays{{/link-to}}</li>
+		</ul>
+	{{/general-collapse}}
+</div>
+
+{{/if}}

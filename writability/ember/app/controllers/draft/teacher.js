@@ -43,6 +43,44 @@ export default DraftController.extend({
             var draft = this.get('model'),
                 controller = this;
 
+            //// Removes obsolete Annotation spans from draft content on save.
+            //// This includes both types: id='annotation-99' and 'annotation-in-progress'
+            //// This works but the review submission breaks for some reason.
+            
+            //var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
+            //
+            //var annotation_objs;
+            //var annotation_ids
+            //draft.get('review')
+            //    .then( function(review) { review.get('annotations')
+            //        .then( function(annotations) {
+            //            annotation_objs = annotations; // Array of Anno IDs. ["45","47"..]
+            //            annotation_ids = annotation_objs.mapBy('id');
+            //        
+            //            // Remove annotations from content that dont exist in DB
+            //            div_container.find( 'span[id*=annotation-]' ).each(function() {
+            //                var annotation_span = $(this);
+            //                var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
+            //                if (annotation_ids.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
+            //                    annotation_span.replaceWith(annotation_span.contents());
+            //                }
+            //            });
+
+            //            // Remove any in progress annotations (should be max of 1)
+            //            var currentInProgress = div_container.find('#annotation-in-progress');
+            //            if (currentInProgress.length > 0) {
+            //                currentInProgress.replaceWith(currentInProgress.contents());
+            //            }
+            //            var newFormattedText = div_container.html();
+
+            //            controller.set('formatted_text', newFormattedText);
+            //            controller.set('formatted_text_buffer', newFormattedText);
+            //            Ember.run.debounce(controller, controller.saveDraft, 1);
+            //        })  
+            //    });
+            //console.log('passed draftsave');
+
+            //// Original handling without change to Draft Content
             this.updateEssayDueDate().then(function() {
                 draft.get('review')
                     .then(function (review) {
@@ -128,7 +166,7 @@ export default DraftController.extend({
 
             var stuff = $('<div>').html(this.get('formatted_text'));
             var workingAnnotation = stuff.find('#annotation-in-progress');
-            workingAnnotation.attr('id', anno_id).addClass(tag_type);
+            workingAnnotation.attr('id', anno_id).addClass(tag_type);   // Adds Positive or Negative for the underline color
             var newFormattedText = stuff.html();
 
             this.set('formatted_text', newFormattedText);
@@ -140,6 +178,24 @@ export default DraftController.extend({
 
         saveEssay: function(essay) {
             essay.save();
+        },
+
+        teacherDeleteAnnotation: function (annotation) {
+            var anno_id = '#annotation-' + annotation.id;                   // Note inclusion of #, unlike in hasSavedAnnotation()
+            var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
+
+            var annotation_to_remove = div_container.find(anno_id);         //Get text, replace span with text
+            var text = annotation_to_remove.text();
+            annotation_to_remove.replaceWith(text);
+
+            var newFormattedText = div_container.html();                    // Set draft textarea to new content
+
+            this.set('formatted_text', newFormattedText);
+            this.set('formatted_text_buffer', newFormattedText);
+            Ember.run.debounce(this, this.saveDraft, autosaveTimout);
+
+            annotation.destroyRecord();
+
         }
     }
 });

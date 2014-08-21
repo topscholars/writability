@@ -42,7 +42,7 @@ export default DS.Model.extend({
 
     curr_draft_number: function () {
         var curr_draft_number = this.get('draftsWithCompletedReview') + 1; 
-        return curr_draft_number
+        return curr_draft_number;
     }.property('draftsWithCompletedReview'),
 
     studentRecentReview: Ember.computed.alias('draftsWithCompletedReview.lastObject.review'),

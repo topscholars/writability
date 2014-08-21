@@ -111,13 +111,17 @@ class ApplicationEssayResourceManager(StatefulResourceManager, EssayResourceMana
     def _add_item_fields(self):
         super(ApplicationEssayResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "onboarding_is_selected": fields.Boolean,
             "theme_essays": fields.List(ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
                 absolute=True)),
             "selected_theme_essay": ResourceField(
                 ThemeEssayResourceManager.item_resource_name,
                 absolute=True),
-            "university_name": fields.String
+            "university_name": fields.String,
+            "choice_group": fields.Integer,
+            "requirement_type": fields.String,
+            "special_program": fields.Integer
             # 'proposed_topics': fields.List(fields.String)
         })
 

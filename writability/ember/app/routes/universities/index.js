@@ -1,13 +1,18 @@
 import AuthenticatedRoute from 'writability/routes/authenticated';
 
 export default AuthenticatedRoute.extend({
-    model: function () {
-        return this.get('currentStudent').get('universities');
+	beforeModel: function() {
+		if (this.get('currentStudent.universities.length') < 1) {
+			this.transitionTo('universities.add');
+		}
+	},
+
+    setupController: function(controller, model) {
+        this.controllerFor('universities').set('addingUniversities', false);
+        this._super(controller, model); //Required boilerplate
     },
 
     renderTemplate: function () {
-        this.render(
-            'universities/essay-templates',
-            {outlet: 'right-side-outlet'});
+        this.render({into: 'layouts/main', outlet: 'right-side-outlet'});
     }
 });

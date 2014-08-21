@@ -1,15 +1,19 @@
-import json
 from flask import request
-from flask.ext.restful import Resource
+
+from flask.ext.restful import Resource, marshal
+
 from .user import User
+
 from models.db import db
 from models.essay import ApplicationEssay, ThemeEssay
 from models.user import User
 from models.essay_template import ApplicationEssayTemplate, ThemeEssayTemplate
+from essay import EssayResourceManager
+from base import ItemResource, ListResource
+from .base import InvalidUsage
 
 
 class AddUniversitiesResource(Resource):
-
     @classmethod
     def get_endpoint(self):
         return 'add-universities'
@@ -20,67 +24,73 @@ class AddUniversitiesResource(Resource):
     def _update(self, model, id, **kwargs):
         return model.update(id, kwargs)
 
-    def _create_application_essay(self, student, application_essay_template, use_threading=True):
+    def _create_application_essay(self, student, application_essay_template):
+        aet = application_essay_template
         return self._create(ApplicationEssay,
                             student=student.id,
                             essay_template=application_essay_template.id,
-                            is_displayed=False if use_threading else True)
+                            is_displayed=False,
+                            onboarding_is_selected=True if not aet.special_program and aet.requirement_type == 'Required' else False)
 
-    def _create_theme_essay(self, student, application_essays, theme, use_threading=True):
-        essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id':theme})[0].id
+    def _create_theme_essay(self, student, application_essays, theme):
+        essay_template_id = ThemeEssayTemplate.read_by_filter({'theme_id': theme})[0].id
         try:
-            existing_theme_essay = ThemeEssay.read_by_filter({'student_id':student.id, 'essay_template_id': essay_template_id})[0]
+            existing_theme_essay = ThemeEssay.read_by_filter({
+                'student_id': student.id,
+                'essay_template_id': essay_template_id
+            })[0]
+
             app_essays = existing_theme_essay.application_essays
             app_essays.extend(application_essays)
-            return self._update(ThemeEssay,existing_theme_essay.id,
-                            theme=theme,
-                            application_essays=app_essays,
-                            essay_template=essay_template_id,
-                            student=student.id,
-                            state='new',
-                            proposed_topics=['',''],
-                            is_displayed=True if use_threading else False)
-        except:
-            return self._create(ThemeEssay,
-                            theme=theme,
-                            application_essays=application_essays,
-                            essay_template=essay_template_id,
-                            student=student.id,
-                            state='new',
-                            proposed_topics=['',''],
-                            is_displayed=True if use_threading else False)
 
-    def post(self, student_id):       
+            return self._update(ThemeEssay, existing_theme_essay.id,
+                                theme=theme,
+                                application_essays=app_essays,
+                                essay_template=essay_template_id,
+                                student=student.id,
+                                state='new',
+                                proposed_topics=['', ''],
+                                is_displayed=False)
+        except IndexError:
+            return self._create(ThemeEssay,
+                                theme=theme,
+                                application_essays=application_essays,
+                                essay_template=essay_template_id,
+                                student=student.id,
+                                state='new',
+                                proposed_topics=['', ''],
+                                is_displayed=False)
+
+    def post(self, student_id):
         req_json = request.get_json()
         university_ids = req_json.get('universities')
 
-        # use_threading: parameter from university onboarding page.
-        # when False, we skip straight to the application essay process.
-        try:
-            use_threading = req_json.get('use_threading')
-        except:
-            use_threading = True
         if university_ids is None:
             return 'Missing "universities" parameter in JSON request', 400
+
         student = User.query.filter_by(id=student_id).first()
+
         required_application_essay_templates = []
         for university_id in university_ids:
             required_application_essay_templates.extend(
-                ApplicationEssayTemplate.query.filter_by(university_id=university_id))
+                ApplicationEssayTemplate.query.filter_by(university_id=university_id)
+            )
+
         existing_application_essay_template_ids = [application_essay.essay_template_id
-            for application_essay in student.application_essays]
+                                                   for application_essay in student.application_essays]
+
         application_essay_templates = [x for x in required_application_essay_templates
                                        if x.id not in existing_application_essay_template_ids]
 
-        current_user=User.read(student_id)
+        current_user = User.read(student_id)
         all_themes = set([te.theme.id for te in current_user.theme_essays])
 
-        app_essay_list = [] # (app_essay, [theme1,theme2,etc])
+        app_essay_list = []  # (app_essay, [theme1,theme2,etc])
         for application_essay_template in application_essay_templates:
-            application_essay = self._create_application_essay(student, application_essay_template, use_threading)
+            application_essay = self._create_application_essay(student, application_essay_template)
             db.session.add(application_essay)
             db.session.flush()
-            db.session.refresh(application_essay)   # make sure 'id' field is set properly
+            db.session.refresh(application_essay)  # make sure 'id' field is set properly
 
             # get set of themes and list of app essays for theme essay output
             app_essay_list.append((application_essay, [t.id for t in application_essay_template.themes]))
@@ -89,9 +99,61 @@ class AddUniversitiesResource(Resource):
 
         for theme in all_themes:
             ae_list = [ae[0] for ae in app_essay_list if theme in ae[1]]
-            db.session.add(self._create_theme_essay(student, ae_list, theme, use_threading))
+            db.session.add(self._create_theme_essay(student, ae_list, theme))
 
         if len(application_essay_templates) > 0:
             db.session.commit()
 
         return 'OK ' + str(len(application_essay_templates))
+
+
+class SetEssayDisplayResource(ListResource):
+    """
+    This resource sets the is_displayed parameter on a student's essays.
+    """
+    resource_manager_class = EssayResourceManager
+
+    def get(self, student_id):
+        abort(400, message="Bad Request")
+
+    def delete(self, student_id):
+        abort(400, message="Bad Request")
+
+    def put(self, student_id):
+        resource_name = self.resource_manager.list_resource_name
+        model_class = self.resource_manager.model_class
+        list_field = self.resource_manager.list_field
+
+        use_threading = self._get_payload()
+        student = User.read(student_id)
+        app_essays = [e for e in student.application_essays if e.onboarding_is_selected]
+
+        if use_threading:
+            # set every theme essay with an application essay in app_essays is_displayed
+            theme_essays = [e for e in student.theme_essays if list(set(e.application_essays) & set(app_essays))]
+            for e in theme_essays:
+                item = {"theme_essay": ThemeEssay.update(e.id,{'is_displayed': True})}
+                User.update(student.id, {'onboarded': True})
+            return marshal({resource_name: app_essays}, list_field)
+        else:
+            # set everything in app_essays is_displayed
+            for e in app_essays:
+                item = {"application_essay": ApplicationEssay.update(e.id,{'is_displayed': True})}
+                User.update(student.id, {'onboarded': True})
+            return marshal({resource_name: app_essays}, list_field)
+
+    def _get_payload(self):
+        """
+        Get the JSON body of the request.
+        Should be in the form 
+        { 
+          "use_threading": <boolean>
+        }
+
+        """
+        json = request.get_json()
+        try:
+            payload = json['use_threading']
+        except:  # FIXME: too broad exception
+            raise InvalidUsage('Did you pass use_threading?')
+        return payload

@@ -17,7 +17,7 @@ window.Landing = (function ($) {
             //$('#modal-container').animate({'visibility': 'hidden'});
         });
 
-        if(window.location.pathname === '/register')
+        if(window.location.pathname === '/register' || window.location.pathname === '/login')
             $('#modal-container').show();
     });
 })($);

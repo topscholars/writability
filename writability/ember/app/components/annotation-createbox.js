@@ -26,6 +26,10 @@ export default Ember.Component.extend(Collapsable, {
 			this.get('annotation.annotation').save().then(function(annotation) {
 				component.sendAction('hasSavedAnnotation', annotation);
 			});
-		}
+		}//,
+		//cancelAnnotation: function() {
+		// Close currently open createbox
+		// Remove #annotation-in-progress
+		//}
 	}
 });

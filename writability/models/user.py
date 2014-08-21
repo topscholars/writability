@@ -36,6 +36,7 @@ class User(StatefulModel, UserMixin):
     last_name = db.Column(db.String)
     active = db.Column(db.Boolean)
     confirmed_at = db.Column(db.DateTime())
+    onboarded = db.Column(db.Boolean, nullable=False, default=False)
 
     # relationships
     roles = db.relationship(

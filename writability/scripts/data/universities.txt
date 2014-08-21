@@ -1,127 +1,125 @@
-American University
-Amherst
-Arizona State
-Babson
-Bard college
-Barnard
-Bates
-Bently University
-Boston College
-Boston University
-Brown University
-Bucknell
-California College of the Arts
-CalTech
-Carnegie Mellon
-Christopher Newport University
-Clarkson University
-Colby College
-College of Charleston
-Columbia University
-Common App
-Connecticut College
-Cornell
-Dartmouth
-Drexel
-Duke
-Earlham College
-Ecole hoteliere de Lausanne
-Emerson
-Emory
-George Mason University
-George Washington University
-Georgetown University
-Georgia Tech
-Gettysburg College
-Glion Institute of Higher Education
-Hamilton
-Harvard University
-Harvey Mudd
-Johns Hopkins
-Knox
-Lafayette
-Lehigh
-Les Roches International School of Hotel Management
-Linfield
-Loyola Marymount
-Macalester
-McGill
-Michigan State
-Michigan Tech
-Middlebury College
-MIT
-Mount Holyoke College
-NC State
-New York University
-North Carolina State
-Northeastern
-Northland College
-Northwestern
-Occidental
-Ohio State
-Oxford
-Pace
-Pace University
-Penn State
-Pepperdine
-Pitzer
-Pomona College
-Pratt
-Princeton University
-Purdue
-Reed
-Rensselear Polytechnic Institute
-Rhode Island School of Design
-Rice
-RIT
-Rutgers
-San Francisco State University
-Santa Clara U
-SCAD
-Skidmore
-Smith
-St. Olaf College
-Stanford
-Swarthmore
-Syracuse
-Tufts
-U Central Florida
-U Chicago
-U Denver
-U Illinois - Chicago
-U Maryland
-U Mass, Amherst
-U Michigan
-U Ohio
-U Oregon
-U Penn
-U Rhode Island
-U San Francisco
-U SanFran
-U Texas-Austin
-U Toronto
-U Vermont
-U Virginia
-U Washington
-U Wisconsin - Madison
-UC
-UCAS
-Union College
-U British Columbia
-U Central Florida
-U Nevada, Las Vegas
-U Rochester
-U San Fancisco
-U Pacific
-USC
-UT Austin
-Vanderbilt
-Vassar
-Washington College
-Wellesley
-Wesleyan
-Wheaton
-William and Mary
-Williams
-WPI
-Yale University
+American University	1
+Amherst	1
+Arizona State	0
+Babson	1
+Bard College	1
+Barnard	1
+Bates	1
+Bentley University	1
+Boston College	1
+Boston University	1
+Brown University	1
+Bucknell	1
+California College of the Arts	1
+CalTech	1
+Carnegie Mellon	1
+Christopher Newport University	1
+Clarkson University	1
+Colby College	1
+College of Charleston	0
+Columbia University	1
+Common App	0
+Connecticut College	1
+Cornell	1
+Dartmouth	1
+Drexel	1
+Duke	1
+Earlham College	1
+Ecole hoteliere de Lausanne	0
+Emerson	1
+Emory	1
+George Mason University	0
+George Washington University	1
+Georgetown University	0
+Georgia Tech	1
+Gettysburg College	1
+Glion Institute of Higher Education	0
+Hamilton	1
+Harvard University	1
+Harvey Mudd	1
+Johns Hopkins	1
+Knox	1
+Lafayette	1
+Lehigh	1
+Les Roches International School of Hotel Management	0
+Linfield	1
+Loyola Marymount	1
+Macalester	1
+McGill	0
+Michigan State	0
+Michigan Tech	0
+Middlebury College	1
+MIT	0
+Mount Holyoke College	1
+New York University	1
+North Carolina State	0
+Northeastern	1
+Northland College	0
+Northwestern	1
+Occidental	1
+Ohio State	1
+Oxford	0
+Pace University	1
+Penn State	0
+Pepperdine	1
+Pitzer	1
+Pomona College	1
+Pratt	0
+Princeton University	1
+Purdue	1
+Reed	1
+Rensselaer Polytechnic Institute	1
+Rhode Island School of Design	1
+Rice	1
+RIT	1
+Rutgers	0
+San Francisco State University	0
+Santa Clara U	1
+SCAD	0
+Skidmore	1
+Smith	1
+St. Olaf College	1
+Stanford	1
+Swarthmore	1
+Syracuse	1
+Tufts	1
+U Central Florida	0
+U Chicago	1
+U Denver	1
+U Illinois – Chicago	0
+U Illinois Urbana-Champaign	0
+U Iowa	0
+U Maryland	0
+U Mass, Amherst	1
+U Michigan	1
+U Ohio	0
+U Oregon	0
+U Penn	1
+U Rhode Island	1
+U San Francisco	1
+U Texas-Austin	0
+U Toronto	0
+U Vermont	1
+U Virginia	1
+U Washington	0
+U Wisconsin - Madison	0
+UC	0
+UCAS	0
+Union College	1
+University of British Columbia	0
+U Central Florida	0
+University of Nevada, Las Vegas	0
+University of Rochester	1
+University of the Pacific	1
+USC	1
+Vanderbilt	1
+Vassar	1
+Washington College	1
+Washington University, St. Louis	1
+Wellesley	1
+Wesleyan	1
+Wheaton	1
+William and Mary	1
+Williams	1
+WPI	1
+Yale University	1

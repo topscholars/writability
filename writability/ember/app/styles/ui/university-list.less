@@ -1,0 +1,77 @@
+.university-item {
+	button.remove {
+		padding: 0;
+		border: none;
+		background: none;
+		float: right;
+		.itemHeaderText();
+
+		&:hover {
+			color: #333;
+		}
+	}
+}
+
+.university-essay-selection .tab-content {
+	padding: @smallMargin;
+	margin-top: -120px;
+	padding-top: 120px;
+}
+
+.university-essay-selection .universities-title {
+	.moduleHeaderText();
+	padding: @smallMargin;
+	padding-bottom: 0;
+}
+
+.university-essay-selection .universities-sub-title {
+	.headerText();
+	padding-left: @smallMargin;
+	padding-bottom: 1px;
+}
+
+.university-essay-selection .title-section {
+	border-bottom: 1px @grey solid;
+	background: white;
+	position: relative;
+	z-index: 2;
+}
+
+
+.special-program h3, .university-application-essay-group h3 {
+	.headerText();
+}
+
+.special-program {
+	display: block;
+	width: 100%;
+
+	margin-bottom: @innerPadding;
+}
+
+.university-application-essay-group {
+	margin-top: @innerPadding;
+
+	&:first-of-type {
+		margin-top: 0;
+	}
+}
+
+.special-program .university-application-essay-group {
+	border: 1px black solid;
+	padding: @smallPadding;
+}
+
+.university-application-essay-group .choice-group {
+	border: 1px black solid;
+	margin-top: @smallPadding;
+	padding: @smallPadding;
+
+	i.icon-check {
+		color: @brand-success;
+	}
+
+	i.icon-cancel {
+		color: @brand-danger;
+	}
+}
