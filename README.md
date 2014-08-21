@@ -59,3 +59,6 @@ cd into /scripts and run as usual with 'python populate_db.py'
 This script is not yet working on Heroku, a ticket is filed with their support team. But you can manually enter the lines from the script file into a console.
 `heroku run bash db_refresh_from_prod.sh --app writability-dev`
 Production DB backups will be stored in the code repo occasionally and after major updates.
+
+To reset:
+heroku pg:reset DATABASE_URL --app writability-dev --confirm writability-dev
