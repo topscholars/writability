@@ -391,8 +391,16 @@ table {
 ** @import "ui/annotations";
 ** @import "ui/form/all";
 ** @import "ui/rubric";
-** @import "ui/draft_review";
 */
+.draft_review_input {
+  width: 140px;
+  padding-left: 10px !important;
+  font-size: 22px !important;
+  /* TODO  import and use shared sizing */
+}
+.draft_review_input.num_revisions {
+  width: 122px;
+}
 /*@import "modules";
 @import "partials"; */
 .alert {
