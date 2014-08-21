@@ -3,6 +3,8 @@ import Ember from 'ember';
 export default Ember.TextField.extend({
 
 	classNames: ['form-date'],
+	classNameBindings:['isDraftSettingsBox:draft_review_input'],
+	isDraftSettingsBox: false, // Set as true in hbs to add custom class for smaller input size
 
 	min: true,
 

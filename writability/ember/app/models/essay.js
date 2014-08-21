@@ -12,7 +12,7 @@ export default DS.Model.extend({
     num_of_drafts: DS.attr('number'),
     topic: DS.attr('string'),
     max_words: DS.attr('number'),
-    draft_due_date: DS.attr(null, {readOnly: true}),
+    draft_due_date: DS.attr(null, {readOnly: true}), // Likely needs null changed to 'string'
     next_action: DS.attr('string', {readOnly: true}),
     is_displayed: DS.attr('boolean'),
     state: DS.attr('string'),
@@ -39,6 +39,11 @@ export default DS.Model.extend({
     teacherRecentReview: Ember.computed.alias('recentDraft.review'),
 
     draftsWithCompletedReview: Ember.computed.filterBy('drafts', 'reviewState', 'completed'),
+
+    curr_draft_number: function () {
+        var curr_draft_number = this.get('draftsWithCompletedReview') + 1; 
+        return curr_draft_number;
+    }.property('draftsWithCompletedReview'),
 
     studentRecentReview: Ember.computed.alias('draftsWithCompletedReview.lastObject.review'),
 

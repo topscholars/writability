@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 	classNames: ['form-number'],
+
 	min: null,
 	max: null,
 	value: null,

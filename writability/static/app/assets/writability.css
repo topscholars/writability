@@ -385,6 +385,16 @@ table {
 * TOOLS
 ************************************************************/
 /* Use a background-image in a consistent way. */
+/* These imports were removed on develop sometime aug13-21.. are they redundant?
+** @import "components";
+** @import "ui/select2";
+** @import "ui/annotations";
+** @import "ui/form/all";
+** @import "ui/rubric";
+** @import "ui/draft_review";
+*/
+/*@import "modules";
+@import "partials"; */
 .alert {
   padding: 15px;
   margin-bottom: 20px;

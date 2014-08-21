@@ -1,13 +1,10 @@
 <div class="panel-title">Details</div>
 
+<!-- Prompt,Topic,Theme,Due Date,Draft #,Word Count -->
 {{#with essay}}
 <div class="details-field">
-    <span class="key">Audience:</span>
-    <span class="value app-text">{{audience}}</span>
-</div>
-<div class="details-field">
-    <span class="key">Context:</span >
-    <span class="value app-text">{{context}}</span>
+    <span class="key">Prompt:</span>
+    <span class="value app-text">{{essay_prompt}}</span>
 </div>
 <div class="details-field">
     <span class="key">Topic:</span>
@@ -16,5 +13,20 @@
 <div class="details-field">
     <span class="key">Theme:</span>
     <span class="value app-text">{{theme.name}} ({{theme.category}})</span>
+</div>
+<div class="details-field">
+    <span class="key">Draft Due Date:</span >
+    <span class="value app-text">{{format-date draft_due_date}}</span>
+</div><div class="details-field">
+    <span class="key">Essay Due Date:</span >
+    <span class="value app-text">{{format-date due_date}}</span>
+</div>
+<div class="details-field">
+    <span class="key">Draft #:</span >
+    <span class="value app-text">{{curr_draft_number}}</span>
+</div>
+<div class="details-field">
+    <span class="key">Word Count:</span >
+    <span class="value app-text">{{draft.word_count}}</span>
 </div>
 {{/with}}
