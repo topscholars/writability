@@ -688,9 +688,8 @@ def delete_users():
 
 
 def populate_db():
-    pass
-    ##RubricCategoryPopulator()
-    ##CriteriaPopulator()
+    RubricCategoryPopulator()
+    CriteriaPopulator()
     # ApplicationEssayTemplatePopulator()
 
 def populate_test_data():
@@ -715,6 +714,6 @@ for arg in sys.argv:
     if arg in ('--dev'):
         populate_test_data()
 
-# populate_db()
+populate_db()
 
 # ApplicationEssayTemplatePopulator()
