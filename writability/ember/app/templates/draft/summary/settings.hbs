@@ -2,7 +2,7 @@
 
 <div class="details-field">
     <div class="key">Next Due Date:</div>
-    {{form-date dateBind=essay.due_date format="mm/dd/yyyy" isDraftSettingsBox=true}}
+    {{form-date}}
 </div>
 
 <div class="details-field">
@@ -10,7 +10,7 @@
     {{form-number value=essay.num_of_drafts min=0 max=20 isDraftSettingsBox=true}}
 </div>
 
-<!-- Settings Button Removed. Inputs should autosave. 
+<!-- Settings Button Removed. Inputs should autosave.
 <div class="details-field">
 	<button {{action 'saveEssay' essay}}>Save Essay</button>
 </div>
