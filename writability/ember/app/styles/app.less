@@ -1174,8 +1174,8 @@ p.lead {
 
 @import "./ui/icons";
 @import "./ui/merge";
-@import (inline) "vendor/pickadate/lib/compressed/themes/classic.css";
-@import (inline) "vendor/pickadate/lib/compressed/themes/classic.date.css";
+@import (inline) "vendor/pickadate/lib/themes/default.css";
+@import (inline) "vendor/pickadate/lib/themes/default.date.css";
 @import "ui/select2";
 @import "ui/annotations";
 @import "ui/form/all";
@@ -1195,4 +1195,8 @@ p.lead {
     overflow: hidden;
     clip: rect(0,0,0,0);
     border: 0;
+}
+
+.picker--opened .picker__holder {
+    background: none;
 }
