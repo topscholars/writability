@@ -1,6 +1,7 @@
 import EssayController from './essay';
+import SelectableApplicationEssayMixin from 'writability/mixins/selectable-application-essay';
 
-export default EssayController.extend({
+export default EssayController.extend(SelectableApplicationEssayMixin, {
 	actions: {
 	    submitProposedTopics: function(model) {
 	        var input = {
