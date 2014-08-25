@@ -1,4 +1,14 @@
 <ol class="list">
+{{#if showHiddenEssays}}
+  <li class="legend">Merged Essays</li>
+  {{#each mergedEssays}}
+    {{view view.listItem classNameBindings="isSelected" }}
+  {{/each}}
+  <li class="legend">Hidden Essays</li>
+  {{#each notDisplayedEssays}}
+    {{view view.listItem classNameBindings="isSelected" }}
+  {{/each}}
+{{else}}
   {{#if studentActionRequiredEssays}}
     <li class="legend">Take Action</li>
     {{#each studentActionRequiredEssays}}
@@ -11,4 +21,5 @@
       {{view view.listItem classNameBindings="isSelected" }}
     {{/each}}
   {{/if}}
+{{/if}}
 </ol>

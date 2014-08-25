@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
 		var parentEssay = this.get('parentEssay');
 
 		return this.get('essays').filter(function(essay) {
-			return essay.id !== parentEssay.id;
+			return essay.get('is_displayed') && essay.id !== parentEssay.id;
 		});
 	}.property('parentEssay', 'essays'),
 
