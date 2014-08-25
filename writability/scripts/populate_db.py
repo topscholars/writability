@@ -688,7 +688,6 @@ def delete_users():
 
 
 def populate_db():
-    # pass
     RubricCategoryPopulator()
     CriteriaPopulator()
     # ApplicationEssayTemplatePopulator()

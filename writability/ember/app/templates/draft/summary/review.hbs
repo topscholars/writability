@@ -1,9 +1,11 @@
 <div class="panel-title">Review</div>
 
+{{rubric-container reviewMode=reviewMode rubric=rubric}}
+
+<br />
+<p>Review Comment:<p>
 {{#if reviewMode}}
     {{textarea class="review-editor" value=review.text}}
 {{else}}
     <p>{{currentReview.text}}</p>
 {{/if}}
-
-{{rubric-container reviewMode=reviewMode rubric=rubric}}
