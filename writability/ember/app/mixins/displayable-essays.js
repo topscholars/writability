@@ -33,7 +33,7 @@ export default Ember.Mixin.create({
 
     actions: {
         toggleHiddenEssays: function() {
-            this.set('showHiddenEssays', !this.get('showHiddenEssays'));
+            this.toggleProperty('showHiddenEssays');
         }
     }
 });
