@@ -11,6 +11,7 @@ from .db import db
 from .base import BaseModel
 # from sqlalchemy.orm import validates
 from annotation import Tag
+from essay_template import EssayTemplate
 from sqlalchemy.ext.associationproxy import association_proxy
 
 class Rubric(BaseModel):
@@ -90,16 +91,20 @@ class RubricCategory(BaseModel): # Impact, Content, and Quality.
 class Criterion(Tag):   # Tags that a teacher can write an annotation against, 
                         # that are also associated with a rubric category
     #__tablename__ = 'criteria'
-    ##### ADD relationship to RubricCategory 
     rubric_category_id = db.Column(db.Integer, db.ForeignKey('rubric_category.id'))
 
 
-    #__tablename__ = 'criteria'
     # inheritance
     __mapper_args__ = {'polymorphic_identity': 'criteria'}
     # required fields
     id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
 
+    essay_template = db.relationship(
+        "EssayTemplate",
+        backref=db.backref("criteria", uselist=True),
+        uselist=False)
+
+    essay_template_id = db.Column(db.Integer, db.ForeignKey('essay_template.id'))
 
 
     ## Creates rubric categories from criteria

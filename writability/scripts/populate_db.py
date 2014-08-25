@@ -197,6 +197,7 @@ class CriteriaPopulator(Populator):
         category = tokens[2].strip()
         description = tokens[3].strip()
         super_category = tokens[4].strip()
+        essay_template = tokens[5].strip()
 
         payload = {
             "criterion": {
@@ -205,6 +206,7 @@ class CriteriaPopulator(Populator):
                 "category" : category,
                 "description" : description,
                 "super_category" : super_category,
+                "essay_template" : essay_template,
                 "rubriccategory": None
             }
         }

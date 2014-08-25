@@ -10,6 +10,7 @@ from flask import request
 
 from models.rubric import Rubric, RubricCategory, Criterion, RubricCategoryRubricAssociations
 import review, annotation
+import essay_template
 
 from .base import ResourceManager, ItemResource, ListResource, InvalidUsage
 from .fields import ResourceField, RubricAssocationResourceField
@@ -149,6 +150,9 @@ class CriterionResourceManager(annotation.TagResourceManager):
     def _add_item_fields(self):
         super(CriterionResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "essay_template": ResourceField(
+                essay_template.EssayTemplateResourceManager.item_resource_name,
+                absolute=True),
             "rubriccategory": ResourceField(
                 RubricCategoryResourceManager.item_resource_name,
                 absolute=True)
