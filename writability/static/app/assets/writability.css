@@ -1094,6 +1094,7 @@ input[type="checkbox"]:disabled {
 .list-module .thick-list-item .main-group .sub-line {
   font-family: 'Trade Gothic W01', sans-serif;
   font-size: 16px;
+  width: 320px;
 }
 .list-module .thick-list-item .details-group {
   font-family: 'Trade Gothic W01', sans-serif;
