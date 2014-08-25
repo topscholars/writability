@@ -75,43 +75,41 @@ export default DraftController.extend({
 
                         controller.set('formatted_text', newFormattedText);
                         controller.set('formatted_text_buffer', newFormattedText);
-                        console.log('about to save');
-                        //// Calling either save method results in creation of 2 drafts.
-                        //// The 2nd is associated with the 'write draft' button, but has no prev_review
+                        // not using debounce because this needs to happen immediately
+                        // When review is saved, the new draft is created and must have updated text 
                         draft.save();
-                        //Ember.run.debounce(controller, controller.saveDraft, 1);
-                        console.log('Called save');
+
+                        //TODO this called draft.get multiple times and can be refactored
+
+                        //// Original handling without change to Draft Content
+                        controller.updateEssayDueDate().then(function() {
+                            draft.get('review')
+                                .then(function (review) {
+                                    review.set('state', 'completed');
+                                    // Save draft
+                                    return review.save();
+                                })
+                                .then(function (savedReview) {
+                                    var essay_id = draft.get('essay_id'),
+                                        student_id = controller.get('student.id'),
+                                        essayPromise = draft.get('essay');
+
+                                    // This should really be refactored
+                                    essayPromise.then(function(essay) {
+                                        essay.reload().then(function() {
+                                            controller.send('alert', 'Review submitted.', 'success');
+
+                                            if (draft.get('essay_type') === 'application') {
+                                                controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                                            } else if (draft.get('essay_type') === 'theme') {
+                                                controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                                            }
+                                        });
+                                    });
+                                });
+                        });
                     });  
                 });
-            console.log('passed draftsave');
-
-            //// Original handling without change to Draft Content
-            this.updateEssayDueDate().then(function() {
-                draft.get('review')
-                    .then(function (review) {
-                        review.set('state', 'completed');
-                        // Save draft
-                        return review.save();
-                    })
-                    .then(function (savedReview) {
-                        var essay_id = draft.get('essay_id'),
-                            student_id = controller.get('student.id'),
-                            essayPromise = draft.get('essay');
-
-                        // This should really be refactored
-                        essayPromise.then(function(essay) {
-                            essay.reload().then(function() {
-                                controller.send('alert', 'Review submitted.', 'success');
-
-                                if (draft.get('essay_type') === 'application') {
-                                    controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
-                                } else if (draft.get('essay_type') === 'theme') {
-                                    controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
-                                }
-                            });
-                        });
-                    });
-            });
         },
 
         back: function () {
