@@ -47,38 +47,43 @@ export default DraftController.extend({
             //// This includes both types: id='annotation-99' and 'annotation-in-progress'
             //// This works but the review submission breaks for some reason.
             
-            //var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
-            //
-            //var annotation_objs;
-            //var annotation_ids
-            //draft.get('review')
-            //    .then( function(review) { review.get('annotations')
-            //        .then( function(annotations) {
-            //            annotation_objs = annotations; // Array of Anno IDs. ["45","47"..]
-            //            annotation_ids = annotation_objs.mapBy('id');
-            //        
-            //            // Remove annotations from content that dont exist in DB
-            //            div_container.find( 'span[id*=annotation-]' ).each(function() {
-            //                var annotation_span = $(this);
-            //                var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
-            //                if (annotation_ids.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
-            //                    annotation_span.replaceWith(annotation_span.contents());
-            //                }
-            //            });
+            var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
+            
+            var annotation_objs;
+            var annotation_ids;
+            draft.get('review')
+                .then( function(review) { review.get('annotations')
+                    .then( function(annotations) {
+                        annotation_objs = annotations; // Array of Anno IDs. ["45","47"..]
+                        annotation_ids = annotation_objs.mapBy('id');
+                    
+                        // Remove annotations from content that dont exist in DB
+                        div_container.find( 'span[id*=annotation-]' ).each(function() {
+                            var annotation_span = $(this);
+                            var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
+                            if (annotation_ids.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
+                                annotation_span.replaceWith(annotation_span.contents());
+                            }
+                        });
 
-            //            // Remove any in progress annotations (should be max of 1)
-            //            var currentInProgress = div_container.find('#annotation-in-progress');
-            //            if (currentInProgress.length > 0) {
-            //                currentInProgress.replaceWith(currentInProgress.contents());
-            //            }
-            //            var newFormattedText = div_container.html();
+                        // Remove any in progress annotations (should be max of 1)
+                        var currentInProgress = div_container.find('#annotation-in-progress');
+                        if (currentInProgress.length > 0) {
+                            currentInProgress.replaceWith(currentInProgress.contents());
+                        }
+                        var newFormattedText = div_container.html();
 
-            //            controller.set('formatted_text', newFormattedText);
-            //            controller.set('formatted_text_buffer', newFormattedText);
-            //            Ember.run.debounce(controller, controller.saveDraft, 1);
-            //        })  
-            //    });
-            //console.log('passed draftsave');
+                        controller.set('formatted_text', newFormattedText);
+                        controller.set('formatted_text_buffer', newFormattedText);
+                        console.log('about to save');
+                        //// Calling either save method results in creation of 2 drafts.
+                        //// The 2nd is associated with the 'write draft' button, but has no prev_review
+                        draft.save();
+                        //Ember.run.debounce(controller, controller.saveDraft, 1);
+                        console.log('Called save');
+                    });  
+                });
+            console.log('passed draftsave');
 
             //// Original handling without change to Draft Content
             this.updateEssayDueDate().then(function() {
@@ -175,10 +180,10 @@ export default DraftController.extend({
 
             this.set('newAnnotation', null);
         },
-
-        saveEssay: function(essay) {
-            essay.save();
-        },
+        //// For 'Save Essay' button in review settings box.
+        //saveEssay: function(essay) {
+        //    essay.save();
+        //},
 
         teacherDeleteAnnotation: function (annotation) {
             var anno_id = '#annotation-' + annotation.id;                   // Note inclusion of #, unlike in hasSavedAnnotation()
