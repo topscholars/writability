@@ -4,13 +4,17 @@ import EssaySortable from 'writability/mixins/essay-sortable';
 export default Ember.ArrayController.extend(EssaySortable, {
     needs: ['student'],
 
-    showMergedEssays: false,
+    showHiddenEssays: false,
     selectedEssay: null,
 
     student: Ember.computed.alias('controllers.student.model'),
 
     displayedEssays: Ember.computed.filter('arrangedContent', function(essay) {
         return (essay.get('is_displayed'));
+    }).property('arrangedContent', 'arrangedContent.length'),
+
+    notDisplayedEssays: Ember.computed.filter('arrangedContent', function(essay) {
+        return ! (essay.get('is_displayed'));
     }).property('arrangedContent', 'arrangedContent.length'),
 
     mergedEssays: function () {
@@ -48,8 +52,8 @@ export default Ember.ArrayController.extend(EssaySortable, {
                 }
             }
         },
-        toggleMergedEssays: function() {
-            this.set('showMergedEssays', !this.get('showMergedEssays'));
+        toggleHiddenEssays: function() {
+            this.set('showHiddenEssays', !this.get('showHiddenEssays'));
         }
     }
 });

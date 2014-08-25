@@ -1,9 +1,9 @@
 <div class="module-title">
 	<h2 class="inline">Essays</h2>
   {{#if showMergedEssays}}
-    <button {{action 'toggleMergedEssays'}}>Hide Merged Essays</button>
+    <button {{action 'toggleHiddenEssays'}}>Hide Hidden Essays</button>
   {{else}}
-    <button {{action 'toggleMergedEssays'}}>Show Merged Essays</button>
+    <button {{action 'toggleHiddenEssays'}}>Show Hidden Essays</button>
   {{/if}}
   <br />
 	<span class="student-info">{{student.name}}</span>
