@@ -21,11 +21,11 @@ export default Ember.Mixin.create({
 
 	studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
 	    return (essay.get('nextActionAwaits') === 'student');
-	}).property('unmergedEssays', 'unmergedEssays.length'),
+	}).property('unmergedEssays', 'unmergedEssays.length', 'unmergedEssays.@each.nextActionAwaits'),
 
 	teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
 	    return (essay.get('nextActionAwaits') === 'teacher');
-	}).property('unmergedEssays', 'unmergedEssays.length'),
+	}).property('unmergedEssays', 'unmergedEssays.length', 'unmergedEssays.@each.nextActionAwaits'),
 
 	actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') !== 'completed');
