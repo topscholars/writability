@@ -21,8 +21,8 @@
     "validatorjs": "~1.0",
     "select2": "*",
     "entypo": "*",
-    "pickadate": "~3.5.2",
-    "bootstrap.growl": "~2.0.0"
+    "bootstrap.growl": "~2.0.0",
+    "pikaday": "~1.2.0"
   },
   "resolutions": {
     "ember-data": "3e58bfdc41"

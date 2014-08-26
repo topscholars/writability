@@ -47,66 +47,69 @@ export default DraftController.extend({
             //// This includes both types: id='annotation-99' and 'annotation-in-progress'
             //// This works but the review submission breaks for some reason.
             
-            //var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
-            //
-            //var annotation_objs;
-            //var annotation_ids
-            //draft.get('review')
-            //    .then( function(review) { review.get('annotations')
-            //        .then( function(annotations) {
-            //            annotation_objs = annotations; // Array of Anno IDs. ["45","47"..]
-            //            annotation_ids = annotation_objs.mapBy('id');
-            //        
-            //            // Remove annotations from content that dont exist in DB
-            //            div_container.find( 'span[id*=annotation-]' ).each(function() {
-            //                var annotation_span = $(this);
-            //                var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
-            //                if (annotation_ids.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
-            //                    annotation_span.replaceWith(annotation_span.contents());
-            //                }
-            //            });
-
-            //            // Remove any in progress annotations (should be max of 1)
-            //            var currentInProgress = div_container.find('#annotation-in-progress');
-            //            if (currentInProgress.length > 0) {
-            //                currentInProgress.replaceWith(currentInProgress.contents());
-            //            }
-            //            var newFormattedText = div_container.html();
-
-            //            controller.set('formatted_text', newFormattedText);
-            //            controller.set('formatted_text_buffer', newFormattedText);
-            //            Ember.run.debounce(controller, controller.saveDraft, 1);
-            //        })  
-            //    });
-            //console.log('passed draftsave');
-
-            //// Original handling without change to Draft Content
-            this.updateEssayDueDate().then(function() {
-                draft.get('review')
-                    .then(function (review) {
-                        review.set('state', 'completed');
-                        // Save draft
-                        return review.save();
-                    })
-                    .then(function (savedReview) {
-                        var essay_id = draft.get('essay_id'),
-                            student_id = controller.get('student.id'),
-                            essayPromise = draft.get('essay');
-
-                        // This should really be refactored
-                        essayPromise.then(function(essay) {
-                            essay.reload().then(function() {
-                                controller.send('alert', 'Review submitted.', 'success');
-
-                                if (draft.get('essay_type') === 'application') {
-                                    controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
-                                } else if (draft.get('essay_type') === 'theme') {
-                                    controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
-                                }
-                            });
+            var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
+            
+            var annotation_objs;
+            var annotation_ids;
+            draft.get('review')
+                .then( function(review) { review.get('annotations')
+                    .then( function(annotations) {
+                        annotation_objs = annotations; // Array of Anno IDs. ["45","47"..]
+                        annotation_ids = annotation_objs.mapBy('id');
+                    
+                        // Remove annotations from content that dont exist in DB
+                        div_container.find( 'span[id*=annotation-]' ).each(function() {
+                            var annotation_span = $(this);
+                            var id_num = (this.id).split("-").pop(); // Handles "annotation-15", pop() returns last element in array: "15"
+                            if (annotation_ids.indexOf(id_num) == -1) {  // If existing anno array does not contain current anno span
+                                annotation_span.replaceWith(annotation_span.contents());
+                            }
                         });
-                    });
-            });
+
+                        // Remove any in progress annotations (should be max of 1)
+                        var currentInProgress = div_container.find('#annotation-in-progress');
+                        if (currentInProgress.length > 0) {
+                            currentInProgress.replaceWith(currentInProgress.contents());
+                        }
+                        var newFormattedText = div_container.html();
+
+                        controller.set('formatted_text', newFormattedText);
+                        controller.set('formatted_text_buffer', newFormattedText);
+                        // not using debounce because this needs to happen immediately
+                        // When review is saved, the new draft is created and must have updated text 
+                        draft.save();
+
+                        //TODO this called draft.get multiple times and can be refactored
+
+                        //// Original handling without change to Draft Content
+                        controller.updateEssayDueDate().then(function() {
+                            draft.get('review')
+                                .then(function (review) {
+                                    review.set('state', 'completed');
+                                    // Save draft
+                                    return review.save();
+                                })
+                                .then(function (savedReview) {
+                                    var essay_id = draft.get('essay_id'),
+                                        student_id = controller.get('student.id'),
+                                        essayPromise = draft.get('essay');
+
+                                    // This should really be refactored
+                                    essayPromise.then(function(essay) {
+                                        essay.reload().then(function() {
+                                            controller.send('alert', 'Review submitted.', 'success');
+
+                                            if (draft.get('essay_type') === 'application') {
+                                                controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                                            } else if (draft.get('essay_type') === 'theme') {
+                                                controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                                            }
+                                        });
+                                    });
+                                });
+                        });
+                    });  
+                });
         },
 
         back: function () {
@@ -175,10 +178,10 @@ export default DraftController.extend({
 
             this.set('newAnnotation', null);
         },
-
-        saveEssay: function(essay) {
-            essay.save();
-        },
+        //// For 'Save Essay' button in review settings box.
+        //saveEssay: function(essay) {
+        //    essay.save();
+        //},
 
         teacherDeleteAnnotation: function (annotation) {
             var anno_id = '#annotation-' + annotation.id;                   // Note inclusion of #, unlike in hasSavedAnnotation()

@@ -5,6 +5,7 @@
     "window": true,
     "CKEDITOR": true,
     "Validator": true,
+    "Pikaday": true,
     "$": true,
     "WritabilityENV": true
   },
