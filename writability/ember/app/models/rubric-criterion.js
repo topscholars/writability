@@ -3,7 +3,7 @@ import DS from 'ember-data';
 
 var Criterion = DS.Model.extend({
 	description: DS.attr(),
-  rubriccategory: DS.belongsTo('rubric-category', {async: true})
+  rubriccategory: DS.belongsTo('rubric-category')
 });
 
 //RubricCategory.reopenClass({
