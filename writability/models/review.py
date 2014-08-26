@@ -104,7 +104,8 @@ class Review(StatefulModel):
 
                     new_rubric_params = {
                         "name": None,
-                        "review_id": new_draft.review.id
+                        "review_id": new_draft.review.id,
+                        "essay_template": new_draft.review.essay_template
                     }
 
                     new_rubric = self.rubric.create_copy(new_review_id=new_draft.review.id)

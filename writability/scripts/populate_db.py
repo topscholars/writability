@@ -719,3 +719,4 @@ for arg in sys.argv:
 populate_db()
 
 # ApplicationEssayTemplatePopulator()
+# delete_users()

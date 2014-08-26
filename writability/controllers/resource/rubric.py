@@ -29,6 +29,9 @@ class RubricResourceManager(ResourceManager):
             "review": ResourceField(
                 review.ReviewResourceManager.item_resource_name,
                 absolute=True),
+            "essay_template": ResourceField(
+                essay_template.EssayTemplateResourceManager.item_resource_name,
+                absolute=True),
             "rubric_associations": fields.List(RubricAssocationResourceField(
                 RubricCategoryRubricAssociationsResourceManager.item_resource_name,
                 absolute=True))

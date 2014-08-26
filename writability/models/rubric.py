@@ -32,6 +32,13 @@ class Rubric(BaseModel):
 
     rubric_categories = association_proxy('rubric_associations', 'rubric_category')
 
+    essay_template = db.relationship(
+        "EssayTemplate",
+        backref=db.backref("rubric", uselist=True),
+        uselist=False)
+
+    essay_template_id = db.Column(db.Integer, db.ForeignKey('essay_template.id'))
+
     # optional fields
     name = db.Column(db.String)
 
@@ -61,7 +68,8 @@ class Rubric(BaseModel):
         '''
         new_rubric_params = {
             "name": None,
-            "review_id": new_review_id
+            "review_id": new_review_id,
+            "essay_template": self.essay_template
         }
         new_rubric = Rubric(**new_rubric_params)
 
