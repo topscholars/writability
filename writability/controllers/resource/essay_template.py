@@ -10,9 +10,7 @@ from flask.ext.restful import fields
 
 from models.essay_template import EssayTemplate, ThemeEssayTemplate, ApplicationEssayTemplate, ChoiceGroup
 import university
-
-import theme
-import university
+import theme, rubric
 from .base import ResourceManager, ItemResource, ListResource
 from .fields import ResourceField
 
@@ -52,7 +50,11 @@ class EssayTemplateResourceManager(ResourceManager):
         super(EssayTemplateResourceManager, self)._add_item_fields()
         self._item_fields.update({
             "essay_prompt": fields.String,
-            "due_date": fields.String
+            "due_date": fields.String,
+            "criteria": fields.List(
+            ResourceField(
+                rubric.CriterionResourceManager.item_resource_name,
+                absolute=True))
         })
 
 
