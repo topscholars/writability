@@ -4,7 +4,8 @@ import ApplicationSerializer from './application';
 
 export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
     attrs: {
-        essay_associations: {serialize: 'no', deserialize: 'records'}
+        essay_associations: {serialize: 'no', deserialize: 'records'},
+        merged_theme_essays: {serialize: 'id', deserialize: 'id'}
     },
     normalize: function(type, hash, prop) {
         hash.application_essays = [];
@@ -22,6 +23,7 @@ export default ApplicationSerializer.extend(DS.EmbeddedRecordsMixin, {
         if (record.get('parent_id') === 0) {
             record.set('parent_id', null);
         }
-        this._super(record, json, key, attributes);
+
+        return this._super(record, json, key, attributes);
     }
 });

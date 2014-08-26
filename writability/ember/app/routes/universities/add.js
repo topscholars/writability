@@ -46,8 +46,10 @@ export default AuthenticatedRoute.extend({
             var controller = this.controllerFor('universities.add');
             var student = controller.get('student');
 
-            student.get('universities').removeObject(universitiy);
-            student.save();
+            student.get('universities').then(function(universities) {
+                universities.removeObject(universitiy);
+                student.save();
+            });
         }
     }
 });

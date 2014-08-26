@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import { autosaveTimout } from 'writability/config';
+import SelectableApplicationEssayMixin from 'writability/mixins/selectable-application-essay';
 
-export default Ember.ObjectController.extend({
+export default Ember.ObjectController.extend(SelectableApplicationEssayMixin, {
     currentDraft: function () {
         return this.draftByMostCurrent(0);
     }.property('drafts'),
@@ -49,10 +50,6 @@ export default Ember.ObjectController.extend({
         reviewDraft: function() {
             var draft = this.get('recentDraft');
             this.transitionToRoute('draft', draft);
-        },
-        selectApplicationEssay: function(applicationEssayAssociation) {
-            applicationEssayAssociation.set('state', 'selected');
-            applicationEssayAssociation.save();
         }
     }
 });

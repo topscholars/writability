@@ -1,7 +1,11 @@
 <ol class="list">
-{{#if showMergedEssays}}
-  <li class="legend">Merged</li>
+{{#if showHiddenEssays}}
+  <li class="legend">Merged Essays</li>
   {{#each mergedEssays}}
+    {{view view.listItem classNameBindings="isSelected" }}
+  {{/each}}
+  <li class="legend">Hidden Essays</li>
+  {{#each notDisplayedEssays}}
     {{view view.listItem classNameBindings="isSelected" }}
   {{/each}}
 {{else}}

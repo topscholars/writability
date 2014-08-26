@@ -5,52 +5,46 @@ export default Ember.TextField.extend({
 	classNames: ['form-date'],
 	classNameBindings:['isDraftSettingsBox:draft_review_input'],
 	isDraftSettingsBox: false, // Set as true in hbs to add custom class for smaller input size
-
+	formatSubmit: "YYYY-MM-DD",
 	min: true,
 
-	formatSubmit: "YYYY-MM-DD",
+	placeholder: 'Select Date',
 
-	momentFormat: function() {
-		return this.get('format').toUpperCase();
-	}.property('format'),
+	picker: null,
+
+	updateValue: function() {
+		var date = moment(this.get("date"));
+		if (date.isValid()) {
+			this.set("value", date.format("L"));
+			this.get("picker").setDate(date.format("L"));
+		} else {
+			this.set("value", null);
+		}
+	}.observes("date"),
+
+	updateDate: function() {
+		var date = moment(this.get("value"));
+		if (date.isValid()) {
+			this.set("date", date.toDate());
+		} else {
+			this.set("date", null);
+		}
+	}.observes("value"),
 
 	didInsertElement: function() {
-		Ember.run.scheduleOnce('afterRender', this, 'startPickadate');
+		var picker = new Pikaday({
+			field: this.$()[0],
+			format: "MM/DD/YYYY"
+		});
+		this.set("picker", picker);
+		this.updateValue();
 	},
 
-	startPickadate: function() {
-		this.$().pickadate(this.get('options'));
-	},
-
-	_elementValueDidChange: function() {
-		var value = this.$().val();
-		var outputVal = moment(value, this.get('momentFormat'));
-		this.set('dateBind', outputVal.format(this.get('formatSubmit')));
-
-		this._super();
-	},
-
-	willInsertElement: function() {
-		if (this.get('dateBind')) {
-			var currentMoment = moment(this.get('dateBind'));
-			this.set('value', currentMoment.format(this.get('momentFormat')));
-		} else {
-			this.set('value', 'Select Date');
+	willDestroyElement: function(){
+		var picker = this.get("picker");
+		if (picker) {
+			picker.destroy();
 		}
-
-	},
-
-	options: function() {
-		var options = {
-			format: this.get('format'),
-			formatSubmit: this.get('formatSubmit'),
-			hiddenName: true
-		};
-
-		if (this.get('min')) {
-			options.min = this.get('min');
-		}
-
-		return options;
-	}.property()
+		this.set("picker", null);
+	}
 });
