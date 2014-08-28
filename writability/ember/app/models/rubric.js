@@ -17,7 +17,7 @@ var Rubric = DS.Model.extend({
   //    return value;
   //  } else {
 
-  impact_criteria: function () {
+  load_impact_criteria: function(selectedCategory) {
       var model = this;
       var all_criteria = this.get('all_criteria');
       var impact_criteria = [];
@@ -28,15 +28,22 @@ var Rubric = DS.Model.extend({
        // .then( function (y) { 
        //   debugger
        // });
-      model.store.findQuery('rubric-category', { name: "Impact"} )
-        .then( function (rubric_cat) { 
-          model.store.findQuery('rubric-criterion', { essay_template_id: "454" }) //model.get('essay_template.id') } ) //, rubriccategory: rubric_cat.id })
-            .then( function (our_beloved_cats) {
-              debugger
-            });
+
+      var category = model.store.findQuery('rubric-category', { name: selectedCategory.get('name')} ).then(function(cat) {
+        return cat.get('firstObject');
       });
-      return impact_criteria;
-      
+      var criteria = model.store.findQuery('rubric-criterion', { essay_template_id: model.get("essay_template.id") });
+
+
+      return Ember.RSVP.all([category, criteria]).then( function (objs) {
+        var category = objs[0],
+            criteria = objs[1];
+
+          return criteria.filter(function(current) {
+            return current.get('rubriccategory.id') === category.get('id');
+          });
+        });
+
       //var peters2 = this.store.find('rubric-criterion', { id: crit.id, rubriccategory: "2" });
 
        
@@ -64,6 +71,14 @@ var Rubric = DS.Model.extend({
       // returns null if the promise doesn't resolve immediately, or 
       // the calculated value if it's ready
       // return value;
+  },
+
+  impact_criteria: function (key, value) {
+    if(arguments.length > 1) {
+      return value;
+    } else {
+      this.load_impact_criteria();
+    }
   }.property('all_criteria')
 
   //var impact_crit = all_criteria.filterBy('')

@@ -1,7 +1,6 @@
 <!-- all_criteria returns 15, impact_criteria 0 -->
-{{#each criterion in rubric.impact_criteria}}
-  yo
-	{{rubric-criterion criterion=criterion criteria=rubric.impact_criteria}}
+{{#each criterion in rubricCriteria}}
+	{{rubric-criterion criterion=criterion criteria=rubricCriteria onSelect=updateCriteria}}
 {{/each}}
 
 <!-- each criterion in rubricCategory.criteria NOT USING THIS -->
