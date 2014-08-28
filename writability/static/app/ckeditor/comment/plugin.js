@@ -15,17 +15,12 @@ CKEDITOR.plugins.add( 'comment', {
                     $(currentInProgress).replaceWith(currentInProgress.contents());
                 }
 
-
                 //if (selectedText.length < 1) {
                 //    alert('Comments require a selected text area. <br />'
                 //        + 'Please select text to comment on, then hit the Comment button.');
                 //    return;
                 //}
                 // TODO -> check that something is already selected, or show a popup.
-
-                // This applies a style to the current selection.
-                var style = new CKEDITOR.style({attributes: {class: "annotation", id: "annotation-in-progress"}});
-                editor.applyStyle(style);
 
                 //Should be moved out..
                 function getSelectionHtml(editor) {
@@ -38,13 +33,21 @@ CKEDITOR.plugins.add( 'comment', {
                     return el.getHtml();
                 }
 
-                //selectedText = getSelectionHtml(editor);   // Breaks addcomment if called above function definition
-                //console.log('selected text: ' + selectedText);
-
+                //// This Breaks addcomment if called above function definition
+                // includes HTML within the selection, e.g. <span> tags
+                var selectedText = getSelectionHtml(editor);   
+                
+                // Enforce non-overlapping tags.
+                if (selectedText.indexOf("span") >= 0) {
+                    alert('Sorry, but comments cannot overlap.'
+                         +'Please select nearby text to add another comment.');
+                    return;
+                } else {
+                    // This applies a style to the current selection.
+                    var style = new CKEDITOR.style({attributes: {class: "annotation", id: "annotation-in-progress"}});
+                    editor.applyStyle(style);
+                }
                 //alert( 'DEMO: You selected this text: ' + getSelectionHtml(editor) );
-
-                //var now = new Date();
-                //editor.insertHtml( 'The current date and time is: <em>' + now.toString() + '</em>' );
             }
         });
 
