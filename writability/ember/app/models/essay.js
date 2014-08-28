@@ -41,7 +41,7 @@ export default DS.Model.extend({
     draftsWithCompletedReview: Ember.computed.filterBy('drafts', 'reviewState', 'completed'),
 
     curr_draft_number: function () {
-        var curr_draft_number = this.get('draftsWithCompletedReview') + 1; 
+        var curr_draft_number = this.get('draftsWithCompletedReview') + 1;
         return curr_draft_number;
     }.property('draftsWithCompletedReview'),
 
@@ -61,5 +61,7 @@ export default DS.Model.extend({
         }
     }.property('next_action', 'state'),
 
-    isThemeEssay: Ember.computed.equal('essayType', 'theme')
+    isThemeEssay: Ember.computed.equal('essayType', 'theme'),
+
+    is_completed: Ember.computed.equal('state', 'completed')
 });
