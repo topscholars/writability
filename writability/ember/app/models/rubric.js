@@ -34,13 +34,13 @@ var Rubric = DS.Model.extend({
       });
       var criteria = model.store.findQuery('rubric-criterion', { essay_template_id: model.get("essay_template.id") });
 
-
+      // This promise waits for the above two to finish, then(..)
       return Ember.RSVP.all([category, criteria]).then( function (objs) {
         var category = objs[0],
             criteria = objs[1];
 
-          return criteria.filter(function(current) {
-            return current.get('rubriccategory.id') === category.get('id');
+          return criteria.filter(function(current) {  // filter goes through each criteria
+            return current.get('rubriccategory.id') === category.get('id'); //returns if meets this 
           });
         });
 

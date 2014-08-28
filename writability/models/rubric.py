@@ -114,6 +114,12 @@ class Criterion(Tag):   # Tags that a teacher can write an annotation against,
 
     essay_template_id = db.Column(db.Integer, db.ForeignKey('essay_template.id'))
 
+    is_simple_tag = db.Column(db.Boolean, nullable=False, default=False)
+
+    # @property
+    # def is_simple_tag(self):
+    #     # return true for Tag, False for Criteria
+    #     return False
 
     ## Creates rubric categories from criteria
     def change_related_objects(self):

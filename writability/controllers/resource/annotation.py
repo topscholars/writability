@@ -83,7 +83,8 @@ class TagResourceManager(StatefulResourceManager):
             "category": fields.String,
             "description": fields.String,
             "example": fields.String,
-            "super_category": fields.String
+            "super_category": fields.String,
+            "is_simple_tag": fields.Boolean
         })
 
 class TagResource(ItemResource):
