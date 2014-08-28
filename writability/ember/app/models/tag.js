@@ -6,6 +6,7 @@ export default DS.Model.extend({
     name: DS.attr(),
     description: DS.attr(),
     tag_type: DS.attr(),
+    is_simple_tag: DS.attr(),
 
 
     // Using redundant methods here because rubric is a 3rd category and handlebar templates cannot insert the response

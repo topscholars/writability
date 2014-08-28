@@ -99,6 +99,13 @@ class Tag(BaseModel):
     # Do we want to preserve this relationship or just carry the info over?
     annotations = db.relationship("Annotation", backref="tag")
 
+    # heh. 
+    is_simple_tag = db.Column(db.Boolean, nullable=False, default=True)
+    # @property
+    # def is_simple_tag(self):
+    #     # return true for Tag, False for Criteria
+    #     return True
+
     @validates('tag_type')
     def validate_tag_type(self, key, tag_type):
         """Assert that review_type is valid."""

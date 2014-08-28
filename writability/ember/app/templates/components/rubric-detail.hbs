@@ -1,3 +1,8 @@
-{{#each criterion in rubricCategory.criteria}}
-	{{rubric-criterion criterion=criterion criteria=rubricCategory.criteria}}
+<!-- all_criteria returns 15, impact_criteria 0 -->
+{{#each criterion in rubricCriteria}}
+	{{rubric-criterion criterion=criterion criteria=rubricCriteria onSelect=updateCriteria}}
 {{/each}}
+
+<!-- each criterion in rubricCategory.criteria NOT USING THIS -->
+<!-- rubricCategory.criteria returns ~2000
+  each criteria in CRITERIA where category = rubricCategory -->

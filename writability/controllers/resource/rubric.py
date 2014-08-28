@@ -10,6 +10,7 @@ from flask import request
 
 from models.rubric import Rubric, RubricCategory, Criterion, RubricCategoryRubricAssociations
 import review, annotation
+import essay_template
 
 from .base import ResourceManager, ItemResource, ListResource, InvalidUsage
 from .fields import ResourceField, RubricAssocationResourceField
@@ -27,6 +28,9 @@ class RubricResourceManager(ResourceManager):
             "name": fields.String,
             "review": ResourceField(
                 review.ReviewResourceManager.item_resource_name,
+                absolute=True),
+            "essay_template": ResourceField(
+                essay_template.EssayTemplateResourceManager.item_resource_name,
                 absolute=True),
             "rubric_associations": fields.List(RubricAssocationResourceField(
                 RubricCategoryRubricAssociationsResourceManager.item_resource_name,
@@ -124,9 +128,6 @@ class RubricCategoryResourceManager(ResourceManager):
         self._item_fields.update({
             "name": fields.String,
             "grade": fields.Integer,
-            "criteria": fields.List(ResourceField(
-                annotation.TagResourceManager.item_resource_name,
-                absolute=True)),
             "help_text": fields.String
         })
 
@@ -141,7 +142,7 @@ class RubricCategoryListResource(ListResource):
 class CriterionResourceManager(annotation.TagResourceManager):
 
     item_resource_name = "criterion"
-    list_resource_name = "criteria"
+    list_resource_name = "criterions"
     model_class = Criterion
 
     # RETURN ONLY TAGS WHERE rubriccategory != NULL or supercategory==TRUE
@@ -149,6 +150,9 @@ class CriterionResourceManager(annotation.TagResourceManager):
     def _add_item_fields(self):
         super(CriterionResourceManager, self)._add_item_fields()
         self._item_fields.update({
+            "essay_template": ResourceField(
+                essay_template.EssayTemplateResourceManager.item_resource_name,
+                absolute=True),
             "rubriccategory": ResourceField(
                 RubricCategoryResourceManager.item_resource_name,
                 absolute=True)

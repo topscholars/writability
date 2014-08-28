@@ -88,7 +88,8 @@ class Draft(StatefulModel):
 
             new_rubric_params = {
                 "name": None,
-                "review_id": self.review.id
+                "review_id": self.review.id,
+                "essay_template": self.essay.essay_template
             }
 
             if len(this_essay.drafts) < 2: # If first draft, create new rubric categories

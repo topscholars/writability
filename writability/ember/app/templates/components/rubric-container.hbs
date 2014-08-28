@@ -1,5 +1,6 @@
 {{rubric-overview associations=rubric.rubric_associations selectedRubricCategory=selectedRubricCategory reviewMode=reviewMode}}
 
+<!-- add rubric below -->
 {{#if selectedRubricCategory}}
-	{{rubric-detail rubricCategory=selectedRubricCategory reviewMode=reviewMode}}
+	{{rubric-detail rubricCategory=selectedRubricCategory reviewMode=reviewMode rubricCriteria=criteria}}
 {{/if}}

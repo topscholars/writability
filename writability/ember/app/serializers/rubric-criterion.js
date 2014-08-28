@@ -3,7 +3,7 @@ import ApplicationSerializer from './application';
 
 export default ApplicationSerializer.extend({
 	typeForRoot: function(key) {
-		if (key === 'criterion') {
+		if (key === 'criterion' || key === 'criterions') {
 			return 'rubric-criterion';
 		} else {
 			return this._super(key);

@@ -11,6 +11,7 @@ from .db import db
 from .base import BaseModel
 # from sqlalchemy.orm import validates
 from annotation import Tag
+from essay_template import EssayTemplate
 from sqlalchemy.ext.associationproxy import association_proxy
 
 class Rubric(BaseModel):
@@ -30,6 +31,13 @@ class Rubric(BaseModel):
         backref=db.backref("rubric"))
 
     rubric_categories = association_proxy('rubric_associations', 'rubric_category')
+
+    essay_template = db.relationship(
+        "EssayTemplate",
+        backref=db.backref("rubric", uselist=True),
+        uselist=False)
+
+    essay_template_id = db.Column(db.Integer, db.ForeignKey('essay_template.id'))
 
     # optional fields
     name = db.Column(db.String)
@@ -60,7 +68,8 @@ class Rubric(BaseModel):
         '''
         new_rubric_params = {
             "name": None,
-            "review_id": new_review_id
+            "review_id": new_review_id,
+            "essay_template": self.essay_template
         }
         new_rubric = Rubric(**new_rubric_params)
 
@@ -90,17 +99,27 @@ class RubricCategory(BaseModel): # Impact, Content, and Quality.
 class Criterion(Tag):   # Tags that a teacher can write an annotation against, 
                         # that are also associated with a rubric category
     #__tablename__ = 'criteria'
-    ##### ADD relationship to RubricCategory 
     rubric_category_id = db.Column(db.Integer, db.ForeignKey('rubric_category.id'))
 
 
-    #__tablename__ = 'criteria'
     # inheritance
     __mapper_args__ = {'polymorphic_identity': 'criteria'}
     # required fields
     id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
 
+    essay_template = db.relationship(
+        "EssayTemplate",
+        backref=db.backref("criteria", uselist=True),
+        uselist=False)
 
+    essay_template_id = db.Column(db.Integer, db.ForeignKey('essay_template.id'))
+
+    is_simple_tag = db.Column(db.Boolean, nullable=False, default=False)
+
+    # @property
+    # def is_simple_tag(self):
+    #     # return true for Tag, False for Criteria
+    #     return False
 
     ## Creates rubric categories from criteria
     def change_related_objects(self):
