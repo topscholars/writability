@@ -7,7 +7,7 @@ export default DS.Model.extend({
     formatted_text: DS.attr('string'),
     due_date: DS.attr('string'),
     word_count: DS.attr('number'),
-    is_final_draft: DS.attr('boolean'),
+    is_final_draft: DS.attr('boolean', {readOnly: true}),
     next_states: DS.attr('array', {readOnly: true}),
     state: DS.attr('string'),
 
