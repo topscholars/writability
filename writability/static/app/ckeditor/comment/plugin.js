@@ -2,7 +2,7 @@ CKEDITOR.plugins.add( 'comment', {
     icons: 'comment',
     init: function( editor ) {
         console.log('CKEDITOR comment plugin init()');
-        // Plugin logic goes here...
+        // Plugin logic goes here... TEST
 
         // Add dialog command
         //editor.addCommand( 'commentDialog', new CKEDITOR.dialogCommand( 'commentDialog' ) );
@@ -22,21 +22,8 @@ CKEDITOR.plugins.add( 'comment', {
                 //}
                 // TODO -> check that something is already selected, or show a popup.
 
-
-                // function getSelectionHtml(editor) {
-                //     var sel = editor.getSelection();
-                //     var ranges = sel.getRanges();
-                //     var el = new CKEDITOR.dom.element("div");
-                //     for (var i = 0, len = ranges.length; i < len; ++i) {
-                //         el.append(ranges[i].cloneContents());
-                //     }
-                //     return el.getHtml();
-                // }
                 // Should be moved out..
-                // var bookmarks = editor.getSelection().createBookmarks();
-                // editor.getSelection().selectBookmarks( bookmarks );
                 function getSelectionHtml(editor) {
-                    console.log('getSelectionHtml() !');
                     var sel = editor.getSelection();
                     var bookmarks = sel.createBookmarks(); // creates bookmarks
                     var ranges = sel.getRanges();
@@ -45,17 +32,13 @@ CKEDITOR.plugins.add( 'comment', {
                         el.append(ranges[i].cloneContents());
                     }
                     editor.getSelection().selectBookmarks( bookmarks );
-                    console.log(el.getHtml);
                     return el.getHtml();
                 }
-
-                //var style = new CKEDITOR.style({attributes: {class: "annotation", id: "annotation-in-progress"}});
-                //editor.applyStyle(style);
 
                 //// This Breaks addcomment if called above function definition
                 // includes HTML within the selection, e.g. <span> tags
                 var selectedText = getSelectionHtml(editor);   
-                //
+
                 // Enforce non-overlapping tags.
                 if (selectedText.indexOf("span") >= 0) {
                     alert('Sorry, but comments cannot overlap.'
@@ -66,7 +49,6 @@ CKEDITOR.plugins.add( 'comment', {
                     var style = new CKEDITOR.style({attributes: {class: "annotation", id: "annotation-in-progress"}});
                     editor.applyStyle(style);
                 }
-                //alert( 'DEMO: You selected this text: ' + getSelectionHtml(editor) );
             }
         });
 
