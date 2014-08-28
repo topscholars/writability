@@ -13,11 +13,11 @@ export default Ember.Mixin.create({
 
 	mergedEssays: Ember.computed.filter('displayedEssays', function(essay) {
 	    return (essay.get('parent'));
-	}).property('displayedEssays', 'displayedEssays.length'),
+	}).property('displayedEssays', 'displayedEssays.length', 'displayedEssays.@each.parent'),
 
 	unmergedEssays: Ember.computed.filter('displayedEssays', function(essay) {
 	    return (!essay.get('parent'));
-	}).property('displayedEssays', 'displayedEssays.length'),
+	}).property('displayedEssays', 'displayedEssays.length', 'displayedEssays.@each.parent'),
 
 	studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
 	    return (essay.get('nextActionAwaits') === 'student');
