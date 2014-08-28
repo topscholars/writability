@@ -128,9 +128,6 @@ class RubricCategoryResourceManager(ResourceManager):
         self._item_fields.update({
             "name": fields.String,
             "grade": fields.Integer,
-            "criteria": fields.List(ResourceField(
-                annotation.TagResourceManager.item_resource_name,
-                absolute=True)),
             "help_text": fields.String
         })
 
@@ -145,7 +142,7 @@ class RubricCategoryListResource(ListResource):
 class CriterionResourceManager(annotation.TagResourceManager):
 
     item_resource_name = "criterion"
-    list_resource_name = "criteria"
+    list_resource_name = "criterions"
     model_class = Criterion
 
     # RETURN ONLY TAGS WHERE rubriccategory != NULL or supercategory==TRUE

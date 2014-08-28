@@ -22,20 +22,19 @@ var Rubric = DS.Model.extend({
       var all_criteria = this.get('all_criteria');
       var impact_criteria = [];
       // content, impact, quality, style
-      var a = model.store.all('rubric-criterion'); // , { id: "454" })
-      var b = model.store.all('criterion');
-      debugger
+      // var a = model.store.findQuery('rubric-criterion', { essay_template_id: "454" }); // , { id: "454" })
+      // var b = model.store.all('criterion');
+      // debugger
        // .then( function (y) { 
        //   debugger
        // });
-      //model.store.find('rubric-category', { name: "Impact"} )
-      //  .then( function (rubric_cat) { 
-      //    model.store.find('rubric-criterion', { essay_template_id: "454" }) //model.get('essay_template.id') } ) //, rubriccategory: rubric_cat.id })
-      //      .then( function (our_beloved_cats) {
-      //        debugger
-      //      });
-      //    
-      //  } );
+      model.store.findQuery('rubric-category', { name: "Impact"} )
+        .then( function (rubric_cat) { 
+          model.store.findQuery('rubric-criterion', { essay_template_id: "454" }) //model.get('essay_template.id') } ) //, rubriccategory: rubric_cat.id })
+            .then( function (our_beloved_cats) {
+              debugger
+            });
+      });
       return impact_criteria;
       
       //var peters2 = this.store.find('rubric-criterion', { id: crit.id, rubriccategory: "2" });
