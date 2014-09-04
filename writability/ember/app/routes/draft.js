@@ -20,7 +20,9 @@ export default AuthenticatedRoute.extend({
         this._super(controller, model);
 
         // controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
+        if(model.get('is_final_draft') && model.get('essay.state') === 'complete') {
+          controller.set('nextDisabled', true); // Use same for next button in other views
+        }
         if (this.get('currentUser.isStudent')) {
             controller.set('nextText', 'Send to Teacher');
         } else {
