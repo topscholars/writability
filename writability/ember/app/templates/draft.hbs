@@ -32,6 +32,7 @@
             action="startedWriting"
             valueBinding="formatted_text"
             isReadOnly=false
+            isFinalDraft=essay_is_completed
             reviewMode=true
             valueBuffer=formatted_text_buffer
         }}
@@ -39,6 +40,7 @@
         {{view 'draft/text-editor'
             action="startedWriting"
             valueBinding="formatted_text"
+            isFinalDraft=essay_is_completed
             valueBuffer=formatted_text_buffer
         }}
     {{/if}}
