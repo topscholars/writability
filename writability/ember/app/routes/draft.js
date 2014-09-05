@@ -16,11 +16,19 @@ export default AuthenticatedRoute.extend({
         return this.store.find('draft', params.id);
     },
 
+    afterModel: function(model) {
+      return model.get('essay').then(function(e) {
+        model.set('essay_state', e.get('state'));
+      });
+    },
+
     setupController: function(controller, model) {
         this._super(controller, model);
 
         // controller.set('backDisabled', true);
-        // controller.set('nextDisabled', true); // Use same for next button in other views
+        if(model.get('is_final_draft') && model.get('essay_state') === 'completed') {
+          controller.set('nextDisabled', true); // Use same for next button in other views
+        }
         if (this.get('currentUser.isStudent')) {
             controller.set('nextText', 'Send to Teacher');
         } else {

@@ -62,9 +62,9 @@ export default DraftController.extend({
             //// Removes obsolete Annotation spans from draft content on save.
             //// This includes both types: id='annotation-99' and 'annotation-in-progress'
             //// This works but the review submission breaks for some reason.
-            
+
             var div_container = $('<div>').html(this.get('formatted_text'));   // Holds text from draft textarea
-            
+
             var annotation_objs;
             var annotation_ids;
             draft.get('review')
@@ -72,7 +72,7 @@ export default DraftController.extend({
                     .then( function(annotations) {
                         annotation_objs = annotations; // Array of Anno IDs. ["45","47"..]
                         annotation_ids = annotation_objs.mapBy('id');
-                    
+
                         // Remove annotations from content that dont exist in DB
                         div_container.find( 'span[id*=annotation-]' ).each(function() {
                             var annotation_span = $(this);
@@ -92,7 +92,7 @@ export default DraftController.extend({
                         controller.set('formatted_text', newFormattedText);
                         controller.set('formatted_text_buffer', newFormattedText);
                         // not using debounce because this needs to happen immediately
-                        // When review is saved, the new draft is created and must have updated text 
+                        // When review is saved, the new draft is created and must have updated text
                         draft.save();
 
                         //TODO this called draft.get multiple times and can be refactored
@@ -112,11 +112,18 @@ export default DraftController.extend({
 
                                     // This should really be refactored
                                     essayPromise.then(function(essay) {
-                                        essay.reload().then(function() {
+                                        essay.reload().then(function(essay) {
                                             controller.send('alert', 'Review submitted.', 'success');
 
                                             if (draft.get('essay_type') === 'application') {
-                                                controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                                                if (draft.get('is_final_draft')) {
+                                                    essay.set('state', 'completed');
+                                                    essay.save().then(function() {
+                                                        controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                                                    });
+                                                } else {
+                                                    controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
+                                                }
                                             } else if (draft.get('essay_type') === 'theme') {
                                                 controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
                                             }
@@ -124,7 +131,7 @@ export default DraftController.extend({
                                     });
                                 });
                         });
-                    });  
+                    });
                 });
         },
 

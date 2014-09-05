@@ -7,6 +7,7 @@ export default Ember.TextArea.extend({
     editor: null,
     isReadOnly: false,  // This is obsolete if we use reviewMode
     reviewMode: false,
+    isFinalDraft: false,
     _suspendValueChange: false,
     _minimumChangeMilliseconds: 1000,
     valueBuffer: null,
@@ -36,6 +37,7 @@ export default Ember.TextArea.extend({
             this.set ('editor', editor);
 
             editor.setReadOnly(this.get('isReadOnly'));
+            editor.setReadOnly(this.get('isFinalDraft'));
 
             editor.on('change', this._onChange, this);
             editor.on('focus', this._onFocus, this);

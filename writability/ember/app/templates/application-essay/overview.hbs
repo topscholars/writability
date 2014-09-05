@@ -13,7 +13,9 @@
     <div class="value app-text">{{context}}</div>
 </div>
 
-{{#if is_in_progress}}
+{{#if is_completed}}
+    <button {{action 'viewFinalDraft' recentDraft}}>View Final Draft</button>
+{{else}}
     {{#if readyToWriteDraft}}
         <button {{action openDraft}}>Write Draft</button>
     {{/if}}

@@ -7,7 +7,7 @@ export default DS.Model.extend({
     formatted_text: DS.attr('string'),
     due_date: DS.attr('string'),
     word_count: DS.attr('number'),
-    is_final_draft: DS.attr('boolean'),
+    is_final_draft: DS.attr('boolean', {readOnly: true}),
     next_states: DS.attr('array', {readOnly: true}),
     state: DS.attr('string'),
 
@@ -22,6 +22,11 @@ export default DS.Model.extend({
             return this.store.find('theme-essay', this.get('essay_id'));
         }
     }.property('essay_type', 'essay_id'),
+
+    essay_is_completed: function() {
+      return this.get('essay_state') === 'completed';
+    }.property('essay_state'),
+
     review: DS.belongsTo('review', {async: true}),
 
     reviewState: Ember.computed.alias('review.state'),

@@ -13,19 +13,19 @@ export default Ember.Mixin.create({
 
 	mergedEssays: Ember.computed.filter('displayedEssays', function(essay) {
 	    return (essay.get('parent'));
-	}).property('displayedEssays', 'displayedEssays.length'),
+	}).property('displayedEssays', 'displayedEssays.length', 'displayedEssays.@each.parent'),
 
 	unmergedEssays: Ember.computed.filter('displayedEssays', function(essay) {
 	    return (!essay.get('parent'));
-	}).property('displayedEssays', 'displayedEssays.length'),
+	}).property('displayedEssays', 'displayedEssays.length', 'displayedEssays.@each.parent'),
 
 	studentActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
 	    return (essay.get('nextActionAwaits') === 'student');
-	}).property('unmergedEssays', 'unmergedEssays.length', 'unmergedEssays.@each.nextActionAwaits'),
+	}).property('unmergedEssays', 'unmergedEssays.length', 'unmergedEssays.@each.nextActionAwaits', 'unmergedEssays.@each.next_action', 'unmergedEssays.@each.state'),
 
 	teacherActionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
 	    return (essay.get('nextActionAwaits') === 'teacher');
-	}).property('unmergedEssays', 'unmergedEssays.length', 'unmergedEssays.@each.nextActionAwaits'),
+	}).property('unmergedEssays', 'unmergedEssays.length', 'unmergedEssays.@each.nextActionAwaits', 'unmergedEssays.@each.next_action', 'unmergedEssays.@each.state'),
 
 	actionRequiredEssays: Ember.computed.filter('unmergedEssays', function(essay) {
         return (essay.get('state') !== 'completed');

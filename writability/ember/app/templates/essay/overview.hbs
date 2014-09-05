@@ -17,8 +17,12 @@
         <div class="value student-text">{{topic}}</div>
     </div>
 
-    {{#if readyToWriteDraft}}
-        <button {{action openDraft}}>Write Draft</button>
+    {{#if is_completed}}
+        <button {{action 'viewFinalDraft' recentDraft}}>View Final Draft</button>
+    {{else}}
+        {{#if readyToWriteDraft}}
+            <button {{action openDraft}}>Write Draft</button>
+        {{/if}}
     {{/if}}
 {{else}}
     {{#if is_new_essay}}

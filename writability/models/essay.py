@@ -104,7 +104,7 @@ class Essay(BaseModel):
                 action,
                 existing_drafts,
                 num_of_drafts)
-        elif curr_draft.is_final_draft and s == "reviewed":
+        elif self.state == "completed":
             action = "Complete"
         else:
             action = "Error"

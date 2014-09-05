@@ -1,4 +1,5 @@
 {{#if applicationUser.isStudent}}
+{{#if applicationStudent.onboarded}}
 <div class="nav-section student-nav">
 	<button class="menu nav-button" {{action 'toggleMenu' target="view"}}>
 		<i class="icon-menu"></i>
@@ -10,4 +11,5 @@
 		</ul>
 	{{/general-collapse}}
 </div>
+{{/if}}
 {{/if}}

@@ -1,5 +1,7 @@
 <p>{{view.summaryText}}</p>
 
 {{#each essay_association in essay_associations itemController=view.listItemController}}
+{{#if essay_association.application_essay.onboarding_is_selected}}
     {{render 'essay/application-list-item' essay_association}}
+{{/if}}
 {{/each}}
