@@ -22,7 +22,7 @@
 </div>
 
 {{#if is_completed}}
-    <button {{action 'reviewDraft' recentDraft}}>View Final Draft</button>
+    {{!# <button ((action 'reviewDraft' recentDraft)) >View Final Draft</button> }}
 {{else}}
 {{#if draft_ready_for_review}}
     <button {{action 'reviewDraft' recentDraft}}>Review Draft</button>
