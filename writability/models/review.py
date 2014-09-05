@@ -101,11 +101,11 @@ class Review(StatefulModel):
                     db.session.add(new_draft.review)
                     # Commit here so that the review gets an ID
                     db.session.commit()
-
+                    
                     new_rubric_params = {
                         "name": None,
                         "review_id": new_draft.review.id,
-                        "essay_template": new_draft.review.essay_template
+                        "essay_template": this_draft.essay.essay_template
                     }
 
                     new_rubric = self.rubric.create_copy(new_review_id=new_draft.review.id)
