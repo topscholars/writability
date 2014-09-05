@@ -1,0 +1,8 @@
+{{!-- NOTE: Don't pass reviewMode to suppress plus/minus sliders --}}
+{{#each association in rubric.rubric_associations}}
+	{{rubric-slider association=association selectedRubricCategory=selectedRubricCategory select='selectCategory'}}
+{{/each}}
+
+{{#if selectedRubricCategory}}
+	{{rubric-detail rubricCategory=selectedRubricCategory reviewMode=reviewMode rubricCriteria=criteria}}
+{{/if}}
