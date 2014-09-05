@@ -114,7 +114,7 @@ export default DraftController.extend({
                                     essayPromise.then(function(essay) {
                                         essay.reload().then(function(essay) {
                                             controller.send('alert', 'Review submitted.', 'success');
-
+                                            // YEP THIS IS SOME DUPES. TODO tidy
                                             if (draft.get('essay_type') === 'application') {
                                                 if (draft.get('is_final_draft')) {
                                                     essay.set('state', 'completed');
@@ -125,7 +125,14 @@ export default DraftController.extend({
                                                     controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
                                                 }
                                             } else if (draft.get('essay_type') === 'theme') {
-                                                controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                                                if (draft.get('is_final_draft')) {
+                                                    essay.set('state', 'completed');
+                                                    essay.save().then(function() {
+                                                        controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                                                    });
+                                                } else {
+                                                    controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
+                                                }
                                             }
                                         });
                                     });
