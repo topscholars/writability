@@ -18,7 +18,7 @@
     </div>
 
     {{#if is_completed}}
-        <button {{action 'reviewDraft' recentDraft}}>View Final Draft</button>
+        <button {{action 'viewFinalDraft' recentDraft}}>View Final Draft</button>
     {{else}}
         {{#if readyToWriteDraft}}
             <button {{action openDraft}}>Write Draft</button>

@@ -54,6 +54,12 @@ export default Ember.ObjectController.extend({
                     that.transitionToRoute('draft', draft);
                 });
             });
+        },
+        viewFinalDraft: function(draft) {
+          var that = this;
+          this.getMostRecentDraft().then(function (draft) {
+            that.transitionToRoute('draft', draft);
+          });
         }
     }
 });
