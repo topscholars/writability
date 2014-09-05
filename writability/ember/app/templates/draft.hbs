@@ -44,6 +44,7 @@
     {{/if}}
 </div>
 
+{{#unless essay_is_completed}}
 <div class="editor-column annotations-column">
     <!-- received event="controllerMethodToCall()" -->
     {{annotation-container
@@ -54,3 +55,4 @@
         hasSavedAnnotation="hasSavedAnnotation"
         isStudent=isStudent}}
 </div>
+{{/unless}}
