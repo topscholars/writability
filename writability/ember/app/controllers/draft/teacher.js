@@ -11,26 +11,6 @@ export default DraftController.extend({
     // Page displays blank anno's when this is used.
     //annotations: Ember.computed.alias('review.annotations'),
 
-    //current_ess_template
-
-    tags: function() {
-        return this.store.find('tag', { is_simple_tag: true } );
-        //var a =  this.store.find('tag', { tag_type: "POSITIVE" } );
-        //var b =  this.store.find('tag', { tag_type: "NEGATIVE" } );
-        //////var d =  this.store.find('criteria', { essay_template_id: this.get('myAliasID') } );
-        //var stream = Ember.A();
-//
-        //return Ember.RSVP.all([a, b]).then( function (objs) {
-        //    stream.pushObjects(objs[0].toArray());
-        //    stream.pushObjects(objs[1].toArray());
-        //    //debugger
-        //    return stream;
-        //});
-
-        //Concatenate these and return
-        // Criteria extends Tag, with 2 added attributes on Criteria
-    }.property(),
-
     formattedTextObserver: function () {
         if (this.get('formatted_text').indexOf('id="annotation-in-progress"') > -1) {
             this.send('createNewAnnotation');

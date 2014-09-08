@@ -17,9 +17,8 @@ export default AuthenticatedRoute.extend({
     },
 
     afterModel: function(model) {
-      return model.get('essay').then(function(e) {
-        model.set('essay_state', e.get('state'));
-      });
+      return Ember.RSVP.all([model.loadEssayState(),
+                             model.loadTagsAndCriteria()]);
     },
 
     setupController: function(controller, model) {

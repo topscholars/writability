@@ -3,9 +3,13 @@ import DS from 'ember-data';
 //import FixtureData from 'writability/fixtures/rubric-criterion';
 
 var Criterion = DS.Model.extend({
-	description: DS.attr(),
+	description: DS.attr('string'),
+  essay_template: DS.belongsTo('essayTemplate', {async: true}),
+  category: DS.attr('string'),
   rubriccategory: DS.belongsTo('rubric-category'),
-  //name: Ember.computed.alias('rubric_category.name')
+  name: DS.attr('string'),
+  super_category: DS.attr('string'),
+  tag_type: DS.attr('string')
 });
 
 //RubricCategory.reopenClass({
