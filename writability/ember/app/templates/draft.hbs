@@ -8,11 +8,9 @@
                 Review
             </button>
             {{#if isTeacher}}
-                <!-- Removed until setting field updates properly
                 <button {{action togglePanel "settings" target=view}} class="settings panel-toggle">
                     Settings
                 </button>
-                -->
             {{/if}}
         </div>
         <div class="essay-prompt strong">{{dotdot-ninety essay.essay_prompt true}}<strong class="show-more" {{action togglePanel "details" target=view}}>... show more</strong> </div>

@@ -22,7 +22,7 @@
     "select2": "*",
     "entypo": "*",
     "bootstrap.growl": "~2.0.0",
-    "pikaday": "~1.2.0"
+    "pickadate": "~3.4.0"
   },
   "resolutions": {
     "ember-data": "3e58bfdc41"
