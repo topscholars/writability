@@ -60,7 +60,7 @@ export default Ember.ObjectController.extend({
         return this.get('essay').then(function(essay) {
             essay.autoUpdateDueDate();
 
-            return essay.save();
+            return essay.saveWithDrafts();
         });
     },
 

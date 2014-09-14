@@ -98,7 +98,7 @@ export default DraftController.extend({
                                             if (draft.get('essay_type') === 'application') {
                                                 if (draft.get('is_final_draft')) {
                                                     essay.set('state', 'completed');
-                                                    essay.save().then(function() {
+                                                    essay.saveWithDrafts().then(function() {
                                                         controller.transitionToRoute('student.essays.show-application', student_id, essay_id);
                                                     });
                                                 } else {
@@ -107,7 +107,7 @@ export default DraftController.extend({
                                             } else if (draft.get('essay_type') === 'theme') {
                                                 if (draft.get('is_final_draft')) {
                                                     essay.set('state', 'completed');
-                                                    essay.save().then(function() {
+                                                    essay.saveWithDrafts().then(function() {
                                                         controller.transitionToRoute('student.essays.show-theme', student_id, essay_id);
                                                     });
                                                 } else {

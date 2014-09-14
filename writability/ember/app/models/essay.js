@@ -61,6 +61,13 @@ export default DS.Model.extend({
         }
     }.property('next_action', 'state'),
 
+    saveWithDrafts: function() {
+      var model = this;
+      return this.get('drafts').then(function() {
+        model.save();
+      });
+    },
+
     isThemeEssay: Ember.computed.equal('essayType', 'theme'),
 
     is_completed: Ember.computed.equal('state', 'completed')
