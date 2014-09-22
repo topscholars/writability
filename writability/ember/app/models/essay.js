@@ -7,7 +7,7 @@ export default DS.Model.extend({
     // properties
     audience: DS.attr('string'),
     context: DS.attr('string'),
-    due_date: DS.attr(),
+    due_date: DS.attr('date'),
     essay_prompt: DS.attr('string'),
     num_of_drafts: DS.attr('number'),
     topic: DS.attr('string'),
@@ -60,6 +60,13 @@ export default DS.Model.extend({
             return 'student';
         }
     }.property('next_action', 'state'),
+
+    saveWithDrafts: function() {
+      var model = this;
+      return this.get('drafts').then(function() {
+        model.save();
+      });
+    },
 
     isThemeEssay: Ember.computed.equal('essayType', 'theme'),
 

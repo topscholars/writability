@@ -20,8 +20,9 @@ var app = new EmberApp();
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
 app.import('vendor/momentjs/moment.js');
-app.import('vendor/pikaday/pikaday.js');
-app.import('vendor/pikaday/plugins/pikaday.jquery.js');
+app.import('vendor/pickadate/lib/picker.js');
+app.import('vendor/pickadate/lib/picker.date.js');
+app.import('vendor/pickadate/lib/picker.time.js');
 app.import('vendor/validatorjs/dist/validator.min.js');
 app.import('vendor/select2/select2.js');
 app.import('vendor/bootstrap.growl/dist/bootstrap-growl.js');
@@ -38,7 +39,7 @@ var extraAssets = pickFiles(app.trees.vendor.dir,{
 		'ckeditor/plugins/sharedspace/plugin.js',
 		'ckeditor/skins/moono/**/*.css',
 		'ckeditor/skins/moono/**/*.png',
-		'ckeditor/lang/en.js'
+    'ckeditor/lang/en.js'
     ],
     destDir: '/libs'
 });

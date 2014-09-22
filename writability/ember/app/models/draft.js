@@ -23,6 +23,8 @@ export default DS.Model.extend({
         }
     }.property('essay_type', 'essay_id'),
 
+    essay_template: Ember.computed.alias('essay.essay_template'),
+
     essay_is_completed: function() {
       return this.get('essay_state') === 'completed';
     }.property('essay_state'),
@@ -30,6 +32,34 @@ export default DS.Model.extend({
     review: DS.belongsTo('review', {async: true}),
 
     reviewState: Ember.computed.alias('review.state'),
+
+    loadEssayState: function() {
+      var model = this;
+      return this.get('essay').then(function(e) {
+        model.set('essay_state', e.get('state'));
+      });
+    },
+
+    loadTagsAndCriteria: function() {
+        var tags = this.store.find('tag', { is_simple_tag: true } );
+        var model = this;
+
+        return this.get('essay').then(function(essay) {
+          return essay.get('essay_template').then(function(template) {
+            var criteria =  model.store.find('rubric-criterion', {
+              essay_template_id: template.get('id')
+            });
+
+            return Ember.RSVP.hash({
+              tags: tags,
+              criteria: criteria
+            }).then( function (result) {
+              var tags = result.tags.get('content');
+              model.set('tags_and_criteria', tags.concat(result.criteria.get('content')));
+            });
+        });
+      });
+    }
 
     //// For potential use to return array of IDs
     //active_annotation_ids: function() {
